@@ -54,7 +54,10 @@ namespace LOLpreter
                 foreach (Match i in check1)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Delimiter to mark the start of the program " });
+                    tableLayoutPanel1.Controls.Add(new Label() { 
+                        Text = "Delimiter to mark the start of the program ",
+                        AutoSize = true
+                        });
                     str = "";
                     continue;
                 }
@@ -63,7 +66,10 @@ namespace LOLpreter
                 foreach (Match i in check2)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Delimiter to mark the end of the program " });
+                    tableLayoutPanel1.Controls.Add(new Label() { 
+                        Text = "Delimiter to mark the end of the program ",
+                        AutoSize = true
+                    });
                     str = "";
                     continue;
                 }
@@ -72,7 +78,10 @@ namespace LOLpreter
                 foreach (Match i in check3)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Single-line comment " });
+                    tableLayoutPanel1.Controls.Add(new Label() { 
+                        Text = "Single-line comment ",
+                        AutoSize = true
+                    });
                     str = "";
                     continue;
                 }
@@ -80,7 +89,10 @@ namespace LOLpreter
                 foreach (Match i in check4)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Initialize a variable " });
+                    tableLayoutPanel1.Controls.Add(new Label() { 
+                        Text = "Initialize a variable ",
+                        AutoSize = true
+                    });
                     str = "";
                     continue;
                 }
@@ -88,7 +100,10 @@ namespace LOLpreter
                 foreach (Match i in check5)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Assignment operator in declaring a variable " });
+                    tableLayoutPanel1.Controls.Add(new Label() { 
+                        Text = "Assignment operator in declaring a variable ",
+                        AutoSize = true
+                    });
                     str = "";
                     continue;
                 }
@@ -96,7 +111,10 @@ namespace LOLpreter
                 foreach (Match i in check6)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Input  " });
+                    tableLayoutPanel1.Controls.Add(new Label() { 
+                        Text = "Input  ",
+                        AutoSize = true 
+                    });
                     str = "";
                     continue;
                 }
@@ -104,7 +122,10 @@ namespace LOLpreter
                 foreach (Match i in check7)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Output " });
+                    tableLayoutPanel1.Controls.Add(new Label() { 
+                        Text = "Output ",
+                        AutoSize = true
+                    });
                     str = "";
                     continue;
                 }
@@ -112,7 +133,10 @@ namespace LOLpreter
                 foreach (Match i in check8)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Comparison Operator; True if operands are equal " });
+                    tableLayoutPanel1.Controls.Add(new Label() { 
+                        Text = "Comparison Operator; True if operands are equal ",
+                        AutoSize = true
+                    });
                     str = "";
                     continue;
                 }
@@ -120,7 +144,10 @@ namespace LOLpreter
                 foreach (Match i in check9)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Comparison Operator; True if operands are not equal" });
+                    tableLayoutPanel1.Controls.Add(new Label() { 
+                        Text = "Comparison Operator; True if operands are not equal",
+                        AutoSize = true
+                    });
                     str = "";
                     continue;
                 }
@@ -128,7 +155,8 @@ namespace LOLpreter
                 foreach (Match i in check10)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Arithmetic Operator; Adds operands" });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Arithmetic Operator; Adds operands",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -136,7 +164,8 @@ namespace LOLpreter
                 foreach (Match i in check11)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Arithmetic Operator; Subtracts operand" });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Arithmetic Operator; Subtracts operand",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -144,7 +173,8 @@ namespace LOLpreter
                 foreach (Match i in check12)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Arithmetic Operator; Multiplies operands " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Arithmetic Operator; Multiplies operands ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -152,7 +182,8 @@ namespace LOLpreter
                 foreach (Match i in check13)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Arithmetic Operator; Divides operands " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Arithmetic Operator; Divides operands ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -160,7 +191,8 @@ namespace LOLpreter
                 foreach (Match i in check14)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Arithmetic Operator; Returns the remainder of the operands " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Arithmetic Operator; Returns the remainder of the operands ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -168,7 +200,8 @@ namespace LOLpreter
                 foreach (Match i in check15)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Comparison Operator; Returns the biggest of the given integers " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Comparison Operator; Returns the biggest of the given integers ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -176,7 +209,8 @@ namespace LOLpreter
                 foreach (Match i in check16)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Comparison Operator; Returns the smallest of the given integers " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Comparison Operator; Returns the smallest of the given integers ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -184,7 +218,8 @@ namespace LOLpreter
                 foreach (Match i in check17)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "If-Else Delimiter; Signals the start of the If-Else block " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "If-Else Delimiter; Signals the start of the If-Else block ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -192,7 +227,8 @@ namespace LOLpreter
                 foreach (Match i in check18)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "If the expression provided in the If-Else block is true, the code in this block will be executed " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "If the expression provided in the If-Else block is true, the code in this block will be executed ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -200,7 +236,8 @@ namespace LOLpreter
                 foreach (Match i in check19)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "If the expression provided in the If-Else block is false, the code in this block will be executed. Also signals the end of the ​YA RLY​ block " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "If the expression provided in the If-Else block is false, the code in this block will be executed. Also signals the end of the ​YA RLY​ block ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -208,7 +245,8 @@ namespace LOLpreter
                 foreach (Match i in check20)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Signals the end of the If-Else block " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Signals the end of the If-Else block ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -216,7 +254,8 @@ namespace LOLpreter
                 foreach (Match i in check21)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Signals the start of a Switch Case block " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Signals the start of a Switch Case block ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -224,7 +263,8 @@ namespace LOLpreter
                 foreach (Match i in check22)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Comparison block for a Switch Case. Followed by a literal" });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Comparison block for a Switch Case. Followed by a literal",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -232,7 +272,8 @@ namespace LOLpreter
                 foreach (Match i in check23)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "The default optional case in a Switch Case block." });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "The default optional case in a Switch Case block.",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -240,7 +281,8 @@ namespace LOLpreter
                 foreach (Match i in check24)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Signals the start of a loop. Followed by a label. " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Signals the start of a loop. Followed by a label. ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -248,7 +290,8 @@ namespace LOLpreter
                 foreach (Match i in check25)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Signals the end of a loop. Followed by a label." });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Signals the end of a loop. Followed by a label.",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -256,7 +299,8 @@ namespace LOLpreter
                 foreach (Match i in check26)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Initializes a function. Followed by the function name. " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Initializes a function. Followed by the function name. ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -264,7 +308,8 @@ namespace LOLpreter
                 foreach (Match i in check27)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Closes a function block. " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Closes a function block. ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -272,7 +317,8 @@ namespace LOLpreter
                 foreach (Match i in check28)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Calls a function. Followed by the function name and its parameters. 29 " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Calls a function. Followed by the function name and its parameters. ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -280,7 +326,8 @@ namespace LOLpreter
                 foreach (Match i in check29)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Break statement. " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Break statement. ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -288,7 +335,8 @@ namespace LOLpreter
                 foreach (Match i in check30)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Appears between the ​YA RLY ​and ​NO WAI​ blocks. Similar to an Elseif statement. " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Appears between the ​YA RLY ​and ​NO WAI​ blocks. Similar to an Elseif statement. ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -296,7 +344,8 @@ namespace LOLpreter
                 foreach (Match i in check31)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Separates arguments. " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Separates arguments. ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -304,7 +353,8 @@ namespace LOLpreter
                 foreach (Match i in check32)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Boolean Operator; Similar to AND; 1 or 2 operands " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Boolean Operator; Similar to AND; 1 or 2 operands ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -312,7 +362,8 @@ namespace LOLpreter
                 foreach (Match i in check33)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Boolean Operator; Similar to OR; 1 or 2 operands " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Boolean Operator; Similar to OR; 1 or 2 operands ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -320,7 +371,8 @@ namespace LOLpreter
                 foreach (Match i in check34)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Boolean Operator; Similar to XOR; Infinite operands " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Boolean Operator; Similar to XOR; Infinite operands ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -328,7 +380,8 @@ namespace LOLpreter
                 foreach (Match i in check35)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Negation " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Negation ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -336,7 +389,8 @@ namespace LOLpreter
                 foreach (Match i in check36)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Boolean Operator; Similar to AND; Infinite operands " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Boolean Operator; Similar to AND; Infinite operands ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -344,7 +398,8 @@ namespace LOLpreter
                 foreach (Match i in check37)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Boolean Operator; Similar to OR; Infinite operands " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Boolean Operator; Similar to OR; Infinite operands ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -352,7 +407,8 @@ namespace LOLpreter
                 foreach (Match i in check38)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Used for re-casting a variable to a different type " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Used for re-casting a variable to a different type ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -360,7 +416,8 @@ namespace LOLpreter
                 foreach (Match i in check39)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Used for re-casting a variable to a different type " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Used for re-casting a variable to a different type ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -368,7 +425,8 @@ namespace LOLpreter
                 foreach (Match i in check40)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Increments a variable by one. " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Increments a variable by one. ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -376,7 +434,8 @@ namespace LOLpreter
                 foreach (Match i in check41)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Decrements a variable by one. " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Decrements a variable by one. ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -384,7 +443,8 @@ namespace LOLpreter
                 foreach (Match i in check42)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Returns the value of succeeding expression. " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Returns the value of succeeding expression. ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -392,7 +452,8 @@ namespace LOLpreter
                 foreach (Match i in check43)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Delimiter of a function call. " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Delimiter of a function call. ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -400,7 +461,8 @@ namespace LOLpreter
                 foreach (Match i in check44)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops. " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops. ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -408,7 +470,8 @@ namespace LOLpreter
                 foreach (Match i in check45)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops. " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops. ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -416,7 +479,8 @@ namespace LOLpreter
                 foreach (Match i in check46)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Temporary variable. Remains in local scope until it is replaced with a bare expression. 47 " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Temporary variable. Remains in local scope until it is replaced with a bare expression. ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -424,7 +488,8 @@ namespace LOLpreter
                 foreach (Match i in check47)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Start of a multi-line comment " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Start of a multi-line comment ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -432,7 +497,8 @@ namespace LOLpreter
                 foreach (Match i in check48)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "End of a multi-line comment " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "End of a multi-line comment ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
@@ -440,7 +506,8 @@ namespace LOLpreter
                 foreach (Match i in check49)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
-                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Expects strings as its input arguments for concatenation " });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = "Expects strings as its input arguments for concatenation ",
+                        AutoSize = true });
                     str = "";
                     continue;
                 }
