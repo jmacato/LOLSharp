@@ -7,3 +7,12 @@ c:\users\jonathan arino\documents\visual studio 2015\Projects\LOLpreter\LOLprete
 c:\users\jonathan arino\documents\visual studio 2015\Projects\LOLpreter\LOLpreter\obj\Debug\LOLpreter.exe
 c:\users\jonathan arino\documents\visual studio 2015\Projects\LOLpreter\LOLpreter\obj\Debug\LOLpreter.pdb
 c:\users\jonathan arino\documents\visual studio 2015\Projects\LOLpreter\LOLpreter\obj\Debug\LOLpreter.Form1.resources
+D:\RAIN-PC\Desktop\Shared\CMSC 124\Project\CMSC124-Project-LOLCODE-Interpreter\bin\Debug\LOLpreter.exe.config
+D:\RAIN-PC\Desktop\Shared\CMSC 124\Project\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.exe
+D:\RAIN-PC\Desktop\Shared\CMSC 124\Project\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.pdb
+D:\RAIN-PC\Desktop\Shared\CMSC 124\Project\CMSC124-Project-LOLCODE-Interpreter\bin\Debug\LOLpreter.exe
+D:\RAIN-PC\Desktop\Shared\CMSC 124\Project\CMSC124-Project-LOLCODE-Interpreter\bin\Debug\LOLpreter.pdb
+D:\RAIN-PC\Desktop\Shared\CMSC 124\Project\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.csprojResolveAssemblyReference.cache
+D:\RAIN-PC\Desktop\Shared\CMSC 124\Project\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.Form1.resources
+D:\RAIN-PC\Desktop\Shared\CMSC 124\Project\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.Properties.Resources.resources
+D:\RAIN-PC\Desktop\Shared\CMSC 124\Project\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.csproj.GenerateResource.Cache
