@@ -13,9 +13,12 @@ namespace LOLpreter
 {
     public partial class Form1 : Form
     {
+        string lolstream = "";
+
         public Form1()
         {
             InitializeComponent();
+
             
         }
 
@@ -44,11 +47,28 @@ namespace LOLpreter
 
         }
 
+        /* Standardize line endings to windows (CR LF) instead of linux (LF) only*/
+        private string NormalizeEndings(string input)
+        {
+            if (Regex.IsMatch(input, "\r"))
+            {
+                return input;
+            } else
+            {
+                return Regex.Replace(input, "\n", Environment.NewLine);
+            }
+        }
+
         private void button2_Click(object sender, EventArgs e)
         {
+            lolstream = textBox1.Text;
+
             tableLayoutPanel1.Controls.Clear();
             string str = "";
-            foreach (char s in textBox1.Text)
+
+            string[] lollines = lolstream.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string s in lollines)
             {
                 str += s;
                 MatchCollection checkFloat = Regex.Matches(str, @"-?\d+\.\d+");
@@ -67,13 +87,13 @@ namespace LOLpreter
                 MatchCollection checkBoolean = Regex.Matches(str, @"WIN|FAIL");
                 foreach (Match i in checkBoolean)
                 {
+                    str = str.Replace(i.Value,"");
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label()
                     {
                         Text = "Boolean Literal",
                         AutoSize = true
                     });
-                    str = "";
                     continue;
                 }
 
@@ -612,7 +632,9 @@ namespace LOLpreter
             {
                 System.IO.StreamReader sr = new
                    System.IO.StreamReader(openFileDialog1.FileName);
-                textBox1.Text = sr.ReadToEnd();
+
+                lolstream = NormalizeEndings(sr.ReadToEnd());
+                textBox1.Text = lolstream;
                 sr.Close();
             }
         }
