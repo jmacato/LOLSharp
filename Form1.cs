@@ -51,12 +51,51 @@ namespace LOLpreter
             foreach (char s in textBox1.Text)
             {
                 str += s;
+                MatchCollection checkFloat = Regex.Matches(str, @"-?\d+\.\d+");
+                foreach (Match i in checkFloat)
+                {
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
+                    tableLayoutPanel1.Controls.Add(new Label()
+                    {
+                        Text = "Float Literal",
+                        AutoSize = true
+                    });
+                    str = "";
+                    continue;
+                }
+
+                MatchCollection checkBoolean = Regex.Matches(str, @"WIN|FAIL");
+                foreach (Match i in checkBoolean)
+                {
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
+                    tableLayoutPanel1.Controls.Add(new Label()
+                    {
+                        Text = "Boolean Literal",
+                        AutoSize = true
+                    });
+                    str = "";
+                    continue;
+                }
+
+                MatchCollection checkInteger = Regex.Matches(str, @"[^/./n]-?\d+[^/.]");
+                foreach (Match i in checkInteger)
+                {
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
+                    tableLayoutPanel1.Controls.Add(new Label()
+                    {
+                        Text = "Integer Literal",
+                        AutoSize = true
+                    });
+                    str = "";
+                    continue;
+                }
+
                 MatchCollection check1 = Regex.Matches(str, @"HAI");
                 foreach (Match i in check1)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { 
-                        Text = "Delimiter to mark the start of the program ",
+                        Text = "Delimiter to mark the start of the program",
                         AutoSize = true
                         });
                     str = "";
@@ -68,7 +107,7 @@ namespace LOLpreter
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { 
-                        Text = "Delimiter to mark the end of the program ",
+                        Text = "Delimiter to mark the end of the program",
                         AutoSize = true
                     });
                     str = "";
@@ -130,6 +169,32 @@ namespace LOLpreter
                     str = "";
                     continue;
                 }
+
+                MatchCollection checkVariable = Regex.Matches(str, @"[:\x22:].+[:\x22:]");
+                foreach (Match i in checkVariable)
+                {
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString().Remove(1) });
+                    tableLayoutPanel1.Controls.Add(new Label()
+                    {
+                        Text = "String Delimiter",
+                        AutoSize = true
+                    });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString().Substring(1, i.Length-2) });
+                    tableLayoutPanel1.Controls.Add(new Label()
+                    {
+                        Text = "String Literal",
+                        AutoSize = true
+                    });
+                    tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString().Substring(i.Length-1) });
+                    tableLayoutPanel1.Controls.Add(new Label()
+                    {
+                        Text = "String Delimiter",
+                        AutoSize = true
+                    });
+                    str = "";
+                    continue;
+                }
+
                 MatchCollection check8 = Regex.Matches(str, @"BOTH SAEM");
                 foreach (Match i in check8)
                 {
