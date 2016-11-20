@@ -16,6 +16,7 @@ namespace LOLpreter
         public Form1()
         {
             InitializeComponent();
+            
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -76,7 +77,7 @@ namespace LOLpreter
                     str = "";
                     continue;
                 }
-                MatchCollection check4 = Regex.Matches(str, @"I HAS A");
+                MatchCollection check4 = Regex.Matches(str, @"I HAS A ");
                 foreach (Match i in check4)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
@@ -212,7 +213,7 @@ namespace LOLpreter
                     str = "";
                     continue;
                 }
-                MatchCollection check21 = Regex.Matches(str, @"WTF?");
+                MatchCollection check21 = Regex.Matches(str, @"WTF[?]");
                 foreach (Match i in check21)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
@@ -412,7 +413,7 @@ namespace LOLpreter
                     str = "";
                     continue;
                 }
-                MatchCollection check46 = Regex.Matches(str, @"IT");
+                MatchCollection check46 = Regex.Matches(str, @"IT\s");
                 foreach (Match i in check46)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
@@ -469,6 +470,22 @@ namespace LOLpreter
         }
 
         private void tableLayoutPanel1_Paint_1(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                System.IO.StreamReader sr = new
+                   System.IO.StreamReader(openFileDialog1.FileName);
+                textBox1.Text = sr.ReadToEnd();
+                sr.Close();
+            }
+        }
+
+        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
 
         }
