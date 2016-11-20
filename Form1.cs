@@ -64,14 +64,12 @@ namespace LOLpreter
             lolstream = textBox1.Text;
 
             tableLayoutPanel1.Controls.Clear();
-            string str = "";
 
             string[] lollines = lolstream.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string s in lollines)
             {
-                str += s;
-                MatchCollection checkFloat = Regex.Matches(str, @"-?\d+\.\d+");
+                MatchCollection checkFloat = Regex.Matches(s, @"-?\d+\.\d+"); //Float Literal
                 foreach (Match i in checkFloat)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
@@ -80,14 +78,13 @@ namespace LOLpreter
                         Text = "Float Literal",
                         AutoSize = true
                     });
-                    str = "";
+                    
                     continue;
                 }
 
-                MatchCollection checkBoolean = Regex.Matches(str, @"WIN|FAIL");
+                MatchCollection checkBoolean = Regex.Matches(s, @"WIN|FAIL");
                 foreach (Match i in checkBoolean)
                 {
-                    str = str.Replace(i.Value,"");
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label()
                     {
@@ -97,7 +94,7 @@ namespace LOLpreter
                     continue;
                 }
 
-                MatchCollection checkInteger = Regex.Matches(str, @"[^/./n]-?\d+[^/.]");
+                MatchCollection checkInteger = Regex.Matches(s, @"[^/./n]-?\d+[^/.]");
                 foreach (Match i in checkInteger)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
@@ -106,11 +103,11 @@ namespace LOLpreter
                         Text = "Integer Literal",
                         AutoSize = true
                     });
-                    str = "";
+                    
                     continue;
                 }
 
-                MatchCollection check1 = Regex.Matches(str, @"HAI");
+                MatchCollection check1 = Regex.Matches(s, @"HAI");
                 foreach (Match i in check1)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
@@ -118,11 +115,11 @@ namespace LOLpreter
                         Text = "Delimiter to mark the start of the program",
                         AutoSize = true
                         });
-                    str = "";
+                    
                     continue;
                 }
            
-                MatchCollection check2 = Regex.Matches(str, @"KTHXBYE");
+                MatchCollection check2 = Regex.Matches(s, @"KTHXBYE");
                 foreach (Match i in check2)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
@@ -130,11 +127,11 @@ namespace LOLpreter
                         Text = "Delimiter to mark the end of the program",
                         AutoSize = true
                     });
-                    str = "";
+                    
                     continue;
                 }
                 
-                MatchCollection check3 = Regex.Matches(str, @"BTW");
+                MatchCollection check3 = Regex.Matches(s, @"BTW");
                 foreach (Match i in check3)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
@@ -142,10 +139,10 @@ namespace LOLpreter
                         Text = "Single-line comment ",
                         AutoSize = true
                     });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check4 = Regex.Matches(str, @"I HAS A");
+                MatchCollection check4 = Regex.Matches(s, @"I HAS A");
                 foreach (Match i in check4)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
@@ -153,10 +150,10 @@ namespace LOLpreter
                         Text = "Initialize a variable ",
                         AutoSize = true
                     });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check5 = Regex.Matches(str, @"ITZ");
+                MatchCollection check5 = Regex.Matches(s, @"ITZ");
                 foreach (Match i in check5)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
@@ -164,10 +161,10 @@ namespace LOLpreter
                         Text = "Assignment operator in declaring a variable ",
                         AutoSize = true
                     });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check6 = Regex.Matches(str, @"GIMMEH");
+                MatchCollection check6 = Regex.Matches(s, @"GIMMEH");
                 foreach (Match i in check6)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
@@ -175,10 +172,10 @@ namespace LOLpreter
                         Text = "Input  ",
                         AutoSize = true 
                     });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check7 = Regex.Matches(str, @"VISIBLE");
+                MatchCollection check7 = Regex.Matches(s, @"VISIBLE");
                 foreach (Match i in check7)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
@@ -186,11 +183,11 @@ namespace LOLpreter
                         Text = "Output ",
                         AutoSize = true
                     });
-                    str = "";
+                    
                     continue;
                 }
 
-                MatchCollection checkVariable = Regex.Matches(str, @"[:\x22:].+[:\x22:]");
+                MatchCollection checkVariable = Regex.Matches(s, @"[:\x22:].+[:\x22:]");
                 foreach (Match i in checkVariable)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString().Remove(1) });
@@ -211,11 +208,11 @@ namespace LOLpreter
                         Text = "String Delimiter",
                         AutoSize = true
                     });
-                    str = "";
+                    
                     continue;
                 }
 
-                MatchCollection check8 = Regex.Matches(str, @"BOTH SAEM");
+                MatchCollection check8 = Regex.Matches(s, @"BOTH SAEM");
                 foreach (Match i in check8)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
@@ -223,10 +220,10 @@ namespace LOLpreter
                         Text = "Comparison Operator; True if operands are equal ",
                         AutoSize = true
                     });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check9 = Regex.Matches(str, @"DIFFRINT");
+                MatchCollection check9 = Regex.Matches(s, @"DIFFRINT");
                 foreach (Match i in check9)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
@@ -234,367 +231,367 @@ namespace LOLpreter
                         Text = "Comparison Operator; True if operands are not equal",
                         AutoSize = true
                     });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check10 = Regex.Matches(str, @"SUM OF");
+                MatchCollection check10 = Regex.Matches(s, @"SUM OF");
                 foreach (Match i in check10)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Arithmetic Operator; Adds operands",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check11 = Regex.Matches(str, @"DIFF OF");
+                MatchCollection check11 = Regex.Matches(s, @"DIFF OF");
                 foreach (Match i in check11)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Arithmetic Operator; Subtracts operand",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check12 = Regex.Matches(str, @"PRODUKT OF");
+                MatchCollection check12 = Regex.Matches(s, @"PRODUKT OF");
                 foreach (Match i in check12)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Arithmetic Operator; Multiplies operands ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check13 = Regex.Matches(str, @"QUOSHUNT OF");
+                MatchCollection check13 = Regex.Matches(s, @"QUOSHUNT OF");
                 foreach (Match i in check13)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Arithmetic Operator; Divides operands ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check14 = Regex.Matches(str, @"MOD OF");
+                MatchCollection check14 = Regex.Matches(s, @"MOD OF");
                 foreach (Match i in check14)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Arithmetic Operator; Returns the remainder of the operands ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check15 = Regex.Matches(str, @"BIGGR OF");
+                MatchCollection check15 = Regex.Matches(s, @"BIGGR OF");
                 foreach (Match i in check15)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Comparison Operator; Returns the biggest of the given integers ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check16 = Regex.Matches(str, @"SMALLR OF");
+                MatchCollection check16 = Regex.Matches(s, @"SMALLR OF");
                 foreach (Match i in check16)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Comparison Operator; Returns the smallest of the given integers ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check17 = Regex.Matches(str, @"O RLY?");
+                MatchCollection check17 = Regex.Matches(s, @"O RLY?");
                 foreach (Match i in check17)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "If-Else Delimiter; Signals the start of the If-Else block ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check18 = Regex.Matches(str, @"YA RLY");
+                MatchCollection check18 = Regex.Matches(s, @"YA RLY");
                 foreach (Match i in check18)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "If the expression provided in the If-Else block is true, the code in this block will be executed ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check19 = Regex.Matches(str, @"NO WAI");
+                MatchCollection check19 = Regex.Matches(s, @"NO WAI");
                 foreach (Match i in check19)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "If the expression provided in the If-Else block is false, the code in this block will be executed. Also signals the end of the ​YA RLY​ block ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check20 = Regex.Matches(str, @"OIC");
+                MatchCollection check20 = Regex.Matches(s, @"OIC");
                 foreach (Match i in check20)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Signals the end of the If-Else block ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check21 = Regex.Matches(str, @"WTF[?]");
+                MatchCollection check21 = Regex.Matches(s, @"WTF[?]");
                 foreach (Match i in check21)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Signals the start of a Switch Case block ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check22 = Regex.Matches(str, @"OMG");
+                MatchCollection check22 = Regex.Matches(s, @"OMG");
                 foreach (Match i in check22)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Comparison block for a Switch Case. Followed by a literal",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check23 = Regex.Matches(str, @"OMGWTF");
+                MatchCollection check23 = Regex.Matches(s, @"OMGWTF");
                 foreach (Match i in check23)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "The default optional case in a Switch Case block.",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check24 = Regex.Matches(str, @"IM IN YR");
+                MatchCollection check24 = Regex.Matches(s, @"IM IN YR");
                 foreach (Match i in check24)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Signals the start of a loop. Followed by a label. ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check25 = Regex.Matches(str, @"IM OUTTA YR");
+                MatchCollection check25 = Regex.Matches(s, @"IM OUTTA YR");
                 foreach (Match i in check25)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Signals the end of a loop. Followed by a label.",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check26 = Regex.Matches(str, @"HOW IZ I");
+                MatchCollection check26 = Regex.Matches(s, @"HOW IZ I");
                 foreach (Match i in check26)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Initializes a function. Followed by the function name. ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check27 = Regex.Matches(str, @"IF U SAY SO");
+                MatchCollection check27 = Regex.Matches(s, @"IF U SAY SO");
                 foreach (Match i in check27)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Closes a function block. ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check28 = Regex.Matches(str, @"I IZ");
+                MatchCollection check28 = Regex.Matches(s, @"I IZ");
                 foreach (Match i in check28)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Calls a function. Followed by the function name and its parameters. ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check29 = Regex.Matches(str, @"GTFO");
+                MatchCollection check29 = Regex.Matches(s, @"GTFO");
                 foreach (Match i in check29)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Break statement. ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check30 = Regex.Matches(str, @"MEBBE");
+                MatchCollection check30 = Regex.Matches(s, @"MEBBE");
                 foreach (Match i in check30)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Appears between the ​YA RLY ​and ​NO WAI​ blocks. Similar to an Elseif statement. ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check31 = Regex.Matches(str, @"AN");
+                MatchCollection check31 = Regex.Matches(s, @"AN");
                 foreach (Match i in check31)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Separates arguments. ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check32 = Regex.Matches(str, @"BOTH OF");
+                MatchCollection check32 = Regex.Matches(s, @"BOTH OF");
                 foreach (Match i in check32)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Boolean Operator; Similar to AND; 1 or 2 operands ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check33 = Regex.Matches(str, @"EITHER OF");
+                MatchCollection check33 = Regex.Matches(s, @"EITHER OF");
                 foreach (Match i in check33)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Boolean Operator; Similar to OR; 1 or 2 operands ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check34 = Regex.Matches(str, @"WON OF");
+                MatchCollection check34 = Regex.Matches(s, @"WON OF");
                 foreach (Match i in check34)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Boolean Operator; Similar to XOR; Infinite operands ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check35 = Regex.Matches(str, @"NOT");
+                MatchCollection check35 = Regex.Matches(s, @"NOT");
                 foreach (Match i in check35)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Negation ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check36 = Regex.Matches(str, @"ALL OF");
+                MatchCollection check36 = Regex.Matches(s, @"ALL OF");
                 foreach (Match i in check36)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Boolean Operator; Similar to AND; Infinite operands ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check37 = Regex.Matches(str, @"ANY OF");
+                MatchCollection check37 = Regex.Matches(s, @"ANY OF");
                 foreach (Match i in check37)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Boolean Operator; Similar to OR; Infinite operands ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check38 = Regex.Matches(str, @"IS NOW A");
+                MatchCollection check38 = Regex.Matches(s, @"IS NOW A");
                 foreach (Match i in check38)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Used for re-casting a variable to a different type ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check39 = Regex.Matches(str, @"MAEK");
+                MatchCollection check39 = Regex.Matches(s, @"MAEK");
                 foreach (Match i in check39)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Used for re-casting a variable to a different type ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check40 = Regex.Matches(str, @"UPPIN");
+                MatchCollection check40 = Regex.Matches(s, @"UPPIN");
                 foreach (Match i in check40)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Increments a variable by one. ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check41 = Regex.Matches(str, @"NERFIN");
+                MatchCollection check41 = Regex.Matches(s, @"NERFIN");
                 foreach (Match i in check41)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Decrements a variable by one. ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check42 = Regex.Matches(str, @"FOUND YR");
+                MatchCollection check42 = Regex.Matches(s, @"FOUND YR");
                 foreach (Match i in check42)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Returns the value of succeeding expression. ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check43 = Regex.Matches(str, @"MKAY");
+                MatchCollection check43 = Regex.Matches(s, @"MKAY");
                 foreach (Match i in check43)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Delimiter of a function call. ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check44 = Regex.Matches(str, @"WILE");
+                MatchCollection check44 = Regex.Matches(s, @"WILE");
                 foreach (Match i in check44)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops. ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check45 = Regex.Matches(str, @"TILL");
+                MatchCollection check45 = Regex.Matches(s, @"TILL");
                 foreach (Match i in check45)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops. ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check46 = Regex.Matches(str, @"IT\s");
+                MatchCollection check46 = Regex.Matches(s, @"IT\s");
                 foreach (Match i in check46)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Temporary variable. Remains in local scope until it is replaced with a bare expression. ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check47 = Regex.Matches(str, @"OBTW");
+                MatchCollection check47 = Regex.Matches(s, @"OBTW");
                 foreach (Match i in check47)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Start of a multi-line comment ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check48 = Regex.Matches(str, @"TLDR");
+                MatchCollection check48 = Regex.Matches(s, @"TLDR");
                 foreach (Match i in check48)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "End of a multi-line comment ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
-                MatchCollection check49 = Regex.Matches(str, @"SMOOSH");
+                MatchCollection check49 = Regex.Matches(s, @"SMOOSH");
                 foreach (Match i in check49)
                 {
                     tableLayoutPanel1.Controls.Add(new Label() { Text = i.ToString() });
                     tableLayoutPanel1.Controls.Add(new Label() { Text = "Expects strings as its input arguments for concatenation ",
                         AutoSize = true });
-                    str = "";
+                    
                     continue;
                 }
                
