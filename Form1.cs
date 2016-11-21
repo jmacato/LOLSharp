@@ -181,7 +181,13 @@ namespace LOLpreter
 
                     foreach (var result in results)
                     {
-                        Debug.WriteLine(s+"|"+result.Value);
+                        tableLayoutPanel1.Controls.Add(new Label() { Text = s });
+                        tableLayoutPanel1.Controls.Add(new Label()
+                        {
+                            Text = result.Value,
+                            AutoSize = true
+                        });
+                        continue;
                     }
                 }
                 lineaddress += 1;
