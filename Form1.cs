@@ -66,29 +66,29 @@ namespace LOLpreter
         Dictionary<string, string> LexemeDefinitions = new Dictionary<string, string>
         {
             //Multi-spaced operands takes precedence
-            {@"I-HAS-A","Initialize a variable"},
-            {@"BOTH-SAEM","Comparison Operator; True if operands are equal"},
-            {@"SUM-OF","Arithmetic Operator; Adds operands"},
-            {@"DIFF-OF","Arithmetic Operator; Subtracts operand"},
-            {@"PRODUKT-OF","Arithmetic Operator; Multiplies operands"},
-            {@"QUOSHUNT-OF","Arithmetic Operator; Divides operands"},
-            {@"MOD-OF","Arithmetic Operator; Returns the remainder of the operands"},
-            {@"BIGGR-OF","Comparison Operator; Returns the biggest of the given integers"},
-            {@"SMALLR-OF","Comparison Operator; Returns the smallest of the given integers"},
-            {@"O-RLY?","If-Else Delimiter; Signals the start of the If-Else block"},
-            {@"YA-RLY","If the expression provided in the If-Else block is true, the code in this block will be executed"},
-            {@"NO-WAI","If the expression provided in the If-Else block is false, the code in this block will be executed. Also signals the end of the ​YA RLY​ block"},
+            {@"I-HAS-A","Declare variable"},
+            {@"BOTH-SAEM","Comparison Operator"},
+            {@"SUM-OF","Addition Operator"},
+            {@"DIFF-OF","Subtraction Operator"},
+            {@"PRODUKT-OF","Multiplication Operator"},
+            {@"QUOSHUNT-OF","Division Operator"},
+            {@"MOD-OF","Modulo (Remainder) Operator"},
+            {@"BIGGR-OF","Greater-than Operator; Returns the greater variable"},
+            {@"SMALLR-OF","Lesser-than Operator; Returns the lesser variable"},
+            {@"O-RLY?","Start of If-Else Block"},
+            {@"YA-RLY","[If-Else] Executes inline code when condition is true"},
+            {@"NO-WAI","[If-Else] Executes inline code when condition is true and closes the If-Else Block"},
             {@"IM-IN-YR","Signals the start of a loop. Followed by a label."},
             {@"IM-OUTTA-YR"," Signals the end of a loop.Followed by a label."},
-            {@"HOW-IZ-I"," Initializes a function. Followed by the function name."},
+            {@"HOW-IZ-I"," Declare function. Followed by the function name."},
             {@"IF-U-SAY-SO","Closes a function block."},
             {@"I-IZ","Calls a function. Followed by the function name and its parameters."},
-            {@"BOTH-OF"," Boolean Operator; Similar to AND; 1 or 2 operands"},
-            {@"EITHER-OF","Boolean Operator; Similar to OR; 1 or 2 operands"},
-            {@"WON-OF","Boolean Operator; Similar to XOR; Infinite operands"},
-            {@"ALL-OF"," Boolean Operator; Similar to AND; Infinite operands"},
-            {@"ANY-OF","Boolean Operator; Similar to OR; Infinite operands"},
-            {@"IS-NOW-A","Used for re-casting a variable to a different type"},
+            {@"BOTH-OF","AND Boolean Operator; 1 or 2 operands"},
+            {@"EITHER-OF","OR Boolean Operator; 1 or 2 operands"},
+            {@"WON-OF","XOR Boolean Operator; Infinite operands"},
+            {@"ALL-OF","AND Boolean Operator; Infinite operands"},
+            {@"ANY-OF","OR Boolean Operator; Infinite operands"},
+            {@"IS-NOW-A","Type Recasting"},
             {@"FOUND-YR","Returns the value of succeeding expression."},
 
             {@"HAI","Delimiter to mark the start of the program"},
@@ -217,57 +217,86 @@ namespace LOLpreter
             string Keyword = SplitKeysArgs(s).Keyword.Trim().Trim(',');
             string Argument = SplitKeysArgs(s).Argument;
             string Output = "";
-            switch (Keyword)
+            if (IsKeyword(Keyword))
             {
-                case "HAI":
-                    if (GetArgDataType(Argument) == DataType.FLOT) {
-                        LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
-                        Output = GetArgDataContent(Argument).ToString();
-                    }
-                    else
-                    { //Throw error here?
-                    } break;
-                case "VISIBLE":
-                    LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
-                    switch (GetArgDataType(Argument)) {
-                        case DataType.STRING:
+                switch (Keyword)
+                {
+                    case "HAI":
+                        if (GetArgDataType(Argument) == DataType.FLOT)
+                        {
+                            LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
                             Output = GetArgDataContent(Argument).ToString();
-                            LexTableAdd("Console Output", Output);
-                            break;
-                        case DataType.VARIABLE:
-                            Output = GetArgDataContent(Argument).ToString();
-                            LexTableAdd("Console Output", "VAR:" + Output);
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case "I-HAS-A":
-                    LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
-                    switch (GetArgDataType(SplitKeysArgs(Argument).Keyword))
-                    {
-                        case DataType.VARIABLE:
-                            Output = GetArgDataContent(SplitKeysArgs(Argument).Keyword).ToString();
-                            AddVariable(Output, "Nothing");
-                            LexTableAdd(Output,"Variable");
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case "BTW":
-                    break;
-                default:
-                    if (LexemeDefinitions.ContainsKey(Keyword))
-                    {
-                        LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
+                        }
+                        else
+                        { //Throw error here?
+                        }
                         break;
-                    } else
-                    {                        
-                        LexTableAdd(Keyword, "Variable");
-                    }
-                    break;
+                    case "VISIBLE":
+                        LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
+                        switch (GetArgDataType(Argument))
+                        {
+                            case DataType.STRING:
+                                Output = GetArgDataContent(Argument).ToString();
+                                LexTableAdd("Console Output", Output);
+                                break;
+                            case DataType.VARIABLE:
+                                Output = GetArgDataContent(Argument).ToString();
+                                LexTableAdd("Console Output", "VAR:" + Output);
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case "I-HAS-A": //Variable Declaration Parsing Block
+                        LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
+                        if (IsKeyword(SplitKeysArgs(Argument).Keyword))
+                        {
+                            //throw error here (Reserved Keyword error)
+                        }
+                        switch (GetArgDataType(SplitKeysArgs(Argument).Keyword))
+                        {
+                            case DataType.VARIABLE:
+                                string variablename = SplitKeysArgs(Argument).Keyword;
+                                object varval = "";
+                                Output = GetArgDataContent(variablename).ToString();
+                                string ITZ_ARG = SplitKeysArgs(Argument).Argument;
+
+                                if (IsKeyword(SplitKeysArgs(ITZ_ARG).Keyword))
+                                {
+                                    if (SplitKeysArgs(ITZ_ARG).Keyword == "ITZ")
+                                    {
+                                        LexTableAdd("ITZ", LexemeDefinitions["ITZ"]);
+                                        varval = SplitKeysArgs(ITZ_ARG).Argument;
+                                    }
+                                    else
+                                    {
+                                        varval = null;
+                                    }
+                                }
+
+                                AddVariable(Output, varval.ToString());
+                                LexTableAdd(Output, "Variable");
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case "BTW":
+                        break;
+                    default:
+                        if (LexemeDefinitions.ContainsKey(Keyword))
+                        {
+                            LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
+                            break;
+                        }
+                        else
+                        {
+                            LexTableAdd(Keyword, "Variable");
+                        }
+                        break;
+                }
             }
+
         }
 
         public struct KeyArgPair
@@ -286,6 +315,14 @@ namespace LOLpreter
             }
         }
 
+        private bool IsKeyword(string token)
+        {
+            var keywrd = from Arg in LexemeDefinitions
+                          where Regex.Match(token, Arg.Key, RegexOptions.Singleline).Success
+                          select Arg;
+            return keywrd != null && keywrd.Any();
+        }
+        
         private void SymTableUpdate()
         {
             tableLayoutPanel2.Controls.Clear();
