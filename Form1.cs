@@ -65,6 +65,7 @@ namespace LOLpreter
         */
         Dictionary<string, string> LexemeDefinitions = new Dictionary<string, string>
         {
+            //Multi-spaced operands takes precedence
             {@"I-HAS-A","Initialize a variable"},
             {@"BOTH-SAEM","Comparison Operator; True if operands are equal"},
             {@"SUM-OF","Arithmetic Operator; Adds operands"},
@@ -118,14 +119,14 @@ namespace LOLpreter
             
         };
 
-        Dictionary<string, string> DataType = new Dictionary<string, string>
+        //Regex dictionary for arguments
+        Dictionary<string, string> DataTypeDefinition = new Dictionary<string, string>
         {
             {@"-?\d+\.\d+","Float Literal"},
             {@"WIN|FAIL","Boolean Literal"},
-            {@"[^/./n]-?\d+[^/.]","Integer Literal"}
-            {@"""[^\""]*""","String"}
-
-
+            {@"[^/./n]-?\d+[^/.]","Integer Literal"},
+            {@"""[^\""]*""","String"},
+            {@"[A-Za-z][A-Za-z0-9_]*","Variable"}
         };
 
         enum DataType
@@ -170,28 +171,28 @@ namespace LOLpreter
             {@"IS NOW A","IS-NOW-A"},
             {@"FOUND YR","FOUND-YR"}
         };
-
-
-
+        
         private void button2_Click(object sender, EventArgs e)
         {
-            lolstream = textBox1.Text;
 
-            int lineaddress = 0; //Actively parsed line
+            lolstream = textBox1.Text;
 
             ClearTables();
 
             string[] orig_array = lolstream.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
+            //Turn multispace operands into single strings.
             foreach (string s in MonoglyphyOperators.Keys)
             {
                 lolstream = Regex.Replace(lolstream, s, MonoglyphyOperators[s]);
             }
 
-            //Split them 'up and remove extra lines
+            //Split them 'up and remove empty lines.
             string[] wrk_array = lolstream.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            int i = 0;
 
+
+            //Trim all lines.
+            int i = 0;
             foreach (string s in wrk_array)
             {
                 orig_array[i] = orig_array[i].Trim();
@@ -199,6 +200,8 @@ namespace LOLpreter
                 i++;
             }
 
+            //Begin parsing
+            int lineaddress = 0; //Actively parsed line
             foreach (string cl in wrk_array)
             {
                 parseLine(cl,orig_array,lineaddress);
@@ -216,41 +219,108 @@ namespace LOLpreter
             {
                 string outp = "";
                 string lexremoved = "";
+                LexTableAdd(result.Key, result.Value);
                 switch (result.Key)
                 {
-                    case "HAI":
+                    case "HAI": 
                         lexremoved = orig_array[i].Replace("HAI", "");
 
-                        break;
+                        if (GetArgDataType(lexremoved) == DataType.FLOT)
+                        {
+                            LexTableAdd(outp, "Program Version");
+                            outp = GetArgDataContent(lexremoved).ToString();
+                        } else
+                        {
+                            //Throw error here?
+                            throw new Exception("Invalid datatype for 'HAI':"+ GetArgDataType(lexremoved).ToString());
+                        }
+                        break; //breaks are necessary if a command has already been identified
                     case "VISIBLE":
                         lexremoved = orig_array[i].Replace("VISIBLE", "");
                         LexTableAdd(s, result.Value);
-                        if (Regex.IsMatch(lexremoved, @"""[^\""]*"""))
+
+                        switch (GetArgDataType(lexremoved))
                         {
-                            outp = Regex.Match(lexremoved, @"""[^\""]*""").Value;
-                            SymTableAdd("CONSOLE OUTPUT", outp);
-                        }
-                        else if (Regex.IsMatch(lexremoved, @"[A-Za-z][A-Za-z0-9_]*"))
-                        {
-                            outp = Regex.Match(lexremoved, @"[A-Za-z][A-Za-z0-9_]*").Value;
-                            SymTableAdd("CONSOLE OUTPUT", "VAR:"+outp);
+                            case DataType.STRING:
+                                outp = GetArgDataContent(lexremoved).ToString();
+                                SymTableAdd("Console Output",outp);
+                                break;
+                            case DataType.VARIABLE:
+                                outp = GetArgDataContent(lexremoved).ToString();
+                                SymTableAdd("Console Output", "VAR:" +outp);
+                                break;
+                            default:
+                                break;
                         }
                         break;
                         
                 }
-                LexTableAdd(result.Key, result.Value);
                 continue;
             }
         }
 
+        //Get datatype of command argument
+        private DataType GetArgDataType(string token)
+        {
+            var results = from Arg in DataTypeDefinition
+                          where Regex.Match(token, Arg.Key, RegexOptions.Singleline).Success
+                          select Arg;
+            foreach (var result in results)
+            {
+                switch (result.Value)
+                {
+                    case "Float Literal":
+                        return DataType.FLOT;
+                    case "Boolean Literal":
+                        return DataType.BOOL;
+                    case "Integer Literal":
+                        return DataType.INT;
+                    case "String":
+                        return DataType.STRING;
+                    case "Variable":
+                        return DataType.VARIABLE;
+                    default:
+                        return DataType.UNKNOWN;
+                }
+            }
+            return DataType.UNKNOWN;
+        }
 
+        //Get the value of the argument
+        private object GetArgDataContent(string token)
+        {
+            var results = from Arg in DataTypeDefinition
+                          where Regex.Match(token, Arg.Key, RegexOptions.Singleline).Success
+                          select Arg;
+            foreach (var result in results)
+            {
+                switch (result.Value)
+                {
+                    case "Float Literal":
+                        return Convert.ToDouble(Regex.Match(token,result.Key).Value);
+                    case "Boolean Literal":
+                        return Regex.Match(token, result.Key).Value;
+                    case "Integer Literal":
+                        return Convert.ToDouble(Regex.Match(token, result.Key).Value);
+                    case "String":
+                        return Regex.Match(token, result.Key).Value;
+                    case "Variable":
+                        return Regex.Match(token, result.Key).Value;
+                    default:
+                        return null;
+                }
+            }
+            return DataType.UNKNOWN;
+        }
 
+        //Add to Lexeme table
         private void LexTableAdd(string token, string val)
         {
             tableLayoutPanel1.Controls.Add(new Label() { Text = token });
             tableLayoutPanel1.Controls.Add(new Label() { Text = val, AutoSize = true});
         }
 
+        //Add to Symbol table
         private void SymTableAdd(string token, string val)
         {
             tableLayoutPanel2.Controls.Add(new Label() { Text = token });
