@@ -155,20 +155,20 @@ namespace LOLpreter
         {
             lolstream = textBox1.Text;
 
-            //Regex SCRegex = new Regex(@"BTW(.*?)(\n|\r|\r\n)");
-            //lolstream = SCRegex.Replace(lolstream, "");
             int lineaddress = 0; //Actively parsed line
-            //int iToken = 0; // Current Token
             tableLayoutPanel1.Controls.Clear();
 
-            ////Directives flags
-            //double progVersion = 0;
+            foreach (string s in MonoglyphyOperators.Keys)
+            {
+                lolstream = Regex.Replace(lolstream, s, MonoglyphyOperators[s]);
+            }
 
             //Split them 'up and remove extra lines
             string[] lollines = lolstream.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
-            foreach (string curline in lollines)
+            foreach (string cl in lollines)
             {
+                string curline = cl;
                 string[] activeline = curline.Split(' ');
                 foreach (string s in activeline)
                 {
@@ -183,47 +183,8 @@ namespace LOLpreter
                     {
                         Debug.WriteLine(s+"|"+result.Value);
                     }
-
-
-                    /*
-                    //Compiler Directives
-                    Match checkStart = Regex.Match(s, @"HAI"); //Delimiter to mark the start of the program
-                    Match checkEnd = Regex.Match(s, @"KTHXBYE"); //Delimiter to mark the end of the program              
-                    Match checkSC = Regex.Match(s, @"BTW"); //Single-line comment
-                    Match checkMLCS = Regex.Match(s, @"OBTW"); //Start of a multi-line comment 
-                    Match checkMLCE = Regex.Match(s, @"TLDR"); //End of a multi-line comment */
-                    /*
-                    if (checkStart.Success)
-                    {
-                        //Start of program
-                        lolstream = lolstream.Replace(@"HAI", @"");
-                        progVersion = Convert.ToDouble(activeline[iToken + 1]);
-                        ValidToken = true;
-                        continue;
-                    }
-
-                    if (checkEnd.Success)
-                    {
-                        //End of program
-                        ValidToken = true;
-                        continue;
-                    }
-
-                    if (checkSC.Success)
-                    {
-                        //End of program
-                        ValidToken = true;
-                        continue;
-                    }
-
-                    if (!ValidToken)
-                    {
-
-                    }*/
-                    //iToken += 1;
                 }
                 lineaddress += 1;
-                //iToken = 0;
             }
         }
 
