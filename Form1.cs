@@ -171,7 +171,10 @@ namespace LOLpreter
             {@"IS NOW A","IS-NOW-A"},
             {@"FOUND YR","FOUND-YR"}
         };
-        
+
+        Dictionary<string, object> GlobalVariableList = new Dictionary<string, object> { };
+
+
         private void button2_Click(object sender, EventArgs e)
         {
 
@@ -211,52 +214,96 @@ namespace LOLpreter
 
         private void parseLine(string s, string[] orig_array, int i)
         {
-            var results = from Lexeme in LexemeDefinitions
-                          where Regex.Match(s, Lexeme.Key, RegexOptions.Singleline).Success
-                          select Lexeme;
-
-            foreach (var result in results)
+            string Keyword = SplitKeysArgs(s).Keyword.Trim().Trim(',');
+            string Argument = SplitKeysArgs(s).Argument;
+            string Output = "";
+            switch (Keyword)
             {
-                string outp = "";
-                string lexremoved = "";
-                LexTableAdd(result.Key, result.Value);
-                switch (result.Key)
-                {
-                    case "HAI": 
-                        lexremoved = orig_array[i].Replace("HAI", "");
-
-                        if (GetArgDataType(lexremoved) == DataType.FLOT)
-                        {
-                            LexTableAdd(outp, "Program Version");
-                            outp = GetArgDataContent(lexremoved).ToString();
-                        } else
-                        {
-                            //Throw error here?
-                            throw new Exception("Invalid datatype for 'HAI':"+ GetArgDataType(lexremoved).ToString());
-                        }
-                        break; //breaks are necessary if a command has already been identified
-                    case "VISIBLE":
-                        lexremoved = orig_array[i].Replace("VISIBLE", "");
-                        LexTableAdd(s, result.Value);
-
-                        switch (GetArgDataType(lexremoved))
-                        {
-                            case DataType.STRING:
-                                outp = GetArgDataContent(lexremoved).ToString();
-                                SymTableAdd("Console Output",outp);
-                                break;
-                            case DataType.VARIABLE:
-                                outp = GetArgDataContent(lexremoved).ToString();
-                                SymTableAdd("Console Output", "VAR:" +outp);
-                                break;
-                            default:
-                                break;
-                        }
+                case "HAI":
+                    if (GetArgDataType(Argument) == DataType.FLOT) {
+                        LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
+                        Output = GetArgDataContent(Argument).ToString();
+                    }
+                    else
+                    { //Throw error here?
+                    } break;
+                case "VISIBLE":
+                    LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
+                    switch (GetArgDataType(Argument)) {
+                        case DataType.STRING:
+                            Output = GetArgDataContent(Argument).ToString();
+                            LexTableAdd("Console Output", Output);
+                            break;
+                        case DataType.VARIABLE:
+                            Output = GetArgDataContent(Argument).ToString();
+                            LexTableAdd("Console Output", "VAR:" + Output);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "I-HAS-A":
+                    LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
+                    switch (GetArgDataType(SplitKeysArgs(Argument).Keyword))
+                    {
+                        case DataType.VARIABLE:
+                            Output = GetArgDataContent(SplitKeysArgs(Argument).Keyword).ToString();
+                            AddVariable(Output, "Nothing");
+                            LexTableAdd(Output,"Variable");
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "BTW":
+                    break;
+                default:
+                    if (LexemeDefinitions.ContainsKey(Keyword))
+                    {
+                        LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
                         break;
-                        
-                }
-                continue;
+                    } else
+                    {                        
+                        LexTableAdd(Keyword, "Variable");
+                    }
+                    break;
             }
+        }
+
+        public struct KeyArgPair
+        {
+            public string Keyword;
+            public string Argument;
+        }
+
+        private void AddVariable(string s,object value)
+        {
+            string sx = s.Trim();
+            if (!GlobalVariableList.ContainsKey(sx))
+            {
+                GlobalVariableList.Add(sx, value);
+                SymTableUpdate();
+            }
+        }
+
+        private void SymTableUpdate()
+        {
+            tableLayoutPanel2.Controls.Clear();
+            foreach(KeyValuePair<string,object> symbs in GlobalVariableList)
+            {
+                SymTableAdd(symbs.Key, symbs.Value.ToString());
+            }
+        }
+
+        private KeyArgPair SplitKeysArgs(string sx)
+        {
+            string s = sx.Trim();
+            string Keyword = s.Split(' ').First();
+            string Argument = s.Substring(Keyword.Length, s.Length - Keyword.Length);
+            KeyArgPair x;
+            x.Keyword = Keyword;
+            x.Argument = Argument;
+            return x;
         }
 
         //Get datatype of command argument
