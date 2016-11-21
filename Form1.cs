@@ -59,80 +59,136 @@ namespace LOLpreter
             }
         }
 
+        Dictionary<string, string> LexemeDefinitions = new Dictionary<string, string>
+        {
+            {@"HAI","Delimiter to mark the start of the program"},
+            {@"KTHXBYE","Delimiter to mark the end of the program"},
+            {@"BTW","Single-line comment"},
+            {@"OBTW","Start of a multi-line comment"},
+            {@"TLDR","End of a multi-line comment"},
+            {@"-?\d+\.\d+","Float Literal"},
+            {@"WIN|FAIL","Boolean Literal"},
+            {@"[^/./n]-?\d+[^/.]","Integer Literal"},
+            {@"I HAS A","Initialize a variable"},
+            {@"ITZ","Assignment operator in declaring a variable"},
+            {@"GIMMEH","Input"},
+            {@"VISIBLE","Output"},
+            {@"BOTH SAEM","Comparison Operator; True if operands are equal"},
+            {@"DIFFRINT"," Comparison Operator; True if operands are not equal"},
+            {@"SUM OF","Arithmetic Operator; Adds operands"},
+            {@"DIFF OF","Arithmetic Operator; Subtracts operand"},
+            {@"PRODUKT OF","Arithmetic Operator; Multiplies operands"},
+            {@"QUOSHUNT OF","Arithmetic Operator; Divides operands"},
+            {@"MOD OF","Arithmetic Operator; Returns the remainder of the operands"},
+            {@"BIGGR OF","Comparison Operator; Returns the biggest of the given integers"},
+            {@"SMALLR OF","Comparison Operator; Returns the smallest of the given integers"}, 
+            {@"O RLY?","If-Else Delimiter; Signals the start of the If-Else block"},
+            {@"YA RLY","If the expression provided in the If-Else block is true, the code in this block will be executed"}, 
+            {@"NO WAI","If the expression provided in the If-Else block is false, the code in this block will be executed. Also signals the end of the ​YA RLY​ block"},
+            {@"OIC","Signals the end of the If-Else block"},
+            {@"WTF[?]","Signals the start of a Switch Case block"},
+            {@"OMG","Comparison block for a Switch Case. Followed by a literal"},
+            {@"OMGWTF","The default optional case in a Switch Case block."},
+            {@"IM IN YR","Signals the start of a loop. Followed by a label."},
+            {@"IM OUTTA YR"," Signals the end of a loop.Followed by a label."},
+            {@"HOW IZ I"," Initializes a function. Followed by the function name."},
+            {@"IF U SAY SO","Closes a function block."},
+            {@"I IZ","Calls a function. Followed by the function name and its parameters."},
+            {@"GTFO","Break statement."}, 
+            {@"MEBBE","Appears between the ​YA RLY ​and ​NO WAI​ blocks. Similar to an Elseif statement."}, 
+            {@"AN","Separates arguments."}, 
+            {@"BOTH OF"," Boolean Operator; Similar to AND; 1 or 2 operands"}, 
+            {@"EITHER OF","Boolean Operator; Similar to OR; 1 or 2 operands"}, 
+            {@"WON OF","Boolean Operator; Similar to XOR; Infinite operands"}, 
+            {@"NOT","Negation"}, 
+            {@"ALL OF"," Boolean Operator; Similar to AND; Infinite operands"}, 
+            {@"ANY OF","Boolean Operator; Similar to OR; Infinite operands"}, 
+            {@"IS NOW A","Used for re-casting a variable to a different type"}, 
+            {@"MAEK","Used for re-casting a variable to a different type"}, 
+            {@"UPPIN","Increments a variable by one."}, 
+            {@"NERFIN","Decrements a variable by one."}, 
+            {@"FOUND YR","Returns the value of succeeding expression."}, 
+            {@"MKAY","Delimiter of a function call."}, 
+            {@"WILE","Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops."}, 
+            {@"TILL","Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops."}, 
+            {@"IT\s","Temporary variable. Remains in local scope until it is replaced with a bare expression."}, 
+            {@"SMOOSH","Expects strings as its input arguments for concatenation"} 
+        };
+
         private void button2_Click(object sender, EventArgs e)
         {
             lolstream = textBox1.Text;
+
+            Regex SCRegex = new Regex(@"BTW(.*?)(\n|\r|\r\n)");
+            lolstream = SCRegex.Replace(lolstream, "");
+
             int lineaddress = 0; //Actively parsed line
             int iToken = 0; // Current Token
-
             tableLayoutPanel1.Controls.Clear();
 
-            //Split them 'up
+            //Directives flags
+            double progVersion = 0;
+
+            //Split them 'up and remove extra lines
             string[] lollines = lolstream.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string curline in lollines)
             {
-                foreach (string s in curline.Split(' '))
+                string[] activeline = curline.Split(' ');
+                foreach (string s in activeline)
                 {
+                  //  bool ValidToken = false; //Error flag
+                    int TokenCount = activeline.Count();
+
+                    var results = from Lexeme in LexemeDefinitions
+                                  where Regex.Match(s, Lexeme.Key, RegexOptions.Singleline).Success
+                                  select Lexeme;
+
+                    foreach (var result in results)
+                    {
+                        Console.WriteLine(result.Value);
+                    }
+
+
+                    /*
                     //Compiler Directives
-                    MatchCollection check1 = Regex.Matches(s, @"HAI"); //Delimiter to mark the start of the program
-                    MatchCollection check2 = Regex.Matches(s, @"KTHXBYE"); //Delimiter to mark the end of the program              
-                    MatchCollection check3 = Regex.Matches(s, @"BTW"); //Single-line comment
-                    MatchCollection check47 = Regex.Matches(s, @"OBTW"); //Start of a multi-line comment 
-                    MatchCollection check48 = Regex.Matches(s, @"TLDR"); //End of a multi-line comment 
+                    Match checkStart = Regex.Match(s, @"HAI"); //Delimiter to mark the start of the program
+                    Match checkEnd = Regex.Match(s, @"KTHXBYE"); //Delimiter to mark the end of the program              
+                    Match checkSC = Regex.Match(s, @"BTW"); //Single-line comment
+                    Match checkMLCS = Regex.Match(s, @"OBTW"); //Start of a multi-line comment 
+                    Match checkMLCE = Regex.Match(s, @"TLDR"); //End of a multi-line comment */
+                    /*
+                    if (checkStart.Success)
+                    {
+                        //Start of program
+                        lolstream = lolstream.Replace(@"HAI", @"");
+                        progVersion = Convert.ToDouble(activeline[iToken + 1]);
+                        ValidToken = true;
+                        continue;
+                    }
 
+                    if (checkEnd.Success)
+                    {
+                        //End of program
+                        ValidToken = true;
+                        continue;
+                    }
 
-                    //Operands
-                    MatchCollection checkFloat = Regex.Matches(s, @"-?\d+\.\d+"); //Float Literal
-                    MatchCollection checkBoolean = Regex.Matches(s, @"WIN|FAIL"); //Boolean Literal
-                    MatchCollection checkInteger = Regex.Matches(s, @"[^/./n]-?\d+[^/.]"); //Integer Literal
-                    MatchCollection check4 = Regex.Matches(s, @"I HAS A"); //Initialize a variable
-                    MatchCollection check5 = Regex.Matches(s, @"ITZ"); //Assignment operator in declaring a variable 
-                    MatchCollection check6 = Regex.Matches(s, @"GIMMEH"); //Input
-                    MatchCollection check7 = Regex.Matches(s, @"VISIBLE"); //Output
-                    MatchCollection check8 = Regex.Matches(s, @"BOTH SAEM"); //Comparison Operator; True if operands are equal
-                    MatchCollection check9 = Regex.Matches(s, @"DIFFRINT"); // Comparison Operator; True if operands are not equal
-                    MatchCollection check10 = Regex.Matches(s, @"SUM OF"); //Arithmetic Operator; Adds operands
-                    MatchCollection check11 = Regex.Matches(s, @"DIFF OF");//Arithmetic Operator; Subtracts operand
-                    MatchCollection check12 = Regex.Matches(s, @"PRODUKT OF"); //Arithmetic Operator; Multiplies operands
-                    MatchCollection check13 = Regex.Matches(s, @"QUOSHUNT OF"); //"Arithmetic Operator; Divides operands 
-                    MatchCollection check14 = Regex.Matches(s, @"MOD OF"); //Arithmetic Operator; Returns the remainder of the operands 
-                    MatchCollection check15 = Regex.Matches(s, @"BIGGR OF"); //Comparison Operator; Returns the biggest of the given integers 
-                    MatchCollection check16 = Regex.Matches(s, @"SMALLR OF"); //Comparison Operator; Returns the smallest of the given integers ",
-                    MatchCollection check17 = Regex.Matches(s, @"O RLY?"); //If-Else Delimiter; Signals the start of the If-Else block
-                    MatchCollection check18 = Regex.Matches(s, @"YA RLY"); //If the expression provided in the If-Else block is true, the code in this block will be executed ",
-                    MatchCollection check19 = Regex.Matches(s, @"NO WAI"); //If the expression provided in the If-Else block is false, the code in this block will be executed. Also signals the end of the ​YA RLY​ block
-                    MatchCollection check20 = Regex.Matches(s, @"OIC"); //Signals the end of the If-Else block
-                    MatchCollection check21 = Regex.Matches(s, @"WTF[?]"); //Signals the start of a Switch Case block 
-                    MatchCollection check22 = Regex.Matches(s, @"OMG"); //Comparison block for a Switch Case. Followed by a literal
-                    MatchCollection check23 = Regex.Matches(s, @"OMGWTF"); //The default optional case in a Switch Case block.
-                    MatchCollection check24 = Regex.Matches(s, @"IM IN YR"); //Signals the start of a loop. Followed by a label. 
-                    MatchCollection check25 = Regex.Matches(s, @"IM OUTTA YR"); // Signals the end of a loop.Followed by a label.
-                    MatchCollection check26 = Regex.Matches(s, @"HOW IZ I"); // Initializes a function. Followed by the function name.
-                    MatchCollection check27 = Regex.Matches(s, @"IF U SAY SO"); //Closes a function block. 
-                    MatchCollection check28 = Regex.Matches(s, @"I IZ"); //Calls a function. Followed by the function name and its parameters. 
-                    MatchCollection check29 = Regex.Matches(s, @"GTFO");//Break statement. 
-                    MatchCollection check30 = Regex.Matches(s, @"MEBBE"); //Appears between the ​YA RLY ​and ​NO WAI​ blocks. Similar to an Elseif statement. 
-                    MatchCollection check31 = Regex.Matches(s, @"AN"); //Separates arguments. 
-                    MatchCollection check32 = Regex.Matches(s, @"BOTH OF"); // Boolean Operator; Similar to AND; 1 or 2 operands
-                    MatchCollection check33 = Regex.Matches(s, @"EITHER OF"); //Boolean Operator; Similar to OR; 1 or 2 operands
-                    MatchCollection check34 = Regex.Matches(s, @"WON OF"); //Boolean Operator; Similar to XOR; Infinite operands
-                    MatchCollection check35 = Regex.Matches(s, @"NOT"); //Negation
-                    MatchCollection check36 = Regex.Matches(s, @"ALL OF"); // Boolean Operator; Similar to AND; Infinite operands
-                    MatchCollection check37 = Regex.Matches(s, @"ANY OF"); //Boolean Operator; Similar to OR; Infinite operands 
-                    MatchCollection check38 = Regex.Matches(s, @"IS NOW A"); //Used for re-casting a variable to a different type
-                    MatchCollection check39 = Regex.Matches(s, @"MAEK"); //Used for re-casting a variable to a different type 
-                    MatchCollection check40 = Regex.Matches(s, @"UPPIN"); //Increments a variable by one. 
-                    MatchCollection check41 = Regex.Matches(s, @"NERFIN"); //Decrements a variable by one. 
-                    MatchCollection check42 = Regex.Matches(s, @"FOUND YR"); //Returns the value of succeeding expression.
-                    MatchCollection check43 = Regex.Matches(s, @"MKAY"); //Delimiter of a function call. 
-                    MatchCollection check44 = Regex.Matches(s, @"WILE"); //Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops. 
-                    MatchCollection check45 = Regex.Matches(s, @"TILL"); //Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops. 
-                    MatchCollection check46 = Regex.Matches(s, @"IT\s"); //Temporary variable. Remains in local scope until it is replaced with a bare expression. 
-                    MatchCollection check49 = Regex.Matches(s, @"SMOOSH"); //Expects strings as its input arguments for concatenation   
+                    if (checkSC.Success)
+                    {
+                        //End of program
+                        ValidToken = true;
+                        continue;
+                    }
+
+                    if (!ValidToken)
+                    {
+
+                    }*/
                     iToken += 1;
                 }
-                lineaddress += 1;             
+                lineaddress += 1;
+                iToken = 0;
             }
         }
 
