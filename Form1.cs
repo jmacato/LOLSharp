@@ -65,35 +65,7 @@ namespace LOLpreter
         */
         Dictionary<string, string> LexemeDefinitions = new Dictionary<string, string>
         {
-            {@"HAI","Delimiter to mark the start of the program"},
-            {@"KTHXBYE","Delimiter to mark the end of the program"},
-            {@"BTW","Single-line comment"},
-            {@"OBTW","Start of a multi-line comment"},
-            {@"TLDR","End of a multi-line comment"},
-            {@"-?\d+\.\d+","Float Literal"},
-            {@"WIN|FAIL","Boolean Literal"},
-            {@"[^/./n]-?\d+[^/.]","Integer Literal"},
-            {@"I HAS A","Initialize a variable"},
-            {@"ITZ","Assignment operator in declaring a variable"},
-            {@"GIMMEH","Input"},
-            {@"VISIBLE","Output"},
-            {@"OIC","Signals the end of the If-Else block"},
-            {@"WTF[?]","Signals the start of a Switch Case block"},
-            {@"OMG","Comparison block for a Switch Case. Followed by a literal"},
-            {@"OMGWTF","The default optional case in a Switch Case block."},
-            {@"GTFO","Break statement."},
-            {@"MEBBE","Appears between the ​YA RLY ​and ​NO WAI​ blocks. Similar to an Elseif statement."},
-            {@"AN","Separates arguments."},
-            {@"NOT","Negation"},
-            {@"MAEK","Used for re-casting a variable to a different type"},
-            {@"UPPIN","Increments a variable by one."},
-            {@"NERFIN","Decrements a variable by one."},
-            {@"MKAY","Delimiter of a function call."}, 
-            {@"WILE","Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops."}, 
-            {@"TILL","Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops."}, 
-            {@"IT\s","Temporary variable. Remains in local scope until it is replaced with a bare expression."}, 
-            {@"SMOOSH","Expects strings as its input arguments for concatenation"},
-            {@"DIFFRINT"," Comparison Operator; True if operands are not equal"},
+            {@"I-HAS-A","Initialize a variable"},
             {@"BOTH-SAEM","Comparison Operator; True if operands are equal"},
             {@"SUM-OF","Arithmetic Operator; Adds operands"},
             {@"DIFF-OF","Arithmetic Operator; Subtracts operand"},
@@ -116,8 +88,55 @@ namespace LOLpreter
             {@"ALL-OF"," Boolean Operator; Similar to AND; Infinite operands"},
             {@"ANY-OF","Boolean Operator; Similar to OR; Infinite operands"},
             {@"IS-NOW-A","Used for re-casting a variable to a different type"},
-            {@"FOUND-YR","Returns the value of succeeding expression."}
+            {@"FOUND-YR","Returns the value of succeeding expression."},
+
+            {@"HAI","Delimiter to mark the start of the program"},
+            {@"KTHXBYE","Delimiter to mark the end of the program"},
+            {@"BTW","Single-line comment"},
+            {@"OBTW","Start of a multi-line comment"},
+            {@"TLDR","End of a multi-line comment"},
+            {@"ITZ","Assignment operator in declaring a variable"},
+            {@"GIMMEH","Input"},
+            {@"VISIBLE","Output"},
+            {@"OIC","Signals the end of the If-Else block"},
+            {@"WTF[?]","Signals the start of a Switch Case block"},
+            {@"OMG","Comparison block for a Switch Case. Followed by a literal"},
+            {@"OMGWTF","The default optional case in a Switch Case block."},
+            {@"GTFO","Break statement."},
+            {@"MEBBE","Appears between the ​YA RLY ​and ​NO WAI​ blocks. Similar to an Elseif statement."},
+            {@"AN","Separates arguments."},
+            {@"NOT","Negation"},
+            {@"MAEK","Used for re-casting a variable to a different type"},
+            {@"UPPIN","Increments a variable by one."},
+            {@"NERFIN","Decrements a variable by one."},
+            {@"MKAY","Delimiter of a function call."}, 
+            {@"WILE","Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops."}, 
+            {@"TILL","Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops."}, 
+            {@"IT\s","Temporary variable. Remains in local scope until it is replaced with a bare expression."}, 
+            {@"SMOOSH","Expects strings as its input arguments for concatenation"},
+            {@"DIFFRINT"," Comparison Operator; True if operands are not equal"},
+            
         };
+
+        Dictionary<string, string> DataType = new Dictionary<string, string>
+        {
+            {@"-?\d+\.\d+","Float Literal"},
+            {@"WIN|FAIL","Boolean Literal"},
+            {@"[^/./n]-?\d+[^/.]","Integer Literal"}
+            {@"""[^\""]*""","String"}
+
+
+        };
+
+        enum DataType
+        {
+            FLOT,
+            BOOL,
+            INT,
+            STRING,
+            VARIABLE,
+            UNKNOWN
+        }
 
         /*
         Since we split tokens by spaces
@@ -126,6 +145,7 @@ namespace LOLpreter
         */
         Dictionary<string, string> MonoglyphyOperators = new Dictionary<string, string>
         {
+            {@"I HAS A","I-HAS-A"},
             {@"BOTH SAEM","BOTH-SAEM"},
             {@"SUM OF","SUM-OF"},
             {@"DIFF OF","DIFF OF"},
@@ -151,12 +171,17 @@ namespace LOLpreter
             {@"FOUND YR","FOUND-YR"}
         };
 
+
+
         private void button2_Click(object sender, EventArgs e)
         {
             lolstream = textBox1.Text;
 
             int lineaddress = 0; //Actively parsed line
-            tableLayoutPanel1.Controls.Clear();
+
+            ClearTables();
+
+            string[] orig_array = lolstream.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string s in MonoglyphyOperators.Keys)
             {
@@ -164,34 +189,78 @@ namespace LOLpreter
             }
 
             //Split them 'up and remove extra lines
-            string[] lollines = lolstream.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            string[] wrk_array = lolstream.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            int i = 0;
 
-            foreach (string cl in lollines)
+            foreach (string s in wrk_array)
             {
-                string curline = cl;
-                string[] activeline = curline.Split(' ');
-                foreach (string s in activeline)
-                {
-                  //  bool ValidToken = false; //Error flag
-                    int TokenCount = activeline.Count();
+                orig_array[i] = orig_array[i].Trim();
+                wrk_array[i] = wrk_array[i].Trim();
+                i++;
+            }
 
-                    var results = from Lexeme in LexemeDefinitions
-                                  where Regex.Match(s, Lexeme.Key, RegexOptions.Singleline).Success
-                                  select Lexeme;
-
-                    foreach (var result in results)
-                    {
-                        tableLayoutPanel1.Controls.Add(new Label() { Text = s });
-                        tableLayoutPanel1.Controls.Add(new Label()
-                        {
-                            Text = result.Value,
-                            AutoSize = true
-                        });
-                        continue;
-                    }
-                }
+            foreach (string cl in wrk_array)
+            {
+                parseLine(cl,orig_array,lineaddress);
                 lineaddress += 1;
             }
+        }
+
+        private void parseLine(string s, string[] orig_array, int i)
+        {
+            var results = from Lexeme in LexemeDefinitions
+                          where Regex.Match(s, Lexeme.Key, RegexOptions.Singleline).Success
+                          select Lexeme;
+
+            foreach (var result in results)
+            {
+                string outp = "";
+                string lexremoved = "";
+                switch (result.Key)
+                {
+                    case "HAI":
+                        lexremoved = orig_array[i].Replace("HAI", "");
+
+                        break;
+                    case "VISIBLE":
+                        lexremoved = orig_array[i].Replace("VISIBLE", "");
+                        LexTableAdd(s, result.Value);
+                        if (Regex.IsMatch(lexremoved, @"""[^\""]*"""))
+                        {
+                            outp = Regex.Match(lexremoved, @"""[^\""]*""").Value;
+                            SymTableAdd("CONSOLE OUTPUT", outp);
+                        }
+                        else if (Regex.IsMatch(lexremoved, @"[A-Za-z][A-Za-z0-9_]*"))
+                        {
+                            outp = Regex.Match(lexremoved, @"[A-Za-z][A-Za-z0-9_]*").Value;
+                            SymTableAdd("CONSOLE OUTPUT", "VAR:"+outp);
+                        }
+                        break;
+                        
+                }
+                LexTableAdd(result.Key, result.Value);
+                continue;
+            }
+        }
+
+
+
+        private void LexTableAdd(string token, string val)
+        {
+            tableLayoutPanel1.Controls.Add(new Label() { Text = token });
+            tableLayoutPanel1.Controls.Add(new Label() { Text = val, AutoSize = true});
+        }
+
+        private void SymTableAdd(string token, string val)
+        {
+            tableLayoutPanel2.Controls.Add(new Label() { Text = token });
+            tableLayoutPanel2.Controls.Add(new Label() { Text = val, AutoSize = true });
+        }
+
+        private void ClearTables()
+        {
+            tableLayoutPanel1.Controls.Clear();
+            tableLayoutPanel2.Controls.Clear();
         }
 
         private void label7_Click(object sender, EventArgs e)
