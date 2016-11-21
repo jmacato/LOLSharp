@@ -15,53 +15,9 @@ namespace LOLpreter
     public partial class Form1 : Form
     {
         string lolstream = "";
-
-        public Form1()
-        {
-            InitializeComponent();
-
-            
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label2_Click_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label4_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        /* Standardize line endings to windows (CR LF) instead of linux (LF) only*/
-        private string NormalizeEndings(string input)
-        {
-            if (Regex.IsMatch(input, "\r"))
-            {
-                return input;
-            } else
-            {
-                return Regex.Replace(input, "\n", Environment.NewLine);
-            }
-        }
-
+        
         /*
-        Definitions of each tokens/lexemes
+        Definitions of each reserved keywords
         */
         Dictionary<string, string> LexemeDefinitions = new Dictionary<string, string>
         {
@@ -110,16 +66,16 @@ namespace LOLpreter
             {@"MAEK","Used for re-casting a variable to a different type"},
             {@"UPPIN","Increments a variable by one."},
             {@"NERFIN","Decrements a variable by one."},
-            {@"MKAY","Delimiter of a function call."}, 
-            {@"WILE","Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops."}, 
-            {@"TILL","Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops."}, 
-            {@"IT\s","Temporary variable. Remains in local scope until it is replaced with a bare expression."}, 
+            {@"MKAY","Delimiter of a function call."},
+            {@"WILE","Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops."},
+            {@"TILL","Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops."},
+            {@"IT\s","Temporary variable. Remains in local scope until it is replaced with a bare expression."},
             {@"SMOOSH","Expects strings as its input arguments for concatenation"},
             {@"DIFFRINT"," Comparison Operator; True if operands are not equal"},
-            
+
         };
 
-        //Regex dictionary for arguments
+        //Regex dictionary for datatypes
         Dictionary<string, string> DataTypeDefinition = new Dictionary<string, string>
         {
             {@"-?\d+\.\d+","Float Literal"},
@@ -129,6 +85,7 @@ namespace LOLpreter
             {@"[A-Za-z][A-Za-z0-9_]*","Variable"}
         };
 
+        //For easier classification of in-program types
         enum DataType
         {
             FLOT,
@@ -174,7 +131,24 @@ namespace LOLpreter
 
         Dictionary<string, object> GlobalVariableList = new Dictionary<string, object> { };
 
+        public Form1()
+        {
+            InitializeComponent();            
+        }
 
+
+        /* Standardize line endings to windows (CR LF) instead of linux (LF) only*/
+        private string NormalizeEndings(string input)
+        {
+            if (Regex.IsMatch(input, "\r"))
+            {
+                return input;
+            } else
+            {
+                return Regex.Replace(input, "\n", Environment.NewLine);
+            }
+        }
+        
         private void button2_Click(object sender, EventArgs e)
         {
 
@@ -212,6 +186,7 @@ namespace LOLpreter
             }
         }
 
+        //Parse through a line 
         private void parseLine(string s, string[] orig_array, int i)
         {
             string Keyword = SplitKeysArgs(s).Keyword.Trim().Trim(',');
@@ -255,21 +230,24 @@ namespace LOLpreter
                         }
                         switch (GetArgDataType(SplitKeysArgs(Argument).Keyword))
                         {
-                            case DataType.VARIABLE:
+                            case DataType.VARIABLE: //Next token is a variable
                                 string variablename = SplitKeysArgs(Argument).Keyword;
                                 object varval = "";
                                 Output = GetArgDataContent(variablename).ToString();
                                 string ITZ_ARG = SplitKeysArgs(Argument).Argument;
 
+                                //Check if the next keyword
                                 if (IsKeyword(SplitKeysArgs(ITZ_ARG).Keyword))
                                 {
                                     if (SplitKeysArgs(ITZ_ARG).Keyword == "ITZ")
                                     {
+                                        //Theres a initializer~
                                         LexTableAdd("ITZ", LexemeDefinitions["ITZ"]);
                                         varval = SplitKeysArgs(ITZ_ARG).Argument;
                                     }
                                     else
                                     {
+                                        //No initialization~
                                         varval = null;
                                     }
                                 }
@@ -277,7 +255,7 @@ namespace LOLpreter
                                 AddVariable(Output, varval.ToString());
                                 LexTableAdd(Output, "Variable");
                                 break;
-                            default:
+                            default: //Somebody jacked up the declaration, throw some error here
                                 break;
                         }
                         break;
@@ -299,12 +277,17 @@ namespace LOLpreter
 
         }
 
+        //Used to eat lines bit by bit
+        //...
+        //Kidding, iz just a pair of a lexeme (keywrd) and 
+        //the remaining unprocessed string (args)
         public struct KeyArgPair
         {
             public string Keyword;
             public string Argument;
         }
 
+        //Add variable to the global pool
         private void AddVariable(string s,object value)
         {
             string sx = s.Trim();
@@ -315,6 +298,7 @@ namespace LOLpreter
             }
         }
 
+        //Check if token is a reserved word
         private bool IsKeyword(string token)
         {
             var keywrd = from Arg in LexemeDefinitions
@@ -323,6 +307,7 @@ namespace LOLpreter
             return keywrd != null && keywrd.Any();
         }
         
+        //Clear and rewrite the symbols table
         private void SymTableUpdate()
         {
             tableLayoutPanel2.Controls.Clear();
@@ -331,7 +316,7 @@ namespace LOLpreter
                 SymTableAdd(symbs.Key, symbs.Value.ToString());
             }
         }
-
+        
         private KeyArgPair SplitKeysArgs(string sx)
         {
             string s = sx.Trim();
@@ -416,32 +401,7 @@ namespace LOLpreter
             tableLayoutPanel1.Controls.Clear();
             tableLayoutPanel2.Controls.Clear();
         }
-
-        private void label7_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-    
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void tableLayoutPanel1_Paint_1(object sender, PaintEventArgs e)
-        {
-
-        }
-
+        
         private void button1_Click(object sender, EventArgs e)
         {
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -453,11 +413,6 @@ namespace LOLpreter
                 textBox1.Text = lolstream;
                 sr.Close();
             }
-        }
-
-        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
-        {
-
         }
     }
 }

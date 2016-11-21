@@ -58,7 +58,6 @@
             label2.Size = new System.Drawing.Size(87, 32);
             label2.TabIndex = 6;
             label2.Text = "lexeme";
-            label2.Click += new System.EventHandler(this.label2_Click_1);
             // 
             // label5
             // 
@@ -81,7 +80,6 @@
             this.code.Size = new System.Drawing.Size(90, 46);
             this.code.TabIndex = 1;
             this.code.Text = "code";
-            this.code.Click += new System.EventHandler(this.label2_Click);
             // 
             // button1
             // 
@@ -108,7 +106,6 @@
             this.label1.Size = new System.Drawing.Size(133, 46);
             this.label1.TabIndex = 5;
             this.label1.Text = "lexemes";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label3
             // 
@@ -131,7 +128,6 @@
             this.label4.Size = new System.Drawing.Size(68, 32);
             this.label4.TabIndex = 12;
             this.label4.Text = "value";
-            this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // label6
             // 
@@ -169,7 +165,6 @@
             this.label7.Size = new System.Drawing.Size(128, 46);
             this.label7.TabIndex = 14;
             this.label7.Text = "console";
-            this.label7.Click += new System.EventHandler(this.label7_Click);
             // 
             // tableLayoutPanel1
             // 
@@ -193,7 +188,6 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(359, 213);
             this.tableLayoutPanel1.TabIndex = 4;
-            this.tableLayoutPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel1_Paint_1);
             // 
             // textBox1
             // 
@@ -208,12 +202,10 @@
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBox1.Size = new System.Drawing.Size(300, 212);
             this.textBox1.TabIndex = 16;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // openFileDialog1
             // 
-            this.openFileDialog1.FileName = "openFileDialog1";
-            this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
+            this.openFileDialog1.FileName = "*.lol";
             // 
             // textBox2
             // 
@@ -227,7 +219,6 @@
             this.textBox2.Size = new System.Drawing.Size(992, 229);
             this.textBox2.TabIndex = 15;
             this.textBox2.Text = " > ";
-            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // tableLayoutPanel2
             // 
@@ -282,7 +273,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ANG GANDA NI MA\'AM DYA LOLPRETER";
             this.TopMost = true;
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
