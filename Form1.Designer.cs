@@ -218,7 +218,7 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(992, 229);
             this.textBox2.TabIndex = 15;
-            this.textBox2.Text = " > ";
+            this.textBox2.Text = " >";
             // 
             // tableLayoutPanel2
             // 

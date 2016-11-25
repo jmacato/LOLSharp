@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace LOLpreter
 {
-    public static class ParseDict
+    public static class ParseLOL
     {
         public static Dictionary<string, string> LexemeDefinitions;
         public static Dictionary<string, string> DTRegex;
         public static Dictionary<DataType, string> DTDesc;
         public static Dictionary<string, string> MonoglyphyOperators;
 
-        public static object CInitial()
+        public static object Initialize()
         {
             MonoglyphyOperators = new Dictionary<string, string>
                                     {
@@ -132,6 +133,31 @@ namespace LOLpreter
             STRING,
             VARIABLE,
             UNKNOWN
+        }
+        //Check if token is a reserved word
+        public static bool IsKeyword(string token)
+        {
+            var keywrd = from Arg in ParsingHelpers.LexemeDefinitions
+                         where Regex.Match(token, Arg.Key, RegexOptions.Singleline).Success
+                         select Arg;
+            return keywrd != null && keywrd.Any();
+        }
+
+        public static KeyArgPair SplitKeysArgs(string sx)
+        {
+            string s = sx.Trim();
+            string Keyword = s.Split(' ').First();
+            string Argument = s.Substring(Keyword.Length, s.Length - Keyword.Length);
+            KeyArgPair x;
+            x.Keyword = Keyword.Trim();
+            x.Argument = Argument.Trim();
+            return x;
+        }
+
+        public struct KeyArgPair
+        {
+            public string Keyword;
+            public string Argument;
         }
     }
 }
