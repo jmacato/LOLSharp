@@ -202,7 +202,7 @@ namespace LOLpreter
         {
             tableLayoutPanel1.Controls.Add(new Label() { Text = token });
             tableLayoutPanel1.Controls.Add(new Label() { Text = val, AutoSize = true});
-            textBox2.Text += "\r\n" +"L"+ lineaddress.ToString() +"|" + token.PadRight(20,' ') + "| "+ val.ToString().PadRight(20, ' ');
+            //textBox2.Text += "\r\n" +"L"+ lineaddress.ToString() +"|" + token.PadRight(20,' ') + "| "+ val.ToString().PadRight(20, ' ');
         }
 
         //Add to Symbol table
@@ -233,7 +233,9 @@ namespace LOLpreter
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            ParseLOL.Initialize(); 
+            ParseLOL.Initialize();
+            Console frm = new Console();
+            frm.Show();
         }
     }
 }

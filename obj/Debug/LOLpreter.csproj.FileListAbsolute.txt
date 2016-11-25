@@ -55,3 +55,13 @@ D:\Users\Jumar\Desktop\Lolpreter\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\L
 D:\Users\Jumar\Desktop\Lolpreter\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.csproj.GenerateResource.Cache
 D:\Users\Jumar\Desktop\Lolpreter\CMSC124-Project-LOLCODE-Interpreter\bin\Debug\LOLpreter.exe
 D:\Users\Jumar\Desktop\Lolpreter\CMSC124-Project-LOLCODE-Interpreter\bin\Debug\LOLpreter.pdb
+C:\Users\Jumar\Desktop\lolpreter\CMSC124-Project-LOLCODE-Interpreter\bin\Debug\LOLpreter.exe.config
+C:\Users\Jumar\Desktop\lolpreter\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.exe
+C:\Users\Jumar\Desktop\lolpreter\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.pdb
+C:\Users\Jumar\Desktop\lolpreter\CMSC124-Project-LOLCODE-Interpreter\bin\Debug\LOLpreter.exe
+C:\Users\Jumar\Desktop\lolpreter\CMSC124-Project-LOLCODE-Interpreter\bin\Debug\LOLpreter.pdb
+C:\Users\Jumar\Desktop\lolpreter\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.csprojResolveAssemblyReference.cache
+C:\Users\Jumar\Desktop\lolpreter\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.Form1.resources
+C:\Users\Jumar\Desktop\lolpreter\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.Properties.Resources.resources
+C:\Users\Jumar\Desktop\lolpreter\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.csproj.GenerateResource.Cache
+C:\Users\Jumar\Desktop\lolpreter\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.Console.resources
