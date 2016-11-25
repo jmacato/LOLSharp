@@ -65,3 +65,4 @@ C:\Users\Jumar\Desktop\lolpreter\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\L
 C:\Users\Jumar\Desktop\lolpreter\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.Properties.Resources.resources
 C:\Users\Jumar\Desktop\lolpreter\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.csproj.GenerateResource.Cache
 C:\Users\Jumar\Desktop\lolpreter\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.Console.resources
+D:\Users\Jumar\Desktop\Lolpreter\CMSC124-Project-LOLCODE-Interpreter\obj\Debug\LOLpreter.Console.resources

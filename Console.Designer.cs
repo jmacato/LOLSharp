@@ -28,7 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.cli = new System.Windows.Forms.RichTextBox();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // cli
@@ -47,17 +49,23 @@
             this.cli.TabIndex = 0;
             this.cli.Text = "";
             // 
+            // timer1
+            // 
+            this.timer1.Interval = 90;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // Console
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 31F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(720, 361);
             this.ControlBox = false;
             this.Controls.Add(this.cli);
+            this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("Consolas", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.White;
-            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.Margin = new System.Windows.Forms.Padding(6);
             this.Name = "Console";
             this.Text = "Console";
             this.Load += new System.EventHandler(this.Console_Load);
@@ -68,5 +76,6 @@
         #endregion
 
         private System.Windows.Forms.RichTextBox cli;
+        private System.Windows.Forms.Timer timer1;
     }
 }
