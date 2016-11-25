@@ -13,6 +13,7 @@ namespace LOLpreter
         public static Dictionary<string, string> DTRegex;
         public static Dictionary<DataType, string> DTDesc;
         public static Dictionary<string, string> MonoglyphyOperators;
+        private static object ParseLol;
 
         public static object Initialize()
         {
@@ -137,7 +138,7 @@ namespace LOLpreter
         //Check if token is a reserved word
         public static bool IsKeyword(string token)
         {
-            var keywrd = from Arg in ParsingHelpers.LexemeDefinitions
+            var keywrd = from Arg in ParseLOL.LexemeDefinitions
                          where Regex.Match(token, Arg.Key, RegexOptions.Singleline).Success
                          select Arg;
             return keywrd != null && keywrd.Any();
@@ -159,5 +160,63 @@ namespace LOLpreter
             public string Keyword;
             public string Argument;
         }
+
+
+
+        //Get datatype of command argument
+        public static DataType GetArgDataType(string token)
+        {
+            var results = from Arg in ParseLOL.DTRegex
+                          where Regex.Match(token, Arg.Key, RegexOptions.Singleline).Success
+                          select Arg;
+            foreach (var result in results)
+            {
+                switch (result.Value)
+                {
+                    case "Float Literal":
+                        return ParseLOL.DataType.FLOT;
+                    case "Boolean Literal":
+                        return ParseLOL.DataType.BOOL;
+                    case "Integer Literal":
+                        return ParseLOL.DataType.INT;
+                    case "String":
+                        return ParseLOL.DataType.STRING;
+                    case "Variable":
+                        return ParseLOL.DataType.VARIABLE;
+                    default:
+                        return ParseLOL.DataType.UNKNOWN;
+                }
+            }
+            return ParseLOL.DataType.UNKNOWN;
+        }
+
+        //Get the value of the argument
+        public static object GetArgDataContent(string token)
+        {
+            var results = from Arg in ParseLOL.DTRegex
+                          where Regex.Match(token, Arg.Key, RegexOptions.Singleline).Success
+                          select Arg;
+            foreach (var result in results)
+            {
+                switch (result.Value)
+                {
+                    case "Float Literal":
+                        return Convert.ToDouble(Regex.Match(token, result.Key).Value);
+                    case "Boolean Literal":
+                        return Regex.Match(token, result.Key).Value;
+                    case "Integer Literal":
+                        return Convert.ToDouble(Regex.Match(token, result.Key).Value);
+                    case "String":
+                        return Regex.Match(token, result.Key).Value;
+                    case "Variable":
+                        return Regex.Match(token, result.Key).Value;
+                    default:
+                        return null;
+                }
+            }
+            return ParseLOL.DataType.UNKNOWN;
+        }
+
+
     }
 }
