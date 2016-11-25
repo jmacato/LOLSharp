@@ -16,119 +16,9 @@ namespace LOLpreter
     {
         string lolstream = "";
         
-        /*
-        Definitions of each reserved keywords
-        */
-        Dictionary<string, string> LexemeDefinitions = new Dictionary<string, string>
-        {
-            //Multi-spaced operands takes precedence
-            {@"I-HAS-A","Declare variable"},
-            {@"BOTH-SAEM","Comparison Operator"},
-            {@"SUM-OF","Addition Operator"},
-            {@"DIFF-OF","Subtraction Operator"},
-            {@"PRODUKT-OF","Multiplication Operator"},
-            {@"QUOSHUNT-OF","Division Operator"},
-            {@"MOD-OF","Modulo (Remainder) Operator"},
-            {@"BIGGR-OF","Greater-than Operator; Returns the greater variable"},
-            {@"SMALLR-OF","Lesser-than Operator; Returns the lesser variable"},
-            {@"O-RLY?","Start of If-Else Block"},
-            {@"YA-RLY","[If-Else] Executes inline code when condition is true"},
-            {@"NO-WAI","[If-Else] Executes inline code when condition is true and closes the If-Else Block"},
-            {@"IM-IN-YR","Signals the start of a loop. Followed by a label."},
-            {@"IM-OUTTA-YR"," Signals the end of a loop.Followed by a label."},
-            {@"HOW-IZ-I"," Declare function. Followed by the function name."},
-            {@"IF-U-SAY-SO","Closes a function block."},
-            {@"I-IZ","Calls a function. Followed by the function name and its parameters."},
-            {@"BOTH-OF","AND Boolean Operator; 1 or 2 operands"},
-            {@"EITHER-OF","OR Boolean Operator; 1 or 2 operands"},
-            {@"WON-OF","XOR Boolean Operator; Infinite operands"},
-            {@"ALL-OF","AND Boolean Operator; Infinite operands"},
-            {@"ANY-OF","OR Boolean Operator; Infinite operands"},
-            {@"IS-NOW-A","Type Recasting"},
-            {@"FOUND-YR","Returns the value of succeeding expression."},
-
-            {@"HAI","Delimiter to mark the start of the program"},
-            {@"KTHXBYE","Delimiter to mark the end of the program"},
-            {@"BTW","Single-line comment"},
-            {@"OBTW","Start of a multi-line comment"},
-            {@"TLDR","End of a multi-line comment"},
-            {@"ITZ","Assignment operator in declaring a variable"},
-            {@"GIMMEH","Input"},
-            {@"VISIBLE","Output"},
-            {@"OIC","Signals the end of the If-Else block"},
-            {@"WTF[?]","Signals the start of a Switch Case block"},
-            {@"OMG","Comparison block for a Switch Case. Followed by a literal"},
-            {@"OMGWTF","The default optional case in a Switch Case block."},
-            {@"GTFO","Break statement."},
-            {@"MEBBE","Appears between the ​YA RLY ​and ​NO WAI​ blocks. Similar to an Elseif statement."},
-            {@"AN","Separates arguments."},
-            {@"NOT","Negation"},
-            {@"MAEK","Used for re-casting a variable to a different type"},
-            {@"UPPIN","Increments a variable by one."},
-            {@"NERFIN","Decrements a variable by one."},
-            {@"MKAY","Delimiter of a function call."},
-            {@"WILE","Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops."},
-            {@"TILL","Evaluates an expression as a Boolean statement. If it evaluates to true, the execution is continued. Else, the execution stops."},
-            {@"IT\s","Temporary variable. Remains in local scope until it is replaced with a bare expression."},
-            {@"SMOOSH","Expects strings as its input arguments for concatenation"},
-            {@"DIFFRINT"," Comparison Operator; True if operands are not equal"},
-
-        };
-
-        //Regex dictionary for datatypes
-        Dictionary<string, string> DataTypeDefinition = new Dictionary<string, string>
-        {
-            {@"-?\d+\.\d+","Float Literal"},
-            {@"WIN|FAIL","Boolean Literal"},
-            {@"[^/./n]-?\d+[^/.]","Integer Literal"},
-            {@"""[^\""]*""","String"},
-            {@"[A-Za-z][A-Za-z0-9_]*","Variable"}
-        };
-
-        //For easier classification of in-program types
-        enum DataType
-        {
-            FLOT,
-            BOOL,
-            INT,
-            STRING,
-            VARIABLE,
-            UNKNOWN
-        }
-
-        /*
-        Since we split tokens by spaces
-        It's necessary to turn multiple space operators into
-        a single connected string
-        */
-        Dictionary<string, string> MonoglyphyOperators = new Dictionary<string, string>
-        {
-            {@"I HAS A","I-HAS-A"},
-            {@"BOTH SAEM","BOTH-SAEM"},
-            {@"SUM OF","SUM-OF"},
-            {@"DIFF OF","DIFF OF"},
-            {@"PRODUKT OF","PRODUKT-OF"},
-            {@"QUOSHUNT OF","QUOSHUNT-OF"},
-            {@"MOD OF","MOD-OF"},
-            {@"BIGGR OF","BIGGR-OF"},
-            {@"SMALLR OF","SMALLR-OF"},
-            {@"O RLY?","O RLY?"},
-            {@"YA RLY","YA-RLY"},
-            {@"NO WAI","NO-WAI"},
-            {@"IM IN YR","IM-IN-YR"},
-            {@"IM OUTTA YR","IM-OUTTA-YR"},
-            {@"HOW IZ I","HOW-IZ-I"},
-            {@"IF U SAY SO","IF-U-SAY-SO"},
-            {@"I IZ","I-IZ"},
-            {@"BOTH OF","BOTH-OF"},
-            {@"EITHER OF","EITHER-OF"},
-            {@"WON OF","WON-OF"},
-            {@"ALL OF","ALL-OF"},
-            {@"ANY OF","ANY-OF"},
-            {@"IS NOW A","IS-NOW-A"},
-            {@"FOUND YR","FOUND-YR"}
-        };
-
+        Dictionary<string, string> LexemeDefinitions = ParseDict.LexemeDefinitions;
+        Dictionary<string, string> DataTypeDefinition = ParseDict.DTRegex;
+        Dictionary<string, string> MonoglyphyOperators = ParseDict.MonoglyphyOperators;
         Dictionary<string, object> GlobalVariableList = new Dictionary<string, object> { };
 
         public Form1()
@@ -197,7 +87,7 @@ namespace LOLpreter
                 switch (Keyword)
                 {
                     case "HAI":
-                        if (GetArgDataType(Argument) == DataType.FLOT)
+                        if (GetArgDataType(Argument) == ParseDict.DataType.FLOT)
                         {
                             LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
                             Output = GetArgDataContent(Argument).ToString();
@@ -210,11 +100,11 @@ namespace LOLpreter
                         LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
                         switch (GetArgDataType(Argument))
                         {
-                            case DataType.STRING:
+                            case ParseDict.DataType.STRING:
                                 Output = GetArgDataContent(Argument).ToString();
                                 LexTableAdd("Console Output", Output);
                                 break;
-                            case DataType.VARIABLE:
+                            case ParseDict.DataType.VARIABLE:
                                 Output = GetArgDataContent(Argument).ToString();
                                 LexTableAdd("Console Output", "VAR:" + Output);
                                 break;
@@ -230,7 +120,7 @@ namespace LOLpreter
                         }
                         switch (GetArgDataType(SplitKeysArgs(Argument).Keyword))
                         {
-                            case DataType.VARIABLE: //Next token is a variable
+                            case ParseDict.DataType.VARIABLE: //Next token is a variable
                                 string variablename = SplitKeysArgs(Argument).Keyword;
                                 object varval = "";
                                 Output = GetArgDataContent(variablename).ToString();
@@ -329,7 +219,7 @@ namespace LOLpreter
         }
 
         //Get datatype of command argument
-        private DataType GetArgDataType(string token)
+        private ParseDict.DataType GetArgDataType(string token)
         {
             var results = from Arg in DataTypeDefinition
                           where Regex.Match(token, Arg.Key, RegexOptions.Singleline).Success
@@ -339,20 +229,20 @@ namespace LOLpreter
                 switch (result.Value)
                 {
                     case "Float Literal":
-                        return DataType.FLOT;
+                        return ParseDict.DataType.FLOT;
                     case "Boolean Literal":
-                        return DataType.BOOL;
+                        return ParseDict.DataType.BOOL;
                     case "Integer Literal":
-                        return DataType.INT;
+                        return ParseDict.DataType.INT;
                     case "String":
-                        return DataType.STRING;
+                        return ParseDict.DataType.STRING;
                     case "Variable":
-                        return DataType.VARIABLE;
+                        return ParseDict.DataType.VARIABLE;
                     default:
-                        return DataType.UNKNOWN;
+                        return ParseDict.DataType.UNKNOWN;
                 }
             }
-            return DataType.UNKNOWN;
+            return ParseDict.DataType.UNKNOWN;
         }
 
         //Get the value of the argument
@@ -379,7 +269,7 @@ namespace LOLpreter
                         return null;
                 }
             }
-            return DataType.UNKNOWN;
+            return ParseDict.DataType.UNKNOWN;
         }
 
         //Add to Lexeme table
@@ -413,6 +303,11 @@ namespace LOLpreter
                 textBox1.Text = lolstream;
                 sr.Close();
             }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            ParseDict.CInitial();
         }
     }
 }
