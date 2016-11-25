@@ -9,14 +9,19 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Threading;
 
 namespace LOLpreter
 {
     public partial class Form1 : Form
     {
         string lolstream = "";
+        Console Console = new Console();
         int lineaddress = 0; //Actively parsed line
         Dictionary<string, object> GlobalVariableList = new Dictionary<string, object> { };
+        bool StopExecution = false;
+
+        TableLayoutPanel lex;
 
         public Form1()
         {
@@ -38,11 +43,28 @@ namespace LOLpreter
         
         private void button2_Click(object sender, EventArgs e)
         {
+            enableStopButton();
 
             lolstream = textBox1.Text;
 
+            //Clearing house
             ClearTables();
+            Console.Clear();
 
+             //Let it settle down first
+
+            while (backgroundWorker1.IsBusy) //Force it to stop bgwrk
+            {
+                backgroundWorker1.CancelAsync();
+            }
+
+            //Let the parsing begin
+            backgroundWorker1.RunWorkerAsync();
+
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
             string[] orig_array = lolstream.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
             //Turn multispace operands into single strings.
@@ -67,9 +89,20 @@ namespace LOLpreter
             //Begin parsing
             foreach (string cl in wrk_array)
             {
-                parseLine(cl,orig_array,lineaddress);
+                if (StopExecution) // Check if stop flag has been triggered manually
+                { break;}
+
+                parseLine(cl, orig_array, lineaddress);
                 lineaddress += 1;
+                Thread.Sleep(250); //Simulated delay
+
+                if (StopExecution) // Check if stop flag has been triggered in code
+                { break; }
+
             }
+
+            StopExecution = false;
+            disableStopButton();
         }
 
         //Parse through a line 
@@ -102,16 +135,25 @@ namespace LOLpreter
 
                     case "VISIBLE":
                         LexTableAdd(Keyword, ParseLOL.LexemeDefinitions[Keyword]);
+                        Output = ParseLOL.GetArgDataContent(Argument).ToString();
+
                         switch (ParseLOL.GetArgDataType(Argument))
                         {
                             case ParseLOL.DataType.STRING:
-                                Output = ParseLOL.GetArgDataContent(Argument).ToString();
                                 LexTableAdd("Console Output", Output);
+                                Console.WriteLine(Output);
                                 break;
                             case ParseLOL.DataType.VARIABLE:
-                                Output = ParseLOL.GetArgDataContent(Argument).ToString();
-                                LexTableAdd("Console Output", "VAR:" + Output);
-                                break;
+
+                                if (GlobalVariableList.ContainsKey(Output))
+                                {
+                                    LexTableAdd("Console Output", "VAR:" + Output);
+                                    Console.WriteLine(GlobalVariableList[Output]);
+                                    break;
+                                } else {
+                                   Console.WriteLine("(line " + lineaddress.ToString() + ") ERROR: Unknown variable: " + Output, Color.Red);
+                                    break;
+                                }
                             default:
                                 break;
                         }
@@ -140,7 +182,7 @@ namespace LOLpreter
                                     {
                                         //Theres a initializer~
                                         LexTableAdd("ITZ", ParseLOL.LexemeDefinitions["ITZ"]);
-                                        varval = ParseLOL.SplitKeysArgs(ITZ_ARG).Argument;
+                                        varval = ParseLOL.SplitKeysArgs(ITZ_ARG).Argument.Trim('"');
                                         ParseLOL.DataType vardt = ParseLOL.GetArgDataType(varval.ToString());
                                         LexTableAdd(varval.ToString(), ParseLOL.DTDesc[vardt]);
                                     }
@@ -160,6 +202,10 @@ namespace LOLpreter
                         break;
                     case "BTW":
                         break;
+                    case "KTHXBYE":
+                        LexTableAdd(Keyword, ParseLOL.LexemeDefinitions[Keyword]);
+                        StopExecution = true;
+                        break;
                     default:
                         if (ParseLOL.LexemeDefinitions.ContainsKey(Keyword))
                         {
@@ -168,6 +214,7 @@ namespace LOLpreter
                         }
                         else
                         {
+                            Console.WriteLine("(line " + lineaddress.ToString() + ") ERROR: Unknown keyword: " + Output, Color.Red);
                             LexTableAdd(Keyword, "Unknown");
                         }
                         break;
@@ -190,32 +237,60 @@ namespace LOLpreter
         //Clear and rewrite the symbols table
         private void SymTableUpdate()
         {
-            tableLayoutPanel2.Controls.Clear();
+            this.Invoke((MethodInvoker)delegate ()
+            {
+                tableLayoutPanel2.Controls.Clear();
             foreach(KeyValuePair<string,object> symbs in GlobalVariableList)
             {
                 SymTableAdd(symbs.Key, symbs.Value.ToString());
-            }
+                }
+            });
         }
         
         //Add to Lexeme table
         private void LexTableAdd(string token, string val)
         {
-            tableLayoutPanel1.Controls.Add(new Label() { Text = token });
-            tableLayoutPanel1.Controls.Add(new Label() { Text = val, AutoSize = true});
+            this.Invoke((MethodInvoker)delegate ()
+            {
+                tableLayoutPanel1.Controls.Add(new Label() { Text = token });
+                tableLayoutPanel1.Controls.Add(new Label() { Text = val, AutoSize = true });
+                tableLayoutPanel1.AutoScrollPosition = new Point(0, tableLayoutPanel1.VerticalScroll.Maximum);
+            });
             //textBox2.Text += "\r\n" +"L"+ lineaddress.ToString() +"|" + token.PadRight(20,' ') + "| "+ val.ToString().PadRight(20, ' ');
         }
 
         //Add to Symbol table
         private void SymTableAdd(string token, string val)
         {
-            tableLayoutPanel2.Controls.Add(new Label() { Text = token });
-            tableLayoutPanel2.Controls.Add(new Label() { Text = val, AutoSize = true });
+            this.Invoke((MethodInvoker)delegate ()
+            {
+                tableLayoutPanel2.Controls.Add(new Label() { Text = token });
+                tableLayoutPanel2.Controls.Add(new Label() { Text = val, AutoSize = true });
+                tableLayoutPanel2.AutoScrollPosition = new Point(0, tableLayoutPanel1.VerticalScroll.Maximum);
+            });
         }
 
+        //Clear lex & symb tables
         private void ClearTables()
         {
-            tableLayoutPanel1.Controls.Clear();
-            tableLayoutPanel2.Controls.Clear();
+            this.Invoke((MethodInvoker)delegate ()
+            {
+                //    foreach(Control x in tableLayoutPanel1.Controls)
+                //    {
+                //        x.Dispose();
+                //    }
+                //    foreach (Control x in tableLayoutPanel2.Controls)
+                //    {
+                //        x.Dispose();
+                //    }
+
+                //tableLayoutPanel1.Controls.Clear();
+
+                tableLayoutPanel1.Controls.Clear();
+                tableLayoutPanel1 = lex;
+
+                tableLayoutPanel2.Controls.Clear();
+            });
         }
         
         private void button1_Click(object sender, EventArgs e)
@@ -233,9 +308,53 @@ namespace LOLpreter
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            ParseLOL.Initialize();
-            Console frm = new Console();
-            frm.Show();
+            ParseLOL.Initialize(); //Initialize the dictionary
+            Console.Show(); //Show console window
+            disableStopButton();
+            lex = tableLayoutPanel1;
+
         }
+
+        void disableStopButton()
+        {
+
+            this.Invoke((MethodInvoker)delegate ()
+            {
+                stopExecButton.Enabled = false;
+                stopExecButton.BackColor = Color.DarkGray;
+                executeCodeButton.Enabled = true;
+                executeCodeButton.BackColor = Color.Indigo;
+
+            });
+
+        }
+
+        void enableStopButton()
+        {
+            this.Invoke((MethodInvoker)delegate ()
+            {
+                stopExecButton.Enabled = true;
+                stopExecButton.BackColor = Color.Maroon;
+                executeCodeButton.Enabled = false;
+                executeCodeButton.BackColor = Color.DarkGray;
+            });
+        }
+
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null)
+                Console.WriteLine(e.Error.StackTrace,Color.Red);
+        }
+
+        private void stopExecButton_Click(object sender, EventArgs e)
+        {
+            StopExecution = true;
+        }
+
+        //private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        //{
+        //    throw e.Error;
+        //}
     }
 }

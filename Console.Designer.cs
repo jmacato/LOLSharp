@@ -49,11 +49,6 @@
             this.cli.TabIndex = 0;
             this.cli.Text = "";
             // 
-            // timer1
-            // 
-            this.timer1.Interval = 90;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
             // Console
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 31F);
