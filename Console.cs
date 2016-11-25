@@ -35,7 +35,7 @@ namespace LOLpreter
 
         public void WriteLine(object message)
         {
-            cli.AppendText(message);
+            cli.AppendText(message.ToString());
         }
     }
 }
