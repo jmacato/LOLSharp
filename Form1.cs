@@ -15,10 +15,6 @@ namespace LOLpreter
     public partial class Form1 : Form
     {
         string lolstream = "";
-        
-        Dictionary<string, string> LexemeDefinitions = ParseDict.LexemeDefinitions;
-        Dictionary<string, string> DataTypeDefinition = ParseDict.DTRegex;
-        Dictionary<string, string> MonoglyphyOperators = ParseDict.MonoglyphyOperators;
         Dictionary<string, object> GlobalVariableList = new Dictionary<string, object> { };
 
         public Form1()
@@ -49,9 +45,9 @@ namespace LOLpreter
             string[] orig_array = lolstream.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
             //Turn multispace operands into single strings.
-            foreach (string s in MonoglyphyOperators.Keys)
+            foreach (string s in ParseDict.MonoglyphyOperators.Keys)
             {
-                lolstream = Regex.Replace(lolstream, s, MonoglyphyOperators[s]);
+                lolstream = Regex.Replace(lolstream, s, ParseDict.MonoglyphyOperators[s]);
             }
 
             //Split them 'up and remove empty lines.
@@ -87,17 +83,20 @@ namespace LOLpreter
                 switch (Keyword)
                 {
                     case "HAI":
-                        if (GetArgDataType(Argument) == ParseDict.DataType.FLOT)
+                        double progVersion;
+                        LexTableAdd(Keyword, ParseDict.LexemeDefinitions[Keyword]);
+                        if (GetArgDataType(Argument.ToString()) == ParseDict.DataType.FLOT)
                         {
-                            LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
                             Output = GetArgDataContent(Argument).ToString();
+                            progVersion = Convert.ToDouble(Argument);
+                            LexTableAdd(Output, ParseDict.DTDesc[GetArgDataType(Output)]+"; Program Version");
                         }
                         else
                         { //Throw error here?
                         }
                         break;
                     case "VISIBLE":
-                        LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
+                        LexTableAdd(Keyword, ParseDict.LexemeDefinitions[Keyword]);
                         switch (GetArgDataType(Argument))
                         {
                             case ParseDict.DataType.STRING:
@@ -113,7 +112,7 @@ namespace LOLpreter
                         }
                         break;
                     case "I-HAS-A": //Variable Declaration Parsing Block
-                        LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
+                        LexTableAdd(Keyword, ParseDict.LexemeDefinitions[Keyword]);
                         if (IsKeyword(SplitKeysArgs(Argument).Keyword))
                         {
                             //throw error here (Reserved Keyword error)
@@ -124,6 +123,7 @@ namespace LOLpreter
                                 string variablename = SplitKeysArgs(Argument).Keyword;
                                 object varval = "";
                                 Output = GetArgDataContent(variablename).ToString();
+                                LexTableAdd(Output, "Variable");
                                 string ITZ_ARG = SplitKeysArgs(Argument).Argument;
 
                                 //Check if the next keyword
@@ -132,8 +132,10 @@ namespace LOLpreter
                                     if (SplitKeysArgs(ITZ_ARG).Keyword == "ITZ")
                                     {
                                         //Theres a initializer~
-                                        LexTableAdd("ITZ", LexemeDefinitions["ITZ"]);
+                                        LexTableAdd("ITZ", ParseDict.LexemeDefinitions["ITZ"]);
                                         varval = SplitKeysArgs(ITZ_ARG).Argument;
+                                        ParseDict.DataType vardt = GetArgDataType(varval.ToString());
+                                        LexTableAdd(varval.ToString(), ParseDict.DTDesc[vardt]);
                                     }
                                     else
                                     {
@@ -143,7 +145,7 @@ namespace LOLpreter
                                 }
 
                                 AddVariable(Output, varval.ToString());
-                                LexTableAdd(Output, "Variable");
+ 
                                 break;
                             default: //Somebody jacked up the declaration, throw some error here
                                 break;
@@ -152,9 +154,9 @@ namespace LOLpreter
                     case "BTW":
                         break;
                     default:
-                        if (LexemeDefinitions.ContainsKey(Keyword))
+                        if (ParseDict.LexemeDefinitions.ContainsKey(Keyword))
                         {
-                            LexTableAdd(Keyword, LexemeDefinitions[Keyword]);
+                            LexTableAdd(Keyword, ParseDict.LexemeDefinitions[Keyword]);
                             break;
                         }
                         else
@@ -167,10 +169,6 @@ namespace LOLpreter
 
         }
 
-        //Used to eat lines bit by bit
-        //...
-        //Kidding, iz just a pair of a lexeme (keywrd) and 
-        //the remaining unprocessed string (args)
         public struct KeyArgPair
         {
             public string Keyword;
@@ -191,7 +189,7 @@ namespace LOLpreter
         //Check if token is a reserved word
         private bool IsKeyword(string token)
         {
-            var keywrd = from Arg in LexemeDefinitions
+            var keywrd = from Arg in ParseDict.LexemeDefinitions
                           where Regex.Match(token, Arg.Key, RegexOptions.Singleline).Success
                           select Arg;
             return keywrd != null && keywrd.Any();
@@ -213,15 +211,15 @@ namespace LOLpreter
             string Keyword = s.Split(' ').First();
             string Argument = s.Substring(Keyword.Length, s.Length - Keyword.Length);
             KeyArgPair x;
-            x.Keyword = Keyword;
-            x.Argument = Argument;
+            x.Keyword = Keyword.Trim();
+            x.Argument = Argument.Trim();
             return x;
         }
 
         //Get datatype of command argument
         private ParseDict.DataType GetArgDataType(string token)
         {
-            var results = from Arg in DataTypeDefinition
+            var results = from Arg in ParseDict.DTRegex
                           where Regex.Match(token, Arg.Key, RegexOptions.Singleline).Success
                           select Arg;
             foreach (var result in results)
@@ -248,7 +246,7 @@ namespace LOLpreter
         //Get the value of the argument
         private object GetArgDataContent(string token)
         {
-            var results = from Arg in DataTypeDefinition
+            var results = from Arg in ParseDict.DTRegex
                           where Regex.Match(token, Arg.Key, RegexOptions.Singleline).Success
                           select Arg;
             foreach (var result in results)
@@ -307,7 +305,8 @@ namespace LOLpreter
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            ParseDict.CInitial();
+            ParseDict.CInitial(); 
+
         }
     }
 }
