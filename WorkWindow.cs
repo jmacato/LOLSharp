@@ -65,6 +65,11 @@ namespace LOLpreter
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
+
+            lineaddress = 0;
+            GlobalVariableList.Clear();
+
+
             string[] orig_array = lolstream.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
             //Turn multispace operands into single strings.
@@ -219,10 +224,6 @@ namespace LOLpreter
                         {
                             LexTableAdd(Keyword, "UNIMPLEMENTED: "+ ParseLOL.LexemeDefinitions[Keyword]);
                             break;
-                        } else
-                        {
-                            Console.WriteLine("(line " + lineaddress.ToString() + ") ERROR: Syntax Error: " + s, Color.Red);
-                            LexTableAdd(Keyword, "Unknown");
                         }
                         break;
                 }
@@ -241,6 +242,9 @@ namespace LOLpreter
                     Console.WriteLine("(line " + lineaddress.ToString() + ") ERROR: Dangling variable:" + Keyword, Color.Red);
                 }
 
+            } else {
+                Console.WriteLine("(line " + lineaddress.ToString() + ") ERROR: Syntax Error: " + s, Color.Red);
+                LexTableAdd(Keyword, "Unknown");
             }
 
         }
