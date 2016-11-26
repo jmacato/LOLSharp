@@ -42,10 +42,10 @@
             this.cli.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.cli.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cli.ForeColor = System.Drawing.Color.White;
-            this.cli.Location = new System.Drawing.Point(-1, 0);
+            this.cli.Location = new System.Drawing.Point(12, 12);
             this.cli.Name = "cli";
             this.cli.ReadOnly = true;
-            this.cli.Size = new System.Drawing.Size(724, 363);
+            this.cli.Size = new System.Drawing.Size(736, 337);
             this.cli.TabIndex = 0;
             this.cli.Text = "";
             // 
@@ -54,7 +54,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 31F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(720, 361);
+            this.ClientSize = new System.Drawing.Size(760, 361);
             this.ControlBox = false;
             this.Controls.Add(this.cli);
             this.DoubleBuffered = true;

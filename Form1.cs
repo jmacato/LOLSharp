@@ -121,15 +121,20 @@ namespace LOLpreter
                     case "HAI":
                         double progVersion;
                         LexTableAdd(Keyword, ParseLOL.LexemeDefinitions[Keyword]);
-                        if (ParseLOL.GetArgDataType(Argument.ToString()) == ParseLOL.DataType.FLOT)
+
+                        if (ParseLOL.GetArgDataType(Argument.ToString()) == ParseLOL.DataType.FLOT && Argument.ToString().Length > 0)
                         {
                             Output = ParseLOL.GetArgDataContent(Argument).ToString();
                             progVersion = Convert.ToDouble(Argument);
                             LexTableAdd(Output, ParseLOL.DTDesc[ParseLOL.GetArgDataType(Output)]+"; Program Version");
                         }
                         else
-                        { 
-                            //Throw error here?
+                        {
+                            progVersion = 1.2;
+                            LexTableAdd(Output, "No declared programversion, default is " + progVersion);
+                            Console.WriteLine("(line " + lineaddress.ToString() + ") WARNING: No version declared on program start. " + Output, Color.Yellow);
+                            break;
+
                         }
                         break;
 
@@ -151,7 +156,8 @@ namespace LOLpreter
                                     Console.WriteLine(GlobalVariableList[Output]);
                                     break;
                                 } else {
-                                   Console.WriteLine("(line " + lineaddress.ToString() + ") ERROR: Unknown variable: " + Output, Color.Red);
+                                   Console.Write("(line " + lineaddress.ToString() + ") ERROR: Unknown variable: ", Color.Red);
+                                    Console.WriteLine(Output);
                                     break;
                                 }
                             default:
@@ -349,7 +355,14 @@ namespace LOLpreter
 
         private void stopExecButton_Click(object sender, EventArgs e)
         {
+
             StopExecution = true;
+            while (backgroundWorker1.IsBusy) //Force it to stop bgwrk
+            {
+                backgroundWorker1.CancelAsync();
+            }
+            //if it aint killin it, kill it agein muahahaha
+            if (!backgroundWorker1.IsBusy) { disableStopButton(); } else { stopExecButton_Click(sender, e); } 
         }
 
         //private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
