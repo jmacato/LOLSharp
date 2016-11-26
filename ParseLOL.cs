@@ -163,12 +163,15 @@ namespace LOLpreter
 
 
 
-        //Get datatype of command argument
-        public static DataType GetArgDataType(string token)
+        //Get datatype of the expression
+        public static DataType GetArgDataType(string expression)
         {
             var results = from Arg in ParseLOL.DTRegex
-                          where Regex.Match(token, Arg.Key, RegexOptions.Singleline).Success
+                          where Regex.Match(expression, Arg.Key, RegexOptions.Singleline).Success
                           select Arg;
+
+            
+
             foreach (var result in results)
             {
                 switch (result.Value)
@@ -199,13 +202,13 @@ namespace LOLpreter
             foreach (var result in results)
             {
                 switch (result.Value)
-                {
+                { // All numerical data are signed. Keep it in mind to avoid being bitten in the ass
                     case "Float Literal":
                         return Convert.ToDouble(Regex.Match(token, result.Key).Value);
                     case "Boolean Literal":
                         return Regex.Match(token, result.Key).Value;
-                    case "Integer Literal":
-                        return Convert.ToDouble(Regex.Match(token, result.Key).Value);
+                    case "Integer Literal": 
+                        return Convert.ToInt64(Regex.Match(token, result.Key).Value);
                     case "String":
                         return Regex.Match(token, result.Key).Value;
                     case "Variable":

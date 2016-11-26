@@ -20,9 +20,7 @@ namespace LOLpreter
         int lineaddress = 0; //Actively parsed line
         Dictionary<string, object> GlobalVariableList = new Dictionary<string, object> { };
         bool StopExecution = false;
-
-        TableLayoutPanel lex;
-
+        
         public WorkWindow()
         {
             InitializeComponent();            
@@ -69,7 +67,6 @@ namespace LOLpreter
             lineaddress = 0;
             GlobalVariableList.Clear();
 
-
             string[] orig_array = lolstream.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
             //Turn multispace operands into single strings.
@@ -95,7 +92,7 @@ namespace LOLpreter
             foreach (string cl in wrk_array)
             {
                 if (StopExecution) // Check if stop flag has been triggered manually
-                { break;}
+                { break; }
 
                 parseLine(cl, orig_array, lineaddress);
                 lineaddress += 1;
@@ -117,8 +114,6 @@ namespace LOLpreter
             string Keyword = ParseLOL.SplitKeysArgs(s).Keyword.Trim().Trim(',');
             string Argument = ParseLOL.SplitKeysArgs(s).Argument;
             string Output = "";
-
-
 
             if (ParseLOL.IsKeyword(Keyword))
             {
@@ -318,8 +313,6 @@ namespace LOLpreter
                 //tableLayoutPanel1.Controls.Clear();
 
                 tableLayoutPanel1.Controls.Clear();
-                tableLayoutPanel1 = lex;
-
                 tableLayoutPanel2.Controls.Clear();
             });
         }
@@ -342,8 +335,7 @@ namespace LOLpreter
             ParseLOL.Initialize(); //Initialize the dictionary
             Console.Show(); //Show console window
             disableStopButton();
-            lex = tableLayoutPanel1;
-
+            openFileDialog1.Filter = "*.lol|LOLCODE Source File";
         }
 
         void disableStopButton()
