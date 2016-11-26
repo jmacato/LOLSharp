@@ -13,7 +13,7 @@ using System.Threading;
 
 namespace LOLpreter
 {
-    public partial class Form1 : Form
+    public partial class WorkWindow : Form
     {
         string lolstream = "";
         Console Console = new Console();
@@ -23,7 +23,7 @@ namespace LOLpreter
 
         TableLayoutPanel lex;
 
-        public Form1()
+        public WorkWindow()
         {
             InitializeComponent();            
         }
@@ -113,6 +113,8 @@ namespace LOLpreter
             string Argument = ParseLOL.SplitKeysArgs(s).Argument;
             string Output = "";
 
+
+
             if (ParseLOL.IsKeyword(Keyword))
             {
                 switch (Keyword)
@@ -140,7 +142,7 @@ namespace LOLpreter
 
                     case "VISIBLE":
                         LexTableAdd(Keyword, ParseLOL.LexemeDefinitions[Keyword]);
-                        Output = ParseLOL.GetArgDataContent(Argument).ToString();
+                        Output = ParseLOL.GetArgDataContent(Argument).ToString().Trim('"');
 
                         switch (ParseLOL.GetArgDataType(Argument))
                         {
@@ -217,14 +219,28 @@ namespace LOLpreter
                         {
                             LexTableAdd(Keyword, "UNIMPLEMENTED: "+ ParseLOL.LexemeDefinitions[Keyword]);
                             break;
-                        }
-                        else
+                        } else
                         {
-                            Console.WriteLine("(line " + lineaddress.ToString() + ") ERROR: Unknown keyword: " + Output, Color.Red);
+                            Console.WriteLine("(line " + lineaddress.ToString() + ") ERROR: Syntax Error: " + s, Color.Red);
                             LexTableAdd(Keyword, "Unknown");
                         }
                         break;
                 }
+            } else if (GlobalVariableList.ContainsKey(Keyword))
+            {
+                LexTableAdd(Keyword, "Inline variable");
+
+                var nextToken = ParseLOL.SplitKeysArgs(Argument);
+
+                if (nextToken.Keyword == "R")
+                {
+                    LexTableAdd("Assign @ "+Keyword, nextToken.Argument);
+                } else
+                {
+                    //throw error for dangling variables (variables with no assignment operators
+                    Console.WriteLine("(line " + lineaddress.ToString() + ") ERROR: Dangling variable:" + Keyword, Color.Red);
+                }
+
             }
 
         }
@@ -232,12 +248,15 @@ namespace LOLpreter
         //Add variable to the global pool
         private void AddVariable(string s,object value)
         {
-            string sx = s.Trim();
-            if (!GlobalVariableList.ContainsKey(sx))
+            this.Invoke((MethodInvoker)delegate ()
             {
-                GlobalVariableList.Add(sx, value);
-                SymTableUpdate();
-            }
+                string sx = s.Trim();
+                if (!GlobalVariableList.ContainsKey(sx))
+                {
+                    GlobalVariableList.Add(sx, value);
+                    SymTableUpdate();
+                }
+            });
         }
         
         //Clear and rewrite the symbols table
@@ -252,6 +271,8 @@ namespace LOLpreter
                 }
             });
         }
+
+
         
         //Add to Lexeme table
         private void LexTableAdd(string token, string val)
