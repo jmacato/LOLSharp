@@ -40,7 +40,6 @@
             this.executeCodeButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.stopExecButton = new System.Windows.Forms.Button();
@@ -87,7 +86,7 @@
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.Font = new System.Drawing.Font("Segoe UI Semilight", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.button1.Location = new System.Drawing.Point(108, 17);
+            this.button1.Location = new System.Drawing.Point(108, 18);
             this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(208, 50);
@@ -192,10 +191,6 @@
             this.textBox1.Size = new System.Drawing.Size(300, 212);
             this.textBox1.TabIndex = 16;
             // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "*.lol";
-            // 
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.AutoScroll = true;
@@ -240,7 +235,7 @@
             this.stopExecButton.UseVisualStyleBackColor = false;
             this.stopExecButton.Click += new System.EventHandler(this.stopExecButton_Click);
             // 
-            // Form1
+            // WorkWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -265,7 +260,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "Form1";
+            this.Name = "WorkWindow";
             this.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ANG GANDA NI MA\'AM DYA LOLPRETER";
@@ -286,7 +281,6 @@
         private System.Windows.Forms.Button executeCodeButton;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         public System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Button stopExecButton;

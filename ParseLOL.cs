@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -13,7 +14,9 @@ namespace LOLpreter
         public static Dictionary<string, string> DTRegex;
         public static Dictionary<DataType, string> DTDesc;
         public static Dictionary<string, string> MonoglyphyOperators;
-        private static object ParseLol;
+
+
+
 
         public static object Initialize()
         {
@@ -160,8 +163,6 @@ namespace LOLpreter
             public string Keyword;
             public string Argument;
         }
-
-
 
         //Get datatype of the expression
         public static DataType GetArgDataType(string expression)

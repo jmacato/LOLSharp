@@ -35,26 +35,29 @@
             // 
             // cli
             // 
-            this.cli.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.cli.BackColor = System.Drawing.Color.Black;
             this.cli.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.cli.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.cli.DetectUrls = false;
             this.cli.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cli.ForeColor = System.Drawing.Color.White;
             this.cli.Location = new System.Drawing.Point(12, 12);
             this.cli.Name = "cli";
             this.cli.ReadOnly = true;
-            this.cli.Size = new System.Drawing.Size(736, 337);
+            this.cli.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+            this.cli.Size = new System.Drawing.Size(741, 364);
             this.cli.TabIndex = 0;
             this.cli.Text = "";
+            this.cli.Click += new System.EventHandler(this.cli_Click);
+            this.cli.Enter += new System.EventHandler(this.cli_Enter);
+            this.cli.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.cli_KeyPress);
             // 
             // Console
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 31F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(760, 361);
+            this.ClientSize = new System.Drawing.Size(765, 388);
             this.ControlBox = false;
             this.Controls.Add(this.cli);
             this.DoubleBuffered = true;
