@@ -19,8 +19,13 @@ namespace LOLpreter
         Console Console = new Console();
         int lineaddress = 0; //Actively parsed line
         Dictionary<string, object> GlobalVariableList = new Dictionary<string, object> { };
+
         bool StopExecution = false;
+
+        int WarningCount = 0;
         int ErrorCount = 0;
+        int FatalCount = 0;
+
         bool UserInitiatedTermination = false;
         public WorkWindow()
         {
@@ -49,21 +54,6 @@ namespace LOLpreter
             //Clearing house
             ClearTables();
             Console.Clear();
-
-             //Let it settle down first
-
-            while (backgroundWorker1.IsBusy) //Force it to stop bgwrk
-            {
-                backgroundWorker1.CancelAsync();
-            }
-
-            //Let the parsing begin
-            backgroundWorker1.RunWorkerAsync();
-
-        }
-
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
-        {
 
             lineaddress = 0;
             GlobalVariableList.Clear();
@@ -105,8 +95,8 @@ namespace LOLpreter
                         Console.WriteLine("[END OF PROGRAM]", Color.Lime);
                         break;
                     }
-                } 
-               
+                }
+
                 //Send the current line to process
                 parseLine(cl, orig_array, lineaddress);
                 lineaddress += 1;
@@ -129,8 +119,9 @@ namespace LOLpreter
             //reset stopexec flag
             StopExecution = false;
             disableStopButton();
-        }
 
+        }
+        
         //Parse through a line 
         private void parseLine(string s, string[] orig_array, int i)
         {
@@ -190,31 +181,32 @@ namespace LOLpreter
                             default:
                                 return;
                         }
-                    case "GIMMEH":
-                        string VarName;
-                        LexTableAdd(Keyword, ParseLOL.LexemeDefinitions[Keyword]);
-                        VarName = ParseLOL.GetArgDataContent(Argument).ToString().Trim();
+                    //case "GIMMEH":
+                    //    string VarName;
+                    //    LexTableAdd(Keyword, ParseLOL.LexemeDefinitions[Keyword]);
+                    //    VarName = ParseLOL.GetArgDataContent(Argument).ToString().Trim();
 
-                        if (ParseLOL.GetArgDataType(VarName) == ParseLOL.DataType.VARIABLE)
-                        {
-                            if (GlobalVariableList.ContainsKey(VarName))
-                            {
-                                GlobalVariableList[VarName] = Console.ReadKey(ref StopExecution);
+                    //    if (ParseLOL.GetArgDataType(VarName) == ParseLOL.DataType.VARIABLE)
+                    //    {
+                    //        if (GlobalVariableList.ContainsKey(VarName))
+                    //        {
+                    //            GlobalVariableList[VarName] = Console.ReadKey(ref StopExecution);
 
-                            } else
-                            {
-                                Console.Write("(line " + lineaddress.ToString() + ") ERROR: Undeclared variable: ", Color.Magenta);
-                                Console.WriteLine(VarName);
-                                break;
-                            }
-                        } else
-                        {
-                            Console.Write("(line " + lineaddress.ToString() + ") ERROR: Expected a variable: ", Color.Magenta);
-                            Console.WriteLine(s);
-                            break;
-                        }
+                    //        } else
+                    //        {
+                    //            Console.Write("(line " + lineaddress.ToString() + ") ERROR: Undeclared variable: ", Color.Magenta);
+                    //            Console.WriteLine(VarName);
+                    //            break;
+                    //        }
+                    //    } else
+                    //    {
+                    //        Console.Write("(line " + lineaddress.ToString() + ") ERROR: Expected a variable: ", Color.Magenta);
 
-                        break;
+                    //        Console.WriteLine(s);
+                    //        break;
+                    //    }
+
+                     //   break;
 
                     case "I-HAS-A":
                         //Variable Declaration Parsing Block
@@ -240,6 +232,9 @@ namespace LOLpreter
                                         //Theres a initializer~
                                         LexTableAdd("ITZ", ParseLOL.LexemeDefinitions["ITZ"]);
                                         varval = ParseLOL.SplitKeysArgs(ITZ_ARG).Argument.Trim('"');
+
+                                        GlobalVariableList[variablename] = ParseLOL.GetArgDataContent(varval.ToString());
+
                                         ParseLOL.DataType vardt = ParseLOL.GetArgDataType(varval.ToString());
                                         LexTableAdd(varval.ToString(), ParseLOL.DTDesc[vardt]);
                                     }
@@ -247,6 +242,8 @@ namespace LOLpreter
                                     {
                                         //No initialization~
                                         varval = null;
+                                        GlobalVariableList[variablename] = ParseLOL.GetArgDataContent(varval.ToString());
+
                                     }
                                 }
 
@@ -258,21 +255,16 @@ namespace LOLpreter
                         }
                         break;
 
-                    case "BTW":
-                        return;
-
                     case "KTHXBYE":
-                        LexTableAdd(Keyword, ParseLOL.LexemeDefinitions[Keyword]);
-                        StopExecution = true;
-                        UserInitiatedTermination = false;
+                        KeyHandler_KTHXBYE(Keyword);
                         break;
 
                     default:
                         if (ParseLOL.LexemeDefinitions.ContainsKey(Keyword))
                         {
-                          //  LexTableAdd(Keyword, "UNIMPLEMENTED: "+ ParseLOL.LexemeDefinitions[Keyword]);
-                          //  Console.WriteLine("[UNIMPLEMENTED] "+Keyword, Color.Honeydew);
-                            break;
+                           LexTableAdd(Keyword, "UNIMPLEMENTED: "+ ParseLOL.LexemeDefinitions[Keyword]);
+                           Console.WriteLine("[UNIMPLEMENTED] "+Keyword, Color.Honeydew);
+                           break;
                         }
                         break;
 
@@ -286,20 +278,49 @@ namespace LOLpreter
                 if (nextToken.Keyword == "R")
                 {
                     LexTableAdd("Assign @ "+Keyword, nextToken.Argument); //Set assignment
+
+                    var k0 = nextToken.Argument;
+                    var k1 = ParseLOL.SplitKeysArgs(k0).Keyword;
+                    var k2 = ParseLOL.SplitKeysArgs(k0).Argument;
+
+                    if (ParseLOL.IsKeyword(k1))
+                    {
+
+                    } else
+                    {
+                        switch (ParseLOL.GetArgDataType(k1))
+                        {
+                            case ParseLOL.DataType.BOOL:
+                                GlobalVariableList[Keyword] = ParseLOL.GetArgDataContent(k1);
+                            break;
+                        }
+                    }
+
                 } else
                 {
                     //throw error for dangling variables (variables with no assignment operators
                     Console.Write("(line " + lineaddress.ToString() + ") ERROR: Dangling variable:", Color.Magenta);
+                    ErrorCount += 1;
                     Console.WriteLine(Keyword);
                 }
 
             } else {
-                Console.WriteLine("(line " + lineaddress.ToString() + ") FATAL: Syntax Error: " + s, Color.Red);
+                Console.Write("(line " + lineaddress.ToString() + ") FATAL: Syntax Error: ", Color.Red);
+                FatalCount += 1;
+                Console.WriteLine('"'+s+'"');
                 StopExecution = true;
                 LexTableAdd(Keyword, "Unknown");
                 return;
             }
 
+        }
+
+
+        private void KeyHandler_KTHXBYE(string Keyword)
+        {
+            LexTableAdd(Keyword, ParseLOL.LexemeDefinitions[Keyword]);
+            StopExecution = true;
+            UserInitiatedTermination = false;
         }
         
         //Add variable to the global pool
@@ -333,23 +354,20 @@ namespace LOLpreter
         //Add to Lexeme table
         private void LexTableAdd(string token, string val)
         {
-            this.Invoke((MethodInvoker)delegate ()
-            {
                 tableLayoutPanel1.Controls.Add(new Label() { Text = token });
                 tableLayoutPanel1.Controls.Add(new Label() { Text = val, AutoSize = true });
                 tableLayoutPanel1.AutoScrollPosition = new Point(0, tableLayoutPanel1.VerticalScroll.Maximum);
-            });
+     
         }
 
         //Add to Symbol table
         private void SymTableAdd(string token, string val)
         {
-            this.Invoke((MethodInvoker)delegate ()
-            {
+
                 tableLayoutPanel2.Controls.Add(new Label() { Text = token });
                 tableLayoutPanel2.Controls.Add(new Label() { Text = val, AutoSize = true });
                 tableLayoutPanel2.AutoScrollPosition = new Point(0, tableLayoutPanel1.VerticalScroll.Maximum);
-            });
+
         }
 
         //Clear lex & symb tables
@@ -400,31 +418,33 @@ namespace LOLpreter
         void disableStopButton()
         {
 
-            this.Invoke((MethodInvoker)delegate ()
-            {
                 stopExecButton.Enabled = false;
                 stopExecButton.BackColor = Color.DarkGray;
                 executeCodeButton.Enabled = true;
                 executeCodeButton.BackColor = Color.Indigo;
 
-            });
-
         }
 
         void enableStopButton()
         {
-            this.Invoke((MethodInvoker)delegate ()
-            {
+
                 stopExecButton.Enabled = true;
                 stopExecButton.BackColor = Color.Maroon;
                 executeCodeButton.Enabled = false;
                 executeCodeButton.BackColor = Color.DarkGray;
-            });
         }
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (e.Error != null) { Console.WriteLine(e.Error.Message + "\r\n" + e.Error.StackTrace, Color.Red); }
+            if (e.Error != null) {
+                if (!(e.Error.InnerException == null))
+                {
+                    Console.WriteLine(e.Error.InnerException.Message + "\r\n" + e.Error.InnerException.StackTrace, Color.Red);
+                }
+
+                Console.WriteLine(e.Error.Message + "\r\n" + e.Error.StackTrace, Color.Red);
+
+            }
         }
 
         private void stopExecButton_Click(object sender, EventArgs e)

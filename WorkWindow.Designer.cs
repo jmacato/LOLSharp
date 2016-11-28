@@ -41,7 +41,6 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.stopExecButton = new System.Windows.Forms.Button();
             label2 = new System.Windows.Forms.Label();
             label5 = new System.Windows.Forms.Label();
@@ -213,12 +212,6 @@
             this.tableLayoutPanel2.Size = new System.Drawing.Size(289, 213);
             this.tableLayoutPanel2.TabIndex = 17;
             // 
-            // backgroundWorker1
-            // 
-            this.backgroundWorker1.WorkerSupportsCancellation = true;
-            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
-            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
-            // 
             // stopExecButton
             // 
             this.stopExecButton.BackColor = System.Drawing.Color.DarkRed;
@@ -282,7 +275,6 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        public System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Button stopExecButton;
     }
 }

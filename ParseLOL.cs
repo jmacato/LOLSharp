@@ -15,9 +15,14 @@ namespace LOLpreter
         public static Dictionary<DataType, string> DTDesc;
         public static Dictionary<string, string> MonoglyphyOperators;
 
+        public struct Variable
+        {
+            DataType CurrentDataType;
+            object Value;
+            
+        }
 
-
-
+        
         public static object Initialize()
         {
             MonoglyphyOperators = new Dictionary<string, string>
@@ -207,7 +212,9 @@ namespace LOLpreter
                     case "Float Literal":
                         return Convert.ToDouble(Regex.Match(token, result.Key).Value);
                     case "Boolean Literal":
-                        return Regex.Match(token, result.Key).Value;
+                        if (token=="WIN") { return true; }
+                        if (token=="FAIL") { return false; }
+                        return null;
                     case "Integer Literal": 
                         return Convert.ToInt64(Regex.Match(token, result.Key).Value);
                     case "String":
