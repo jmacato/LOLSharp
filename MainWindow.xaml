@@ -19,9 +19,11 @@
             <ColumnDefinition Width="150*"/>
             <ColumnDefinition Width="600*"/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" Background="#0AFFFFFF">
-            <avalonedit:TextEditor x:Name="LOLinput"  Background="#00000000" BorderBrush="{x:Null}" Foreground="White" FontFamily="Consolas" FontSize="16"  BorderThickness="0" Margin="10,10,0,0" HorizontalScrollBarVisibility="Auto"/>
-        </Grid>
+        <Border Background="#0FFFFFFF" Grid.Row="1" Grid.Column="1" Grid.RowSpan="3"  BorderThickness="1,1,1,1" CornerRadius="15,0,0,15">
+            <Grid >
+            <avalonedit:TextEditor x:Name="LOLinput"  Background="#00000000" Foreground="White" FontFamily="Consolas" FontSize="16"  BorderThickness="0" Margin="10,10,0,0" SnapsToDevicePixels="False" WordWrap="True"/>
+            </Grid>
+        </Border>
         <Button x:Name="startParsing" Content="Parse" Grid.Column="1" HorizontalAlignment="Left" Grid.Row="4" Margin="10,10,0,10" Width="72.623" IsDefault="True" Click="startParsing_Click"/>
         <TextBlock x:Name="textBlock" Margin="10,10,0,0" Grid.Row="1" TextWrapping="Wrap" Text="Token Table" VerticalAlignment="Top" Foreground="#19FFFFFF" Height="15.96"/>
         <TextBlock x:Name="textBlock_Copy" Margin="10,9.999,0,0" Grid.Row="2" TextWrapping="Wrap" Text="Symbol Table" VerticalAlignment="Top" Foreground="#19FFFFFF" Height="15.96"/>

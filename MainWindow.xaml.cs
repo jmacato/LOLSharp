@@ -46,7 +46,8 @@ namespace LOLpreter
                 {
                     x += y.Key.PadRight(20,' ')+" | \""+y.Value+"\"\r\n";
                 }
-                LOLinput.Text = x;
+
+                LOLinput.Document.Text = x;
             }
 
         }

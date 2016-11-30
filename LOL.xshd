@@ -1,97 +1,82 @@
-<SyntaxDefinition name="LOL"
-        xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
-  <Color name="Comment" foreground="Lime" />
-  <Color name="String" foreground="DarkOrange" />
-
-  <!-- This is the main ruleset. -->
-  <RuleSet>
-    <Span color="Comment" begin="BTW" />
-    <Span color="Comment" multiline="true" begin="OBTW" end="TLDR" />
-
-    <Span color="String">
-      <Begin>"</Begin>
-      <End>"</End>
-      <RuleSet>
-        <!-- nested span for escape sequences -->
-        <Span begin=":" end="." />
-      </RuleSet>
-    </Span>
-
-    <Keywords fontWeight="bold" foreground="Orange">
-      <Word>HAI</Word>
-      <Word>KTHXBYE</Word>
-    </Keywords>
-    
-    <Keywords foreground="#f58e91">
-      <Word>SUM OF</Word>
-      <Word>DIFF OF</Word>
-      <Word>PRODUKT OF</Word>
-      <Word>QUOSHUNT OF</Word>
-      <Word>MOD OF</Word>
-      <Word>BIGGR OF</Word>
-      <Word>SMALLR OF</Word>
-      <Word>BOTH OF</Word>
-      <Word>EITHER OF</Word>
-      <Word>WON OF</Word>
-      <Word>ALL OF</Word>
-      <Word>ANY OF</Word>
-    </Keywords>
-
-    <Keywords fontWeight="bold" foreground="Salmon">
-      <Word>I HAS A</Word>
-      <Word>BOTH SAEM</Word>
-      <Word>O RLY</Word>
-      <Word>YA RLY</Word>
-      <Word>NO WAI</Word>
-      <Word>IM IN YR</Word>
-      <Word>IM OUTTA YR</Word>
-      <Word>HOW IZ I</Word>
-      <Word>IF U SAY SO</Word>
-      <Word>I IZ</Word>
-      <Word>IS NOW A</Word>
-      <Word>FOUND YR</Word>
-      <Word>AN</Word>
-      <Word>R</Word>
-      <Word>HAI</Word>
-      <Word>KTHXBYE</Word>
-      <Word>BTW</Word>
-      <Word>OBTW</Word>
-      <Word>TLDR</Word>
-      <Word>ITZ</Word>
-      <Word>GIMMEH</Word>
-      <Word>VISIBLE</Word>
-      <Word>OIC</Word>
-      <Word>WTF?</Word>
-      <Word>OMG</Word>
-      <Word>OMGWTF</Word>
-      <Word>GTFO</Word>
-      <Word>MEBBE</Word>
-      <Word>NOT</Word>
-      <Word>MAEK</Word>
-      <Word>UPPIN</Word>
-      <Word>NERFIN</Word>
-      <Word>MKAY</Word>
-      <Word>WILE</Word>
-      <Word>TILL</Word>
-      <Word>IT</Word>
-      <Word>SMOOSH</Word>
-      <Word>DIFFRINT</Word>
-      <Word>and</Word>
-      <Word>or</Word>
-      <Word>xor</Word>
-      <Word>WIN</Word>
-      <Word>FAIL</Word>
-    </Keywords>
-
-    <!-- Digits -->
-    <Rule foreground="Magenta">
-      \b0[xX][0-9a-fA-F]+  # hex number
-      |    \b
-      (    \d+(\.[0-9]+)?   #number with optional floating point
-      |    \.[0-9]+         #or just starting with floating point
-      )
-      ([+-]?[0-9]+)? # optional exponent
-    </Rule>
-        
-  </RuleSet>
+<?xml version="1.0" encoding="UTF-8"?>
+<SyntaxDefinition xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008" name="LOL">
+	<Color name="Comment" foreground="#7A987A" />
+	<Color name="String" foreground="#8FAFDF" />
+	<!-- This is the main ruleset. -->
+	<RuleSet>
+		<Span color="Comment" begin="BTW" />
+		<Span color="Comment" multiline="true" begin="OBTW" end="TLDR" />
+		<Span color="String">
+			<Begin>"</Begin>
+			<End>"</End>
+			<RuleSet>
+				<!-- nested span for escape sequences -->
+				<Span begin=":" end="." />
+			</RuleSet>
+		</Span>
+		<Keywords fontWeight="bold" foreground="Orange">
+			<Word>HAI</Word>
+			<Word>KTHXBYE</Word>
+		</Keywords>
+		<Keywords foreground="#f58e91">
+			<Word>SUM OF</Word>
+			<Word>DIFF OF</Word>
+			<Word>PRODUKT OF</Word>
+			<Word>QUOSHUNT OF</Word>
+			<Word>MOD OF</Word>
+			<Word>BIGGR OF</Word>
+			<Word>SMALLR OF</Word>
+			<Word>BOTH OF</Word>
+			<Word>EITHER OF</Word>
+			<Word>WON OF</Word>
+			<Word>ALL OF</Word>
+			<Word>ANY OF</Word>
+		</Keywords>
+		<Keywords fontWeight="bold" foreground="#86C9EF">
+			<Word>I HAS A</Word>
+			<Word>BOTH SAEM</Word>
+			<Word>O RLY</Word>
+			<Word>YA RLY</Word>
+			<Word>NO WAI</Word>
+			<Word>IM IN</Word>
+			<Word>IM OUTTA</Word>
+			<Word>HOW IZ I</Word>
+			<Word>IF U SAY SO</Word>
+			<Word>I IZ</Word>
+			<Word>IS NOW A</Word>
+			<Word>FOUND</Word>
+			<Word>ITZ</Word>
+			<Word>GIMMEH</Word>
+			<Word>VISIBLE</Word>
+			<Word>OIC</Word>
+			<Word>WTF</Word>
+			<Word>OMG</Word>
+			<Word>OMGWTF</Word>
+			<Word>GTFO</Word>
+			<Word>MEBBE</Word>
+			<Word>NOT</Word>
+			<Word>MAEK</Word>
+			<Word>UPPIN</Word>
+			<Word>NERFIN</Word>
+			<Word>MKAY</Word>
+			<Word>WILE</Word>
+			<Word>IT</Word>
+			<Word>YR</Word>
+			<Word>SMOOSH</Word>
+			<Word>DIFFRINT</Word>
+			<Word>and</Word>
+			<Word>or</Word>
+			<Word>xor</Word>
+		</Keywords>
+		<Keywords fontWeight="bold" foreground="#8FAFDF">
+			<Word>WIN</Word>
+			<Word>FAIL</Word>
+		</Keywords>
+		<Keywords fontWeight="bold" foreground="#86A0EF">
+			<Word>TIL</Word>
+			<Word>AN</Word>
+			<Word>R</Word>
+		</Keywords>
+		<!-- Digits -->
+	</RuleSet>
 </SyntaxDefinition>
