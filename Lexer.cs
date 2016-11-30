@@ -23,7 +23,7 @@ namespace LOLpreter
         int StrConstCount = 0;
 
 
-        public string GenerateStrConst(Match m)
+        public string MakeStrConstKey(Match m)
         // Replace each Regex cc match with the number of the occurrence.
         {
 
@@ -53,34 +53,24 @@ namespace LOLpreter
 
         public string PreProccess(string raw)
         {
-            char[] rawchars = raw.ToCharArray();
+
+            //Declare var, not war
+            string newraw = "";
+            string finalraw = "";
 
             //Reinitialize all working tables
             ProgTokenTable.Clear();  
             StringConstTable.Clear();
             StringConstInverseTable.Clear();
             ErrorList.Clear();
+
             Debug.WriteLine("-------------------");
-            MatchEvaluator StrKeyMatchEvaluator = new MatchEvaluator(GenerateStrConst);
 
+            //First round of Regex Filters.
+            FirstFilter(ref raw);
 
-            raw = Regex.Replace(raw, "BTW.*", "");                  //Remove single line comment.
-            raw = Regex.Replace(raw, "^/s+|/s+$/g", "");            //Remove whitespace.
-            raw = Regex.Replace(raw, "\r", "");                     //Remove Line Returns first.
-
-            string newraw = "";
-            string finalraw = "";
-
-            /*
-            Get all quoted strings and store them
-            to the Constant string table & its inverse
-            - match only per line so there'll be no multiline
-            - matching, which will throw off this damn thing 
-            */
-            foreach (string target_line in raw.Split(UNICODE_NEWLINE.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
-            {
-                newraw += Regex.Replace(target_line, @"""[^\""]*""", StrKeyMatchEvaluator, RegexOptions.Singleline)+UNICODE_NEWLINE;
-            }
+            //Replace all quoted strings on working text with a pointer.
+            newraw = GenerateStrConstTable(raw);
 
             //Check if theres remaining quotes, and tantrum when there is.
             CheckForUnclosedQuotes(newraw);
@@ -88,33 +78,74 @@ namespace LOLpreter
             //Check if theres a invalid obtw/tldr 
             CheckForInvalidMultilineComment(newraw);
 
-            raw = Regex.Replace(newraw, @"\.\.\.", "");                        //Remove elipsis
-            raw = Regex.Replace(newraw, UNICODE_ELLIPSIS.ToString(), ""); //Remove elipsis pt2
-            raw = Regex.Replace(newraw, ",", UNICODE_NEWLINE);                            //Convert soft linefeed to hard 
-            raw = Regex.Replace(newraw, "\t", "");                             //Remove Tabs
-            raw = Regex.Replace(newraw, @"OBTW([\s\S] *?)TLDR", "");           //Remove multiline comment
+            //Second round of Regex Filters.
+            SecondFilter(ref newraw);
 
             //Loop again on the entire program and trim it to dust.
-            foreach (string target_line in newraw.Split(UNICODE_NEWLINE.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
-            {
-                finalraw += target_line.Trim() + "\r\n";
-            }
-            
-            //Trim the leading and trailing newlines
-            finalraw = finalraw.Trim("\r\n".ToCharArray());
-
-            foreach(Error Errors in ErrorList)
-            {
-                Debug.WriteLine(ErrorHelper.generateErrorMessage(Errors));
-            }
+            finalraw = TrimToDust(newraw);
 
             //Return nothing when there is a error
-            if (ErrorHelper.CountBreakingErrors(ErrorList) > 0) { return null; }
+            if (ErrorHelper.CountBreakingErrors(ErrorList) > 0)
+            {
+                foreach (Error Errors in ErrorList)
+                {
+                    Debug.WriteLine(ErrorHelper.generateErrorMessage(Errors));
+                }
+                return null;
+            }
 
             Debug.WriteLine("Preprocessing complete, Passing to tokenizer...");
             Debug.WriteLine("-------------------");
 
             return finalraw;
+        }
+
+
+
+        /*
+        Get all quoted strings and store them
+        to the Constant string table & its inverse
+        - match only per line so there'll be no multiline
+        - matching, which will throw off this damn thing 
+        */
+        private string GenerateStrConstTable(string raw)
+        {
+            MatchEvaluator StrKeyMatchEvaluator = new MatchEvaluator(MakeStrConstKey);
+            string newraw = "";
+            foreach (string target_line in raw.Split(UNICODE_NEWLINE.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
+            {
+                newraw += Regex.Replace(target_line, @"""[^\""]*""", StrKeyMatchEvaluator, RegexOptions.Singleline) + UNICODE_NEWLINE;
+            }
+            return newraw;
+        }
+
+        private string TrimToDust(string newraw)
+        {
+            string finalraw = "";
+            foreach (string target_line in newraw.Split(UNICODE_NEWLINE.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
+            {
+                finalraw += target_line.Trim() + "\r\n";
+            }
+
+            //Trim the leading and trailing newlines
+            finalraw = finalraw.Trim("\r\n".ToCharArray());
+            return finalraw;
+        }
+
+        private void SecondFilter(ref string raw)
+        {
+            raw = Regex.Replace(raw, @"\.\.\.", "");                        //Remove elipsis
+            raw = Regex.Replace(raw, UNICODE_ELLIPSIS, "");                 //Remove elipsis pt2
+            raw = Regex.Replace(raw, ",", UNICODE_NEWLINE);                 //Convert soft linefeed to hard 
+            raw = Regex.Replace(raw, "\t", "");                             //Remove Tabs
+            raw = Regex.Replace(raw, @"OBTW([\s\S] *?)TLDR", "");           //Remove multiline comment
+        }
+
+        private void FirstFilter(ref string raw)
+        {
+            raw = Regex.Replace(raw, "BTW.*", "");                  //Remove single line comment.
+            raw = Regex.Replace(raw, "^/s+|/s+$/g", "");            //Remove whitespace.
+            raw = Regex.Replace(raw, "\r", "");                     //Remove Line Returns first.
         }
 
         private void CheckForUnclosedQuotes(string raw)
