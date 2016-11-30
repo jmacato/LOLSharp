@@ -20,37 +20,6 @@ namespace LOLpreter
         Dictionary<string, string> StringConstInverseTable= new Dictionary<string, string>();
         List<Error> ErrorList = new List<Error>();
 
-        int StrConstCount = 0;
-
-
-        public string MakeStrConstKey(Match m)
-        // Replace each Regex cc match with the number of the occurrence.
-        {
-
-            //Remove leading and trailing quotes
-            var match = m.ToString().Trim('"');
-
-            //Check if the exact string already exist, if it does, return the existing key
-            //From the inverse table
-            if (StringConstTable.ContainsValue(match))
-            {
-                return StringConstInverseTable[match];
-            }
-
-            //Generate key
-            var key = UNICODE_SECTION + StrConstCount.ToString().PadLeft(8, '0') + UNICODE_SECTION;
-
-            //Add to tables
-            StringConstTable.Add(key, match);
-            StringConstInverseTable.Add(match, key);
-
-            //Increment the key counter
-            StrConstCount++;
-
-            return key;
-        }
-
-
         public string PreProccess(string raw)
         {
 
@@ -99,9 +68,7 @@ namespace LOLpreter
 
             return finalraw;
         }
-
-
-
+        
         /*
         Get all quoted strings and store them
         to the Constant string table & its inverse
@@ -181,6 +148,35 @@ namespace LOLpreter
                 }
                 line++;
             }
+        }
+
+        public string MakeStrConstKey(Match m)
+        // Replace each Regex cc match with the number of the occurrence.
+        {
+
+            int StrConstCount = StringConstTable.Count();
+
+            //Remove leading and trailing quotes
+            var match = m.ToString().Trim('"');
+
+            //Check if the exact string already exist, if it does, return the existing key
+            //From the inverse table
+            if (StringConstTable.ContainsValue(match))
+            {
+                return StringConstInverseTable[match];
+            }
+
+            //Generate key
+            var key = UNICODE_SECTION + StrConstCount.ToString().PadLeft(8, '0') + UNICODE_SECTION;
+
+            //Add to tables
+            StringConstTable.Add(key, match);
+            StringConstInverseTable.Add(match, key);
+
+            //Increment the key counter
+            StrConstCount++;
+
+            return key;
         }
 
         public string Seek(char[] raw, int index, int length = 1)
