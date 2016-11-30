@@ -153,7 +153,7 @@ namespace LOLpreter
             int line = 1,pos;
             foreach (string target_line in raw.Split(UNICODE_NEWLINE.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
             {
-                if (target_line.Contains('"'))
+                if (target_line.Contains('"'))  //Remaining quotes found means unclosed string delimiter
                 {
                     var unclosedquote = Regex.Match(target_line, "\"");
                     pos = unclosedquote.Index + 1;
