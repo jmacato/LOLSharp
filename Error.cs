@@ -16,9 +16,9 @@ namespace LOLpreter
 
     public enum ErrorLevel
     {
-        WARNING,
-        ERROR,
-        FATAL
+        WARNING, //I MEZZED UP A LIL
+        ERROR,   //I POURED MILKZ INTO ZE KEYBOARDZ
+        FATAL    //GTFO RN 
     }
 
     public struct Error
@@ -31,22 +31,8 @@ namespace LOLpreter
     
     public static class ErrorHelper
     {
-        public static string ErrorLevelDescriptor(ErrorLevel ErrLvl)
-        {
-            switch (ErrLvl)
-            {
-                case ErrorLevel.WARNING:
-                    return "WARNING";
-                case ErrorLevel.FATAL:
-                    return "FATAL";
-                case ErrorLevel.ERROR:
-                    return "ERROR";
-                default:
-                    return "UNKNOWN";
-            }
-        }
 
-
+        //Oopsie, somebody messed up ze lolz
         public static void throwError(ErrorLevel ErrorLevel, ErrorCodes ErrorCode, int line, int pos, List<Error> ErrorList)
         {
             Error curError = new Error();
@@ -57,11 +43,13 @@ namespace LOLpreter
             ErrorList.Add(curError);
         }
 
+        //Generate standard error message
         public static string generateErrorMessage(Error Err)
         {
-            return (ErrorLevelDescriptor(Err.ErrorLevel) + " : " + Err.ErrorCode.ToString() + " at line " + Err.line.ToString() + ", pos " + Err.position.ToString());
+            return (Err.ErrorLevel.ToString() + " : " + Err.ErrorCode.ToString() + " at line " + Err.line.ToString() + ", character " + Err.position.ToString());
         }
 
+        //Count all unignorable errors
         public static int CountBreakingErrors(List<Error> ErrList)
         {
             int totalerrors = 0;

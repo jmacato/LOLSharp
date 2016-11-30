@@ -11,14 +11,21 @@ namespace LOLpreter
     class Lexer
     {
 
-        const string UNICODE_ELLIPSIS = "\u2026";
-        const string UNICODE_SECTION = "\u00A7";
-        const string UNICODE_NEWLINE = "\n";
+        public const string UNICODE_ELLIPSIS = "\u2026";
+        public const string UNICODE_SECTION = "\u00A7";
+        public const string UNICODE_NEWLINE = "\n";
 
-        Dictionary<int, string[]> ProgTokenTable = new Dictionary<int, string[]>();
-        Dictionary<string, string> StringConstTable = new Dictionary<string, string>();         
-        Dictionary<string, string> StringConstInverseTable= new Dictionary<string, string>();
-        List<Error> ErrorList = new List<Error>();
+        //Stores Program Table
+        public Dictionary<int, string[]> ProgTokenTable = new Dictionary<int, string[]>();
+        public Dictionary<string, string> StringConstTable = new Dictionary<string, string>();
+        public Dictionary<string, string> StringConstInverseTable= new Dictionary<string, string>();
+        public List<Error> ErrorList = new List<Error>();
+
+
+        /* 
+            LOLCODE Preprocessing function
+            ~ Where all magic starts... ~
+        */
 
         public string PreProccess(string raw)
         {
@@ -99,6 +106,16 @@ namespace LOLpreter
             return finalraw;
         }
 
+        /* 
+            Regex filters
+        */
+        private void FirstFilter(ref string raw)
+        {
+            raw = Regex.Replace(raw, "BTW.*", "");                  //Remove single line comment.
+            raw = Regex.Replace(raw, "^/s+|/s+$/g", "");            //Remove whitespace.
+            raw = Regex.Replace(raw, "\r", "");                     //Remove Line Returns first.
+        }
+
         private void SecondFilter(ref string raw)
         {
             raw = Regex.Replace(raw, @"\.\.\.", "");                        //Remove elipsis
@@ -108,19 +125,14 @@ namespace LOLpreter
             raw = Regex.Replace(raw, @"OBTW([\s\S] *?)TLDR", "");           //Remove multiline comment
         }
 
-        private void FirstFilter(ref string raw)
-        {
-            raw = Regex.Replace(raw, "BTW.*", "");                  //Remove single line comment.
-            raw = Regex.Replace(raw, "^/s+|/s+$/g", "");            //Remove whitespace.
-            raw = Regex.Replace(raw, "\r", "");                     //Remove Line Returns first.
-        }
+
 
         private void CheckForUnclosedQuotes(string raw)
         {
             int line = 1,pos;
             foreach (string target_line in raw.Split(UNICODE_NEWLINE.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
             {
-                if (target_line.Contains('"'))  //Remaining quotes found means unclosed string delimiter
+                if (target_line.Contains('"'))  //Remaining quotes found means unclosed string delimiter, so throw up
                 {
                     var unclosedquote = Regex.Match(target_line, "\"");
                     pos = unclosedquote.Index + 1;
@@ -136,9 +148,9 @@ namespace LOLpreter
             foreach (string target_line in raw.Split(UNICODE_NEWLINE.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
             {
                 var ntarget_line = target_line.Replace("\r","").Replace("\n","").Trim();
-                if (ntarget_line.Contains("TLDR"))
+                if (ntarget_line.Contains("TLDR")) //If line contains TLDR
                 {
-                    if (ntarget_line.Replace("TLDR","") != "")
+                    if (ntarget_line.Replace("TLDR","") != "") //If TLDR removed and still contains stuff, throw up
                     {
                         var unclosedquote = Regex.Match(target_line, "TDLR");
                         pos = unclosedquote.Index + 1;

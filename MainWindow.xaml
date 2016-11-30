@@ -1,22 +1,35 @@
-﻿<Window x:Class="LOLpreter.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LOLpreter"
+        xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit" x:Class="LOLpreter.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="674.026" Width="1115.359" SnapsToDevicePixels="True" Foreground="White" Background="#FF1D1D1D" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="73*"/>
-            <RowDefinition Height="7*"/>
+            <RowDefinition Height="30*"/>
+            <RowDefinition Height="200*"/>
+            <RowDefinition Height="200*"/>
+            <RowDefinition Height="200*"/>
+            <RowDefinition Height="55*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="65*"/>
-            <ColumnDefinition Width="108*"/>
+            <ColumnDefinition Width="150*"/>
+            <ColumnDefinition Width="600*"/>
         </Grid.ColumnDefinitions>
-        <TextBox x:Name="LOLinput" Grid.Column="1" Grid.RowSpan="1" AcceptsReturn="True"/>
-        <TreeView x:Name="parseTree" Grid.RowSpan="2"/>
-        <Button x:Name="startParsing" Content="Parse" Grid.Column="1" HorizontalAlignment="Left" Grid.Row="1" Margin="2,2,0,2" Width="75.623" IsDefault="True" Click="startParsing_Click"/>
+        <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" Background="#0AFFFFFF">
+            <avalonedit:TextEditor x:Name="LOLinput"  Background="#00000000" BorderBrush="{x:Null}" Foreground="White" FontFamily="Consolas" FontSize="16"  BorderThickness="0" Margin="10,10,0,0" HorizontalScrollBarVisibility="Auto"/>
+        </Grid>
+        <Button x:Name="startParsing" Content="Parse" Grid.Column="1" HorizontalAlignment="Left" Grid.Row="4" Margin="10,10,0,10" Width="72.623" IsDefault="True" Click="startParsing_Click"/>
+        <TextBlock x:Name="textBlock" Margin="10,10,0,0" Grid.Row="1" TextWrapping="Wrap" Text="Token Table" VerticalAlignment="Top" Foreground="#19FFFFFF" Height="15.96"/>
+        <TextBlock x:Name="textBlock_Copy" Margin="10,9.999,0,0" Grid.Row="2" TextWrapping="Wrap" Text="Symbol Table" VerticalAlignment="Top" Foreground="#19FFFFFF" Height="15.96"/>
+        <TextBlock x:Name="textBlock_Copy1" Margin="12,10,504.513,0" Grid.Row="3" TextWrapping="Wrap" Text="Errors" VerticalAlignment="Top" Grid.ColumnSpan="2" Foreground="#19FFFFFF" Height="15.96"/>
+        <TextBlock x:Name="label" Text="Current File : (Untitled)" Grid.Column="1" Foreground="#19FFFFFF" VerticalAlignment="Center"/>
+        <Grid HorizontalAlignment="Left" Margin="10,30.96,0,0" Grid.Row="3" Width="150.5"/>
+        <Grid HorizontalAlignment="Left" Margin="12,30.96,0,0" Grid.Row="2" Width="150.5"/>
+        <Grid Margin="11.772,30.96,0,0" Grid.Row="1"/>
+
     </Grid>
 </Window>

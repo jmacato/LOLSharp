@@ -1,0 +1,46 @@
+<SyntaxDefinition name="LOL"
+        xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" foreground="Green" />
+  <Color name="String" foreground="DarkOrange" />
+
+  <!-- This is the main ruleset. -->
+  <RuleSet>
+    <Span color="Comment" begin="BTW" />
+    <Span color="Comment" multiline="true" begin="OBTW" end="TLDR" />
+
+    <Span color="String">
+      <Begin>"</Begin>
+      <End>"</End>
+      <RuleSet>
+        <!-- nested span for escape sequences -->
+        <Span begin=":" end="." />
+      </RuleSet>
+    </Span>
+
+    <Keywords fontWeight="bold" foreground="Orange">
+      <Word>HAI</Word>
+      <Word>KTHXBYE</Word>
+    </Keywords>
+
+    <Keywords fontWeight="bold" foreground="#259845">
+      <Word>I HAS A</Word>
+      <Word>ITZ</Word>
+      <!-- ... -->
+    </Keywords>
+
+    <!-- Digits -->
+    <Rule foreground="DarkMagenta">
+      \b0[xX][0-9a-fA-F]+  # hex number
+      |    \b
+      (    \d+(\.[0-9]+)?   #number with optional floating point
+      |    \.[0-9]+         #or just starting with floating point
+      )
+      ([eE][+-]?[0-9]+)? # optional exponent
+    </Rule>
+    
+    <Rule foreground="Gray">
+      \b(\\W|^)(HAI|R|AN|TIL|MAEK|LOOP|KTHXBYE|I\\sFOUND|IM\\sIN|IM\\sOUTTA|MKAY|LOL|GTFO)(\\W|$)\b
+    </Rule>
+    
+  </RuleSet>
+</SyntaxDefinition>
