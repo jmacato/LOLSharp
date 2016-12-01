@@ -16,49 +16,34 @@ namespace LOLpreter
         public const string UNICODE_NEWLINE = "\n";
 
         //Stores Program Table
-        public Dictionary<int, string[]> ProgTokenTable = new Dictionary<int, string[]>();
         public Dictionary<string, string> StringConstTable = new Dictionary<string, string>();
         public Dictionary<string, string> StringConstInverseTable= new Dictionary<string, string>();
         public List<Error> ErrorList = new List<Error>();
 
-
-        /* 
-            LOLCODE Preprocessing function
-            ~ Where all magic starts... ~
-        */
-
+        /// <summary>
+        /// LOLCODE Preprocessing function
+        /// ~ Where all magic starts... ~
+        /// </summary>
+        /// <param name="raw">The raw text to process</param>
+        /// <returns>Returns null when there's a breaking errror; 
+        /// Returns the processed code when done.</returns>
         public string PreProccess(string raw)
         {
-
-            //Declare var, not war
-            string newraw = "";
-            string finalraw = "";
-
             //Reinitialize all working tables
-            ProgTokenTable.Clear();  
             StringConstTable.Clear();
             StringConstInverseTable.Clear();
             ErrorList.Clear();
 
             Debug.WriteLine("-------------------");
 
-            //First round of Regex Filters.
             FirstFilter(ref raw);
-
-            //Replace all quoted strings on working text with a pointer.
-            newraw = GenerateStrConstTable(raw);
-
-            //Check if theres remaining quotes, and tantrum when there is.
-            CheckForUnclosedQuotes(newraw);
-
-            //Check if theres a invalid obtw/tldr 
-            CheckForInvalidMultilineComment(newraw);
-
-            //Second round of Regex Filters.
-            SecondFilter(ref newraw);
-
-            //Loop again on the entire program and trim it to dust.
-            finalraw = TrimToDust(newraw);
+            TrimToDust(ref raw);
+            CheckForProgStartEnd(raw);
+            ProcessComments(ref raw);
+            GenerateStrConstTable(ref raw);
+            SecondFilter(ref raw);
+            CheckForUnclosedQuotes(raw);
+            TrimToDust(ref raw);
 
             //Return nothing when there is a error
             if (ErrorHelper.CountBreakingErrors(ErrorList) > 0)
@@ -66,6 +51,7 @@ namespace LOLpreter
                 foreach (Error Errors in ErrorList)
                 {
                     Debug.WriteLine(ErrorHelper.generateErrorMessage(Errors));
+                    Debug.WriteLine("-------------------");
                 }
                 return null;
             }
@@ -73,16 +59,31 @@ namespace LOLpreter
             Debug.WriteLine("Preprocessing complete, Passing to tokenizer...");
             Debug.WriteLine("-------------------");
 
-            return finalraw;
+            return raw;
         }
-        
-        /*
-        Get all quoted strings and store them
-        to the Constant string table & its inverse
-        - match only per line so there'll be no multiline
-        - matching, which will throw off this damn thing 
-        */
-        private string GenerateStrConstTable(string raw)
+
+        /// <summary>
+        /// Check for program start and end markers, throw up when theres none.
+        /// </summary>
+        /// <param name="raw">The raw text to process</param>
+        private void CheckForProgStartEnd(string raw)
+        {
+            var x = Regex.Replace(raw.Trim(), "\\s+","");
+            if (x.Substring(0, 3) != "HAI")
+            {
+                ErrorHelper.throwError(ErrorLevel.FATAL, ErrorCodes.NO_PROG_START,ErrorList);
+            }
+            if (x.Substring(x.Length-7, 7) != "KTHXBYE")
+            {
+                ErrorHelper.throwError(ErrorLevel.FATAL, ErrorCodes.NO_PROG_END, ErrorList);
+            }
+        }
+
+        /// <summary>
+        ///    Get all quoted strings and store them to the Constant string table & its inverse
+        ///    match only per line so there'll be no multiline matching, which will throw off this damn thing 
+        /// </summary> 
+        private void GenerateStrConstTable(ref string raw)
         {
             MatchEvaluator StrKeyMatchEvaluator = new MatchEvaluator(MakeStrConstKey);
             string newraw = "";
@@ -90,43 +91,57 @@ namespace LOLpreter
             {
                 newraw += Regex.Replace(target_line, @"""[^\""]*""", StrKeyMatchEvaluator, RegexOptions.Singleline) + UNICODE_NEWLINE;
             }
-            return newraw;
+            raw = newraw;
         }
 
-        private string TrimToDust(string newraw)
+        /// <summary>
+        /// Trimming all leading and trailing whitespace, line-by-line.
+        /// </summary>
+        /// <param name="newraw">The raw text to process</param>
+        private void TrimToDust(ref string newraw)
         {
             string finalraw = "";
-            foreach (string target_line in newraw.Split(UNICODE_NEWLINE.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
+            foreach (string target_line in newraw.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
             {
-                finalraw += target_line.Trim() + "\r\n";
+                finalraw += target_line.Trim().Trim('\t').Trim('\n') + "\r\n";
             }
 
             //Trim the leading and trailing newlines
             finalraw = finalraw.Trim("\r\n".ToCharArray());
-            return finalraw;
+            newraw = finalraw;
         }
-
-        /* 
-            Regex filters
-        */
+        
+        /// <summary>
+        /// First RegEx Filter 
+        /// </summary>
+        /// <param name="raw">The raw text to process</param>
         private void FirstFilter(ref string raw)
         {
-            raw = Regex.Replace(raw, "BTW.*", "");                  //Remove single line comment.
             raw = Regex.Replace(raw, "^/s+|/s+$/g", "");            //Remove whitespace.
             raw = Regex.Replace(raw, "\r", "");                     //Remove Line Returns first.
+            raw = Regex.Replace(raw, "\n", "\r\n");                     //Remove Line Returns first.
+
         }
 
+        /// <summary>
+        /// Second RegEx Filter 
+        /// </summary>
+        /// <param name="raw">The raw text to process</param>
         private void SecondFilter(ref string raw)
         {
-            raw = Regex.Replace(raw, @"\.\.\.", "");                        //Remove elipsis
-            raw = Regex.Replace(raw, UNICODE_ELLIPSIS, "");                 //Remove elipsis pt2
-            raw = Regex.Replace(raw, ",", UNICODE_NEWLINE);                 //Convert soft linefeed to hard 
-            raw = Regex.Replace(raw, "\t", "");                             //Remove Tabs
-            raw = Regex.Replace(raw, @"OBTW([\s\S] *?)TLDR", "");           //Remove multiline comment
+            raw = Regex.Replace(raw, @"\.\.\.\r\n", "");                      //Remove elipsis with newline
+            raw = Regex.Replace(raw, UNICODE_ELLIPSIS+"\r\n", "");   //Remove elipsis pt2
+            raw = Regex.Replace(raw, ",", "\r\n");                   //Convert soft linefeed to hard 
+            raw = Regex.Replace(raw, "\t", "");                               //Remove Tabs
+            raw = Regex.Replace(raw, @"AN \b|OF \b| AN\b| OF\b", "");         //Remove Arity and OF's 
+            raw = Regex.Replace(raw, "[ ]{2,}", " ",RegexOptions.Multiline);  //Remove Tabs
+
         }
 
-
-
+        /// <summary>
+        /// Checks for unterminated string quotations.
+        /// </summary>
+        /// <param name="raw">The raw text to process</param>
         private void CheckForUnclosedQuotes(string raw)
         {
             int line = 1,pos;
@@ -136,16 +151,26 @@ namespace LOLpreter
                 {
                     var unclosedquote = Regex.Match(target_line, "\"");
                     pos = unclosedquote.Index + 1;
-                    ErrorHelper.throwError(ErrorLevel.FATAL, ErrorCodes.UNTERMINATED_STRING_DELIMITER, line, pos, ErrorList);
+                    ErrorHelper.throwError(ErrorLevel.FATAL, ErrorCodes.UNTERMINATED_STRING_DELIMITER, ErrorList, line, pos);
                 }
                 line++;
             }
         }
 
-        private void CheckForInvalidMultilineComment(string raw)
+        /// <summary>
+        /// Checks for stray comment delimiters and filters all valid comments.
+        /// </summary>
+        /// <param name="raw">The raw text to process</param>
+        private void ProcessComments(ref string raw)
         {
-            int line = 1, pos;
+            string newraw = "";
             foreach (string target_line in raw.Split(UNICODE_NEWLINE.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
+            {
+                newraw += Regex.Replace(target_line, @"""[^\""]*""", "$COLLAPSED$", RegexOptions.Singleline) + UNICODE_NEWLINE;
+            }
+
+            int line = 1, pos;
+            foreach (string target_line in newraw.Split(UNICODE_NEWLINE.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
             {
                 var ntarget_line = target_line.Replace("\r","").Replace("\n","").Trim();
                 if (ntarget_line.Contains("TLDR")) //If line contains TLDR
@@ -154,16 +179,48 @@ namespace LOLpreter
                     {
                         var unclosedquote = Regex.Match(target_line, "TDLR");
                         pos = unclosedquote.Index + 1;
-                        ErrorHelper.throwError(ErrorLevel.ERROR, ErrorCodes.INVALID_MULTILINE_COMMENT, line, pos, ErrorList);
+                        ErrorHelper.throwError(ErrorLevel.ERROR, ErrorCodes.INVALID_MULTILINE_COMMENT, ErrorList, line, pos);
                     }
-
                 }
                 line++;
             }
+
+            //HACK HACK: Replace comments with C style ones since regexing them is pain in the butt
+            raw = raw.Replace("OBTW", "/*").Replace("TLDR", "*/").Replace("BTW","//");
+
+            //Remove them properly, phew.
+            string multilinec = @"/\*(.*?)\*/";
+            string singllinec = @"//(.*?)\r?\n";
+            string strings = @"""((\\[^\n]|[^""\n])*)""";
+
+            raw = Regex.Replace(raw,
+            multilinec + "|" + singllinec + "|" + strings,
+            me => { if (me.Value.StartsWith("/*") || me.Value.StartsWith("//"))
+                    return me.Value.StartsWith("//") ? Environment.NewLine : "";
+                // Keep the literal strings
+            return me.Value;}, RegexOptions.Singleline);
+
+            //Now check for unprocessed comment markers, and throw up when there is
+            line = 1; pos = 1;
+            foreach (string target_line in raw.Split(UNICODE_NEWLINE.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
+            {
+                var ntarget_line = target_line.Replace("\r", "").Replace("\n", "").Trim();
+                if (ntarget_line.Contains("/*") || ntarget_line.Contains("*/") || ntarget_line.Contains("//"))
+                {
+                    var unclosedquote = Regex.Match(target_line, "TDLR");
+                    pos = unclosedquote.Index + 1;
+                    ErrorHelper.throwError(ErrorLevel.ERROR, ErrorCodes.STRAY_COMMENT_DELIMITER, ErrorList, line, pos);
+                }
+                line++;
+            }
+
         }
 
+        /// <summary>
+        /// Generate a indexable key for the String Constants Table.
+        /// </summary>
+        /// <param name="m">The matching string to be stored.</param>
         public string MakeStrConstKey(Match m)
-        // Replace each Regex cc match with the number of the occurrence.
         {
 
             int StrConstCount = StringConstTable.Count();
@@ -191,6 +248,7 @@ namespace LOLpreter
             return key;
         }
 
+        // UNUSED, for now //
         public string Seek(char[] raw, int index, int length = 1)
         {
             string ret = "";
@@ -200,29 +258,4 @@ namespace LOLpreter
             return ret;
         }
     }
-
-    class LexemeNode
-    {
-        Lexeme PreviousNode { get; set; }
-        Lexeme Content { get; set; }
-        Lexeme NextNode { get; set; }
-
-        public LexemeNode CreateLexemeNode(Lexeme PreviousNode, Lexeme Content, Lexeme NextNode)
-        {
-            LexemeNode Node = new LexemeNode();
-            Node.PreviousNode = PreviousNode;
-            Node.Content = Content;
-            Node.NextNode = NextNode;
-            return Node;
-        } 
-
-    }
-    public struct Lexeme
-    {
-        int Address;
-        string Token;
-        string Expression;
-    }
-
-
 }

@@ -9,7 +9,7 @@
         Title="MainWindow" Height="674.026" Width="1115.359" SnapsToDevicePixels="True" Foreground="White" Background="#FF1D1D1D" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30*"/>
+            <RowDefinition Height="55*"/>
             <RowDefinition Height="200*"/>
             <RowDefinition Height="200*"/>
             <RowDefinition Height="200*"/>
@@ -20,8 +20,8 @@
             <ColumnDefinition Width="600*"/>
         </Grid.ColumnDefinitions>
         <Border Background="#0FFFFFFF" Grid.Row="1" Grid.Column="1" Grid.RowSpan="3"  BorderThickness="1,1,1,1" CornerRadius="15,0,0,15">
-            <Grid >
-            <avalonedit:TextEditor x:Name="LOLinput"  Background="#00000000" Foreground="White" FontFamily="Consolas" FontSize="16"  BorderThickness="0" Margin="10,10,0,0" SnapsToDevicePixels="False" WordWrap="True"/>
+            <Grid Margin="10,10,0,0">
+                <avalonedit:TextEditor x:Name="LOLinput"  Background="#00000000" Foreground="White" FontFamily="Consolas" FontSize="16"  BorderThickness="0" SnapsToDevicePixels="False" WordWrap="True" ShowLineNumbers="True"/>
             </Grid>
         </Border>
         <Button x:Name="startParsing" Content="Parse" Grid.Column="1" HorizontalAlignment="Left" Grid.Row="4" Margin="10,10,0,10" Width="72.623" IsDefault="True" Click="startParsing_Click"/>
@@ -31,7 +31,7 @@
         <TextBlock x:Name="label" Text="Current File : (Untitled)" Grid.Column="1" Foreground="#19FFFFFF" VerticalAlignment="Center"/>
         <Grid HorizontalAlignment="Left" Margin="10,30.96,0,0" Grid.Row="3" Width="150.5"/>
         <Grid HorizontalAlignment="Left" Margin="12,30.96,0,0" Grid.Row="2" Width="150.5"/>
-        <Grid Margin="11.772,30.96,0,0" Grid.Row="1"/>
+        <Grid Margin="12,30.96,885.659,0" Grid.Row="1" Grid.ColumnSpan="2"/>
 
     </Grid>
 </Window>

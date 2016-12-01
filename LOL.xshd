@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SyntaxDefinition xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008" name="LOL">
 	<Color name="Comment" foreground="#7A987A" />
-	<Color name="String" foreground="#8FAFDF" />
-	<!-- This is the main ruleset. -->
+	<Color name="String" foreground="#FF795D" />
+  <Color name="ExpressionOps" foreground="#F58E91" />
+  <Color name="ExpressionContext" foreground="#17A1FB" />
+  <Color name="Preprocessor" foreground="Orange" />
+  <Color name="Keywords" foreground="#86C9EF" />
+  <Color name="Numerics" foreground="#24BB5C" />
+  <Color name="SpecialChars" foreground="Yellow" />
+
+  <!-- This is the main ruleset. -->
 	<RuleSet>
+    
 		<Span color="Comment" begin="BTW" />
 		<Span color="Comment" multiline="true" begin="OBTW" end="TLDR" />
-		<Span color="String">
-			<Begin>"</Begin>
-			<End>"</End>
-			<RuleSet>
-				<!-- nested span for escape sequences -->
-				<Span begin=":" end="." />
-			</RuleSet>
-		</Span>
-		<Keywords fontWeight="bold" foreground="Orange">
+       
+		<Keywords color="Preprocessor">
 			<Word>HAI</Word>
 			<Word>KTHXBYE</Word>
 		</Keywords>
-		<Keywords foreground="#f58e91">
+    
+		<Keywords color="ExpressionOps">
 			<Word>SUM OF</Word>
 			<Word>DIFF OF</Word>
 			<Word>PRODUKT OF</Word>
@@ -32,7 +34,8 @@
 			<Word>ALL OF</Word>
 			<Word>ANY OF</Word>
 		</Keywords>
-		<Keywords fontWeight="bold" foreground="#86C9EF">
+    
+		<Keywords fontWeight="bold" color="Keywords">
 			<Word>I HAS A</Word>
 			<Word>BOTH SAEM</Word>
 			<Word>O RLY</Word>
@@ -45,7 +48,6 @@
 			<Word>I IZ</Word>
 			<Word>IS NOW A</Word>
 			<Word>FOUND</Word>
-			<Word>ITZ</Word>
 			<Word>GIMMEH</Word>
 			<Word>VISIBLE</Word>
 			<Word>OIC</Word>
@@ -64,19 +66,34 @@
 			<Word>YR</Word>
 			<Word>SMOOSH</Word>
 			<Word>DIFFRINT</Word>
-			<Word>and</Word>
-			<Word>or</Word>
-			<Word>xor</Word>
 		</Keywords>
-		<Keywords fontWeight="bold" foreground="#8FAFDF">
-			<Word>WIN</Word>
-			<Word>FAIL</Word>
-		</Keywords>
-		<Keywords fontWeight="bold" foreground="#86A0EF">
+    
+		<Keywords color="ExpressionContext">
 			<Word>TIL</Word>
 			<Word>AN</Word>
 			<Word>R</Word>
-		</Keywords>
+      <Word>ITZ</Word>
+    </Keywords>
+
+    <Keywords fontWeight="bold" color="Numerics">
+      <Word>WIN</Word>
+      <Word>FAIL</Word>
+    </Keywords>
+
+    <Rule color="Numerics">
+      (\d*\.\d)?\d+\b
+    </Rule>
+
+    <Span color="String">
+      <Begin>"</Begin>
+      <End>"</End>
+    </Span>
+    
+    <Rule color="SpecialChars">
+      [?,.;()\[\]{}+\/%*&lt;&gt;^+~!|&amp;|&#x2026;|\.\.\.]+
+    </Rule>
+
+    
 		<!-- Digits -->
 	</RuleSet>
 </SyntaxDefinition>

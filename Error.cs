@@ -11,7 +11,8 @@ namespace LOLpreter
         NO_PROG_END,
         UNKNOWN_ESCAPE_SEQUENCE,
         UNTERMINATED_STRING_DELIMITER,
-        INVALID_MULTILINE_COMMENT
+        INVALID_MULTILINE_COMMENT,
+        STRAY_COMMENT_DELIMITER
     }
 
     public enum ErrorLevel
@@ -33,8 +34,9 @@ namespace LOLpreter
     {
 
         //Oopsie, somebody messed up ze lolz
-        public static void throwError(ErrorLevel ErrorLevel, ErrorCodes ErrorCode, int line, int pos, List<Error> ErrorList)
+        public static void throwError(ErrorLevel ErrorLevel, ErrorCodes ErrorCode, List<Error> ErrorList, int line = 0xFFFF, int pos = 0xFFFF)
         {
+
             Error curError = new Error();
             curError.line = line + 1;
             curError.position = pos + 1;
@@ -46,6 +48,10 @@ namespace LOLpreter
         //Generate standard error message
         public static string generateErrorMessage(Error Err)
         {
+            if (Err.line == 65536)
+            {
+                return (Err.ErrorLevel.ToString() + " : " + Err.ErrorCode.ToString());
+            }
             return (Err.ErrorLevel.ToString() + " : " + Err.ErrorCode.ToString() + " at line " + Err.line.ToString() + ", character " + Err.position.ToString());
         }
 
