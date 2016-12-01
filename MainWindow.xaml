@@ -370,18 +370,16 @@
         <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" RenderOptions.BitmapScalingMode="NearestNeighbor" Margin="10,5,0,5">
             <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="newFile" Content="&#xE132;"  BorderBrush="{x:Null}" Background="{x:Null}" Foreground="White" FontFamily="Segoe UI Symbol" FontSize="22" Height="40" VerticalAlignment="Top" Click="newFile_Click" ToolTip="New"/>
             <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="openFile" Content="&#xE1C1;" Click="openFile_Click" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FFFFC603" FontFamily="Segoe UI Symbol" FontSize="22" ToolTip="Open"/>
-            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="saveFile" Content="&#xE105;" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FFC799FF" FontFamily="Segoe UI Symbol" FontSize="22" IsEnabled="False" ToolTip="Save" />
+            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="saveFile" Content="&#xE105;" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FFC799FF" FontFamily="Segoe UI Symbol" FontSize="22" IsEnabled="False" ToolTip="Save" Click="saveFile_Click" />
             <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Padding="0" Margin="10,3,10,3" Opacity="0.5"/>
-            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="undoText" Content="&#xE10E;" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FF0097FF" FontFamily="Segoe UI Symbol" FontSize="22" IsEnabled="False" ToolTip="Undo"  />
-            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="redoText" Content="&#xE10D;" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FF0097FF" FontFamily="Segoe UI Symbol" FontSize="22" IsEnabled="False" ToolTip="Redo"  />
+            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="undoText" Content="&#xE10E;" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FF0097FF" FontFamily="Segoe UI Symbol" FontSize="22" IsEnabled="False" ToolTip="Undo" Click="undoText_Click"  />
+            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="redoText" Content="&#xE10D;" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FF0097FF" FontFamily="Segoe UI Symbol" FontSize="22" IsEnabled="False" ToolTip="Redo" Click="redoText_Click"  />
             <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Padding="0" Margin="10,3,10,3" Opacity="0.5"/>
             <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="startProg" Content="&#xE102;" Click="startProg_Click" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FF3AFF00" FontFamily="Segoe UI Symbol" FontSize="22" ToolTip="Run the Lulz"  />
             <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="debugWin" Content="&#xE178;" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FFFF5100" FontFamily="Segoe UI Symbol" FontSize="22" ToolTip="Show Debugging Window"  />
             <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="consoleWin" Content="&#xE147;" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FF5FCCFF" FontFamily="Segoe UI Symbol" FontSize="22" ToolTip="Show Console Window"  />
-
             <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Padding="0" Margin="10,3,10,3" Opacity="0.5"/>
-
-            <TextBlock x:Name="DocTitle" Text="" Grid.Column="1" Foreground="#7FFFFFFF" VerticalAlignment="Center" FontSize="16" />
+            <TextBlock x:Name="DocTitle" Text="" Foreground="#7FFFFFFF" VerticalAlignment="Center" FontSize="16" TextTrimming="CharacterEllipsis" TextOptions.TextFormattingMode="Display" TextOptions.TextHintingMode="Fixed" Margin="0,10" Width="Auto" />
         </StackPanel>
         <Grid Grid.Column="1" Grid.Row="4" >
             <Grid.ColumnDefinitions>

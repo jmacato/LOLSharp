@@ -24,7 +24,6 @@ namespace LOLpreter
         public string CurrentDocumentPath { get; set; }
         public bool CurrentDocumentModified = false;
         private string currentDocumentTitle;
-
         public string CurrentDocumentTitle
         {
             get {return currentDocumentTitle;}
@@ -34,6 +33,7 @@ namespace LOLpreter
                 if (CurrentDocumentModified)
                 {
                     DocTitle.Text = currentDocumentTitle + " (Modified)";
+                    saveFile.IsEnabled = true;
                     this.Title = "LOLCODE Integrated Interpreter Environment - " + DocTitle.Text;
 
                 } else{DocTitle.Text = currentDocumentTitle;}
@@ -45,11 +45,12 @@ namespace LOLpreter
             }
         }
 
-
         public MainWindow()
         {
             InitializeComponent();
         }
+
+        /* Event Handlers */
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -75,24 +76,6 @@ namespace LOLpreter
             DebugWindow.Show();
 
         }
-
-        private void updatePosBar(object sender, EventArgs e)
-        {
-            var x = LOLinput.TextArea.Caret.Position.Location;
-            LineCount.Content = "LN " + x.Line.ToString();
-            CharCount.Content = "CH " + x.Column.ToString();
-
-            var isNumLockToggled = Keyboard.IsKeyToggled(Key.NumLock);
-            var isCapsLockToggled = Keyboard.IsKeyToggled(Key.CapsLock);
-            var isInsToggled = Keyboard.IsKeyToggled(Key.Insert);
-
-            if (isNumLockToggled) { NumStat.Opacity = 1; } else { NumStat.Opacity = 0.2; }
-            if (isCapsLockToggled) { CapStat.Opacity = 1; } else { CapStat.Opacity = 0.2; }
-            if (isInsToggled) { InsStat.Opacity = 1; } else { InsStat.Opacity = 0.2; }
-
-
-        }
-
         private void newFile_Click(object sender, RoutedEventArgs e)
         {
             SafeSaveHandler();
@@ -102,8 +85,8 @@ namespace LOLpreter
             CurrentDocumentPath = "";
             CurrentDocumentModified = false;
             CurrentDocumentTitle = "Untitled.lol";
+            saveFile.IsEnabled = false;
         }
-
         private void startProg_Click(object sender, RoutedEventArgs e)
         {
             var x = Lexer.PreProccess(LOLinput.Text);
@@ -114,19 +97,8 @@ namespace LOLpreter
             }
             else
             {
-
                 Tokenizer.Tokenize(x);
-
                 DebugWindow.SymbolTable.ItemsSource=Lexer.StringConstTable;
-
-
-                //x += "\r\n----- STRING CONSTANTS TABLE ------\r\n";
-                //foreach (KeyValuePair<string, string> y in Lexer.StringConstTable)
-                //{
-                //    x += y.Key.PadRight(20, ' ') + " | \"" + y.Value + "\"\r\n";
-                //}
-
-                //LOLinput.Document.Text = x;
             }
         }
         private void openFile_Click(object sender, RoutedEventArgs e)
@@ -152,15 +124,51 @@ namespace LOLpreter
                 sr.Close();
             }
         }
+        private void LOLinput_TextChanged(object sender, EventArgs e)
+        {
+            CurrentDocumentModified = true;
+            CurrentDocumentTitle = CurrentDocumentTitle;
+            redoText.IsEnabled = LOLinput.Document.UndoStack.CanRedo;
+            undoText.IsEnabled = LOLinput.Document.UndoStack.CanUndo;
+        }
+        private void Window_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            updatePosBar(null, null);
+        }
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            updatePosBar(null, null);
+        }
+        private void saveFile_Click(object sender, RoutedEventArgs e)
+        {
+            SafeSaveHandler(true);
+        }
+        private void redoText_Click(object sender, RoutedEventArgs e)
+        {
+            LOLinput.Redo();
+        }
+        private void undoText_Click(object sender, RoutedEventArgs e)
+        {
+            LOLinput.Undo();
+        }
         
         /// <summary>
         /// Safely save documents
         /// </summary>
-        private void SafeSaveHandler()
+        private void SafeSaveHandler(bool showdialog = true)
         {
             if (CurrentDocumentModified)
             {
-                MessageBoxResult result = MessageBox.Show("Do you want to save your changes?", CurrentDocumentTitle + " is unsaved.", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                MessageBoxResult result;
+                if (showdialog)
+                {
+                    result = MessageBox.Show("Do you want to save your changes?", CurrentDocumentTitle + " is unsaved.", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                } else
+                {
+                    result = MessageBoxResult.Yes;
+                }
+
                 if (result == MessageBoxResult.Yes)
                 {
                     try
@@ -176,9 +184,13 @@ namespace LOLpreter
                             {
                                 return;
                             }
+                            saveFile.IsEnabled = false;
+                            CurrentDocumentTitle = saveFileDialog1.SafeFileName;
+                            CurrentDocumentPath = Path.GetDirectoryName(saveFileDialog1.FileName);
                         }
-                        File.WriteAllText(CurrentDocumentPath + CurrentDocumentTitle, LOLinput.Text);
+                        File.WriteAllText(CurrentDocumentPath + "\\" + CurrentDocumentTitle, LOLinput.Text);
                         CurrentDocumentModified = false;
+                        CurrentDocumentTitle = CurrentDocumentTitle;
                     }
                     catch (Exception ex)
                     {
@@ -204,20 +216,29 @@ namespace LOLpreter
                 return Regex.Replace(input, "\n", Environment.NewLine);
             }
         }
-        private void LOLinput_TextChanged(object sender, EventArgs e)
+        
+        /// <summary>
+        /// Update Statusbars
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void updatePosBar(object sender, EventArgs e)
         {
-            CurrentDocumentModified = true;
+            var x = LOLinput.TextArea.Caret.Position.Location;
+            LineCount.Content = "LN " + x.Line.ToString();
+            CharCount.Content = "CH " + x.Column.ToString();
+
+            var isNumLockToggled = Keyboard.IsKeyToggled(Key.NumLock);
+            var isCapsLockToggled = Keyboard.IsKeyToggled(Key.CapsLock);
+            var isInsToggled = Keyboard.IsKeyToggled(Key.Insert);
+
+            if (isNumLockToggled) { NumStat.Opacity = 1; } else { NumStat.Opacity = 0.2; }
+            if (isCapsLockToggled) { CapStat.Opacity = 1; } else { CapStat.Opacity = 0.2; }
+            if (isInsToggled) { InsStat.Opacity = 1; } else { InsStat.Opacity = 0.2; }
+
             CurrentDocumentTitle = CurrentDocumentTitle;
-        }
-
-        private void Window_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            updatePosBar(null,null);
-        }
-
-        private void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            updatePosBar(null, null);
+            redoText.IsEnabled = LOLinput.Document.UndoStack.CanRedo;
+            undoText.IsEnabled = LOLinput.Document.UndoStack.CanUndo;
 
         }
 
