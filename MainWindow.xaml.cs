@@ -72,20 +72,22 @@ namespace LOLpreter
 
             LOLinput.TextArea.Caret.PositionChanged += new EventHandler(updatePosBar);
             LOLinput.Document.TextChanged += new EventHandler(LOLinput_TextChanged);
-
-            DebugWindow.Show();
-
+            LOLinput.TextChanged += new EventHandler(LOLinput_TextChanged);
         }
         private void newFile_Click(object sender, RoutedEventArgs e)
         {
             SafeSaveHandler();
             LOLinput.Text = "";
+            LOLinput.Document.Text = "";
             LOLinput.Document.UndoStack.ClearAll();
             LOLinput.Document.UndoStack.ClearRedoStack();
             CurrentDocumentPath = "";
-            CurrentDocumentModified = false;
             CurrentDocumentTitle = "Untitled.lol";
             saveFile.IsEnabled = false;
+            CurrentDocumentModified = false;
+            DocTitle.Text = currentDocumentTitle;
+            this.Title = "LOLCODE Integrated Interpreter Environment - " + DocTitle.Text;
+
         }
         private void startProg_Click(object sender, RoutedEventArgs e)
         {
@@ -128,8 +130,7 @@ namespace LOLpreter
         {
             CurrentDocumentModified = true;
             CurrentDocumentTitle = CurrentDocumentTitle;
-            redoText.IsEnabled = LOLinput.Document.UndoStack.CanRedo;
-            undoText.IsEnabled = LOLinput.Document.UndoStack.CanUndo;
+            updatePosBar(null, null);
         }
         private void Window_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
@@ -141,7 +142,7 @@ namespace LOLpreter
         }
         private void saveFile_Click(object sender, RoutedEventArgs e)
         {
-            SafeSaveHandler(true);
+            SafeSaveHandler(false);
         }
         private void redoText_Click(object sender, RoutedEventArgs e)
         {
@@ -242,6 +243,22 @@ namespace LOLpreter
 
         }
 
+        private void debugWin_Click(object sender, RoutedEventArgs e)
+        {
+            if (DebugWindow.Visibility == Visibility.Visible)
+            {
+                DebugWindow.Visibility = Visibility.Collapsed;
+            } else
+            {
+                DebugWindow.Visibility = Visibility.Visible;
+
+            }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            DebugWindow.Close();
+        }
     }
 
 }
