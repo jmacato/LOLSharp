@@ -17,6 +17,7 @@ namespace LOLpreter
     public partial class MainWindow : Window
     {
         Lexer Lexer = new Lexer();
+        Tokenizer Tokenizer = new Tokenizer();
 
         public string CurrentDocumentPath { get; set; }
         public bool CurrentDocumentModified = false;
@@ -81,6 +82,9 @@ namespace LOLpreter
             }
             else
             {
+
+                Tokenizer.Tokenize(x);
+
                 x += "\r\n----- STRING CONSTANTS TABLE ------\r\n";
                 foreach (KeyValuePair<string, string> y in Lexer.StringConstTable)
                 {
