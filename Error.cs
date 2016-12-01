@@ -7,6 +7,7 @@ namespace LOLpreter
 {
     public enum ErrorCodes
     {
+        COMPILER_ERROR,
         NO_PROG_START,
         NO_PROG_END,
         UNKNOWN_ESCAPE_SEQUENCE,

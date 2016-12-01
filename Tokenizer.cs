@@ -12,9 +12,10 @@ namespace LOLpreter
         public void Tokenize(string raw)
         {
             ProgTokenTable.Clear();
+            foreach(string curline in raw.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
+            {
 
-
-
+            }
         }
     }
 }

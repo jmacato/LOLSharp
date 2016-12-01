@@ -68,15 +68,24 @@ namespace LOLpreter
         /// <param name="raw">The raw text to process</param>
         private void CheckForProgStartEnd(string raw)
         {
-            var x = Regex.Replace(raw.Trim(), "\\s+","");
-            if (x.Substring(0, 3) != "HAI")
+            try
             {
-                ErrorHelper.throwError(ErrorLevel.FATAL, ErrorCodes.NO_PROG_START,ErrorList);
-            }
-            if (x.Substring(x.Length-7, 7) != "KTHXBYE")
+                var x = Regex.Replace(raw.Trim(), "\\s+", "");
+                if (x.Substring(0, 3) != "HAI")
+                {
+                    ErrorHelper.throwError(ErrorLevel.FATAL, ErrorCodes.NO_PROG_START, ErrorList);
+                }
+                if (x.Substring(x.Length - 7, 7) != "KTHXBYE")
+                {
+                    ErrorHelper.throwError(ErrorLevel.FATAL, ErrorCodes.NO_PROG_END, ErrorList);
+                }
+            } catch (Exception ex)
             {
-                ErrorHelper.throwError(ErrorLevel.FATAL, ErrorCodes.NO_PROG_END, ErrorList);
+                ErrorHelper.throwError(ErrorLevel.FATAL, ErrorCodes.COMPILER_ERROR, ErrorList);
+                Debug.WriteLine(ex.Message + "\r\n" + ex.StackTrace);
+                return;
             }
+
         }
 
         /// <summary>
@@ -135,7 +144,6 @@ namespace LOLpreter
             raw = Regex.Replace(raw, "\t", "");                               //Remove Tabs
             raw = Regex.Replace(raw, @"AN \b|OF \b| AN\b| OF\b", "");         //Remove Arity and OF's 
             raw = Regex.Replace(raw, "[ ]{2,}", " ",RegexOptions.Multiline);  //Remove Tabs
-
         }
 
         /// <summary>
@@ -236,7 +244,7 @@ namespace LOLpreter
             }
 
             //Generate key
-            var key = UNICODE_SECTION + StrConstCount.ToString().PadLeft(8, '0') + UNICODE_SECTION;
+            var key = UNICODE_SECTION + StrConstCount.ToString("X").PadLeft(8, '0') + UNICODE_SECTION;
 
             //Add to tables
             StringConstTable.Add(key, match);
