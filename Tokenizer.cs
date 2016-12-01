@@ -15,8 +15,15 @@ namespace LOLpreter
             ProgTokenTable.Clear();
             foreach(string curline in raw.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
             {
-                Debug.WriteLine("-->"+String.Join("|", curline.Split(' ')));
+                var linenum = ProgTokenTable.Count + 1;
+                ProgTokenTable.Add(linenum, curline.Split(' '));
             }
+
+            foreach(string[] x in ProgTokenTable.Values)
+            {
+                Debug.WriteLine("-->" + String.Join("|",x));
+            }
+
         }
     }
 }

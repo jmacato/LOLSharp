@@ -1,0 +1,30 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LOLpreter"
+        xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit" x:Class="LOLpreter.DebugWindow"
+        mc:Ignorable="d"
+        Title="Debugging Window" Height="263.026" Width="874.359" SnapsToDevicePixels="True" Foreground="White" Background="#FF1D1D1D" >
+    <Window.Resources>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="200*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Margin="10,10,0,0" Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" Text="Token Table" VerticalAlignment="Top" Foreground="#FFFFFF" Height="16"/>
+        <TextBlock Margin="10,10,0,0" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Text="Symbol Table" VerticalAlignment="Top" Foreground="#FFFFFF" Height="16"/>
+        <TextBlock Margin="10,10,0,0" Grid.Row="1" Grid.Column="2" TextWrapping="Wrap" Text="Errors" VerticalAlignment="Top" Foreground="#FFFFFF" Height="16"/>
+
+        <DataGrid Margin="12,31,10,0" Grid.Row="1" Grid.Column="2" x:Name="ErrorTable" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="Black" HorizontalGridLinesBrush="White" VerticalGridLinesBrush="White" CanUserResizeColumns="True" CanUserSortColumns="True" IsReadOnly="True"/>
+        <DataGrid Margin="12,31,10,0" Grid.Row="1" Grid.Column="1" x:Name="SymbolTable" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="Black" HorizontalGridLinesBrush="White" VerticalGridLinesBrush="White" CanUserResizeColumns="True" CanUserSortColumns="True" IsReadOnly="True"/>
+        <DataGrid Margin="12,31,10,0" Grid.Row="1" Grid.Column="2" x:Name="TokenTable" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="Black" HorizontalGridLinesBrush="White" VerticalGridLinesBrush="White" CanUserResizeColumns="True" CanUserSortColumns="True" IsReadOnly="True"/>    </Grid>
+</Window>

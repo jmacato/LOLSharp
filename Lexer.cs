@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace LOLpreter
 {
@@ -18,7 +20,8 @@ namespace LOLpreter
         //Stores Program Table
         public Dictionary<string, string> StringConstTable = new Dictionary<string, string>();
         public Dictionary<string, string> StringConstInverseTable= new Dictionary<string, string>();
-        public List<Error> ErrorList = new List<Error>();
+        public ObservableCollection<Error> ErrorList = new ObservableCollection<Error>();
+
 
         /// <summary>
         /// LOLCODE Preprocessing function
@@ -50,6 +53,7 @@ namespace LOLpreter
             {
                 foreach (Error Errors in ErrorList)
                 {
+                    
                     Debug.WriteLine(ErrorHelper.generateErrorMessage(Errors));
                     Debug.WriteLine("-------------------");
                 }

@@ -8,6 +8,7 @@ using System.IO;
 using System.Windows;
 using System.Xml;
 using System.Text.RegularExpressions;
+using System.Windows.Input;
 
 namespace LOLpreter
 {
@@ -18,6 +19,7 @@ namespace LOLpreter
     {
         Lexer Lexer = new Lexer();
         Tokenizer Tokenizer = new Tokenizer();
+        DebugWindow DebugWindow = new DebugWindow();
 
         public string CurrentDocumentPath { get; set; }
         public bool CurrentDocumentModified = false;
@@ -32,11 +34,13 @@ namespace LOLpreter
                 if (CurrentDocumentModified)
                 {
                     DocTitle.Text = currentDocumentTitle + " (Modified)";
+                    this.Title = "LOLCODE Integrated Interpreter Environment - " + DocTitle.Text;
 
                 } else{DocTitle.Text = currentDocumentTitle;}
                 if (!(CurrentDocumentPath == ""))
                 {
                     DocTitle.Text += "- (" + CurrentDocumentPath + ")";
+                    this.Title = "LOLCODE Integrated Interpreter Environment - " + DocTitle.Text;
                 }
             }
         }
@@ -62,10 +66,36 @@ namespace LOLpreter
             CurrentDocumentPath = "";
             CurrentDocumentModified = false;
             CurrentDocumentTitle = "Untitled.lol";
+            DocTitle.Text = currentDocumentTitle;
+            this.Title = "LOLCODE Integrated Interpreter Environment - " + DocTitle.Text;
+
+            LOLinput.TextArea.Caret.PositionChanged += new EventHandler(updatePosBar);
+            LOLinput.Document.TextChanged += new EventHandler(LOLinput_TextChanged);
+
+            DebugWindow.Show();
+
         }
+
+        private void updatePosBar(object sender, EventArgs e)
+        {
+            var x = LOLinput.TextArea.Caret.Position.Location;
+            LineCount.Content = "LN " + x.Line.ToString();
+            CharCount.Content = "CH " + x.Column.ToString();
+
+            var isNumLockToggled = Keyboard.IsKeyToggled(Key.NumLock);
+            var isCapsLockToggled = Keyboard.IsKeyToggled(Key.CapsLock);
+            var isInsToggled = Keyboard.IsKeyToggled(Key.Insert);
+
+            if (isNumLockToggled) { NumStat.Opacity = 1; } else { NumStat.Opacity = 0.2; }
+            if (isCapsLockToggled) { CapStat.Opacity = 1; } else { CapStat.Opacity = 0.2; }
+            if (isInsToggled) { InsStat.Opacity = 1; } else { InsStat.Opacity = 0.2; }
+
+
+        }
+
         private void newFile_Click(object sender, RoutedEventArgs e)
         {
-            saveFileX();
+            SafeSaveHandler();
             LOLinput.Text = "";
             LOLinput.Document.UndoStack.ClearAll();
             LOLinput.Document.UndoStack.ClearRedoStack();
@@ -73,11 +103,13 @@ namespace LOLpreter
             CurrentDocumentModified = false;
             CurrentDocumentTitle = "Untitled.lol";
         }
+
         private void startProg_Click(object sender, RoutedEventArgs e)
         {
             var x = Lexer.PreProccess(LOLinput.Text);
-            if (x == null)
+            if (x == null && ErrorHelper.CountBreakingErrors(Lexer.ErrorList) > 0)
             {
+                DebugWindow.ErrorTable.ItemsSource = Lexer.ErrorList;
                 Debug.WriteLine("Parsing Halted.");
             }
             else
@@ -85,18 +117,21 @@ namespace LOLpreter
 
                 Tokenizer.Tokenize(x);
 
-                x += "\r\n----- STRING CONSTANTS TABLE ------\r\n";
-                foreach (KeyValuePair<string, string> y in Lexer.StringConstTable)
-                {
-                    x += y.Key.PadRight(20, ' ') + " | \"" + y.Value + "\"\r\n";
-                }
+                DebugWindow.SymbolTable.ItemsSource=Lexer.StringConstTable;
 
-                LOLinput.Document.Text = x;
+
+                //x += "\r\n----- STRING CONSTANTS TABLE ------\r\n";
+                //foreach (KeyValuePair<string, string> y in Lexer.StringConstTable)
+                //{
+                //    x += y.Key.PadRight(20, ' ') + " | \"" + y.Value + "\"\r\n";
+                //}
+
+                //LOLinput.Document.Text = x;
             }
         }
         private void openFile_Click(object sender, RoutedEventArgs e)
         {
-            saveFileX();
+            SafeSaveHandler();
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "LOLCODE Source files|*.lol|All files (*.*)|*.*";
             dialog.Title = "Select source file";
@@ -121,7 +156,7 @@ namespace LOLpreter
         /// <summary>
         /// Safely save documents
         /// </summary>
-        private void saveFileX()
+        private void SafeSaveHandler()
         {
             if (CurrentDocumentModified)
             {
@@ -173,6 +208,16 @@ namespace LOLpreter
         {
             CurrentDocumentModified = true;
             CurrentDocumentTitle = CurrentDocumentTitle;
+        }
+
+        private void Window_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            updatePosBar(null,null);
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            updatePosBar(null, null);
 
         }
 

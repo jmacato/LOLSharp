@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:LOLpreter"
         xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit" x:Class="LOLpreter.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="674.026" Width="1115.359" SnapsToDevicePixels="True" Foreground="White" Background="#FF1D1D1D" Loaded="Window_Loaded">
+        Title="" Height="674.026" Width="1115.359" SnapsToDevicePixels="True" Foreground="White" Background="#FF1D1D1D" Loaded="Window_Loaded" GotKeyboardFocus="Window_GotKeyboardFocus" KeyDown="Window_KeyDown">
     <Window.Resources>
         <ResourceDictionary>
             <Style
@@ -55,7 +55,7 @@
                                     <Setter Property="Foreground" Value="White"/>
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="false">
-                                    <Setter Property="Foreground" Value="#ADADAD"/>
+                                    <Setter Property="OpacityMask" Value="#50ADADAD"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -233,7 +233,7 @@
                         <Track.IncreaseRepeatButton>
                             <RepeatButton
                         Style="{StaticResource ScrollBarPageButton}"
-                        />
+                         />
                         </Track.IncreaseRepeatButton>
                     </Track>
 
@@ -241,8 +241,58 @@
               Grid.Row="3"
               Style="{StaticResource ScrollBarLineButton}"
               Height="18"
-              Command="ScrollBar.LineDownCommand"
               Content="M 0 0 L 4 4 L 8 0 Z"/>
+                </Grid>
+            </ControlTemplate>
+
+            <ControlTemplate x:Key="HorizontalScrollBar"
+            TargetType="{x:Type ScrollBar}">
+                <Grid >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition MaxWidth="18"/>
+                        <ColumnDefinition Width="0.00001*"/>
+                        <ColumnDefinition MaxWidth="18"/>
+                    </Grid.ColumnDefinitions>
+                    <Border
+            Grid.ColumnSpan="3"
+            CornerRadius="0"
+            Background="#3e3e42" />
+
+                    <RepeatButton
+                Grid.Column="0"
+                Style="{StaticResource ScrollBarLineButton}"
+                Width="18"
+                
+                Content="M 4 0 L 4 8 L 0 4 Z" />
+
+                    <Track
+                Name="PART_Track"
+                Grid.Column="1"
+                IsDirectionReversed="False">
+
+                        <Track.DecreaseRepeatButton>
+                            <RepeatButton
+                    Style="{StaticResource ScrollBarPageButton}" />
+                        </Track.DecreaseRepeatButton>
+                        <Track.Thumb>
+                            <Thumb
+                        Style="{StaticResource ScrollBarThumb}"
+                        Margin="0,5,0,5"
+                        Background="{StaticResource NormalBrush}"
+                        BorderBrush="{StaticResource NormalBorderBrush}" />
+                        </Track.Thumb>
+                        <Track.IncreaseRepeatButton>
+                            <RepeatButton
+                        Style="{StaticResource ScrollBarPageButton}"
+                        />
+                        </Track.IncreaseRepeatButton>
+                    </Track>
+                    <RepeatButton
+                Grid.Column="3"
+                Style="{StaticResource ScrollBarLineButton}"
+                Width="18"
+                
+                Content="M 0 0 L 4 4 L 0 8 Z"/>
                 </Grid>
             </ControlTemplate>
 
@@ -250,7 +300,11 @@
                 <Setter Property="SnapsToDevicePixels" Value="True"/>
                 <Setter Property="OverridesDefaultStyle" Value="true"/>
                 <Style.Triggers>
-
+                    <Trigger Property="Orientation" Value="Horizontal">
+                        <Setter Property="Width" Value="Auto"/>
+                        <Setter Property="Height" Value="18" />
+                        <Setter Property="Template" Value="{StaticResource HorizontalScrollBar}" />
+                    </Trigger>
                     <Trigger Property="Orientation" Value="Vertical">
                         <Setter Property="Width" Value="18"/>
                         <Setter Property="Height" Value="Auto" />
@@ -301,35 +355,47 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="44*"/>
+            <RowDefinition Height="50"/>
             <RowDefinition Height="187*"/>
             <RowDefinition Height="181*"/>
             <RowDefinition Height="204*"/>
-            <RowDefinition Height="27*"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="17*"/>
-            <ColumnDefinition Width="106*"/>
-        </Grid.ColumnDefinitions>
-        <Border Background="#0FFFFFFF" Grid.Row="1" Grid.Column="1" Grid.RowSpan="3"  BorderThickness="1,1,1,1" CornerRadius="15,0,0,15" Margin="0,0,0,1.499">
-            <Grid Margin="10,0,0,0">
-                <avalonedit:TextEditor x:Name="LOLinput"  Background="#00000000" Foreground="White" FontFamily="Consolas" FontSize="16"  BorderThickness="0" SnapsToDevicePixels="False" WordWrap="True" ShowLineNumbers="True" VerticalScrollBarVisibility="Auto" TextChanged="LOLinput_TextChanged"/>
+
+        <Border Background="#0FFFFFFF" Grid.Row="1" Grid.Column="1" Grid.RowSpan="3"  BorderThickness="1,1,1,1" CornerRadius="15,0,0,15" Margin="10,0,0,1">
+            <Grid Margin="10,10,0,10">
+                <avalonedit:TextEditor x:Name="LOLinput"  Background="#00000000" Foreground="White" FontFamily="Consolas" FontSize="16"  BorderThickness="0" SnapsToDevicePixels="False" WordWrap="True" ShowLineNumbers="True" VerticalScrollBarVisibility="Auto" />
             </Grid>
         </Border>
-        <TextBlock x:Name="textBlock" Margin="10,10,0,0" Grid.Row="1" TextWrapping="Wrap" Text="Token Table" VerticalAlignment="Top" Foreground="#19FFFFFF" Height="15.96"/>
-        <TextBlock x:Name="textBlock_Copy" Margin="10,9.999,0,0" Grid.Row="2" TextWrapping="Wrap" Text="Symbol Table" VerticalAlignment="Top" Foreground="#19FFFFFF" Height="15.96"/>
-        <TextBlock x:Name="textBlock_Copy1" Margin="12,10,504.513,0" Grid.Row="3" TextWrapping="Wrap" Text="Errors" VerticalAlignment="Top" Grid.ColumnSpan="2" Foreground="#19FFFFFF" Height="15.96"/>
-        <Grid Margin="10,30.96,10,0" Grid.Row="3"/>
-        <Grid Margin="12,30.96,10,0" Grid.Row="2"/>
-        <Grid Margin="12,30.96,10,0" Grid.Row="1"/>
-        <StackPanel Grid.Column="1" Orientation="Horizontal" RenderOptions.BitmapScalingMode="NearestNeighbor" Height="40">
-            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="newFile" Content="&#xE132;"  BorderBrush="{x:Null}" Background="{x:Null}" Foreground="White" FontFamily="Segoe UI Symbol" FontSize="22" Height="40" VerticalAlignment="Top" Click="newFile_Click"/>
-            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="openFile" Content="&#xE1C1;" Click="openFile_Click" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FFFFC603" FontFamily="Segoe UI Symbol" FontSize="22"/>
-            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="saveFile" Content="&#xE105;" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FFC799FF" FontFamily="Segoe UI Symbol" FontSize="22" />
-            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="startProg" Content="&#xE102;" Click="startProg_Click" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FF97FF00" FontFamily="Segoe UI Symbol" FontSize="22"  />
+        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" RenderOptions.BitmapScalingMode="NearestNeighbor" Margin="10,5,0,5">
+            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="newFile" Content="&#xE132;"  BorderBrush="{x:Null}" Background="{x:Null}" Foreground="White" FontFamily="Segoe UI Symbol" FontSize="22" Height="40" VerticalAlignment="Top" Click="newFile_Click" ToolTip="New"/>
+            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="openFile" Content="&#xE1C1;" Click="openFile_Click" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FFFFC603" FontFamily="Segoe UI Symbol" FontSize="22" ToolTip="Open"/>
+            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="saveFile" Content="&#xE105;" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FFC799FF" FontFamily="Segoe UI Symbol" FontSize="22" IsEnabled="False" ToolTip="Save" />
             <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Padding="0" Margin="10,3,10,3" Opacity="0.5"/>
+            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="undoText" Content="&#xE10E;" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FF0097FF" FontFamily="Segoe UI Symbol" FontSize="22" IsEnabled="False" ToolTip="Undo"  />
+            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="redoText" Content="&#xE10D;" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FF0097FF" FontFamily="Segoe UI Symbol" FontSize="22" IsEnabled="False" ToolTip="Redo"  />
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Padding="0" Margin="10,3,10,3" Opacity="0.5"/>
+            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="startProg" Content="&#xE102;" Click="startProg_Click" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FF3AFF00" FontFamily="Segoe UI Symbol" FontSize="22" ToolTip="Run the Lulz"  />
+            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="debugWin" Content="&#xE178;" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FFFF5100" FontFamily="Segoe UI Symbol" FontSize="22" ToolTip="Show Debugging Window"  />
+            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="consoleWin" Content="&#xE147;" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FF5FCCFF" FontFamily="Segoe UI Symbol" FontSize="22" ToolTip="Show Console Window"  />
+
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Padding="0" Margin="10,3,10,3" Opacity="0.5"/>
+
             <TextBlock x:Name="DocTitle" Text="" Grid.Column="1" Foreground="#7FFFFFFF" VerticalAlignment="Center" FontSize="16" />
         </StackPanel>
+        <Grid Grid.Column="1" Grid.Row="4" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50*"/>
+                <ColumnDefinition Width="50*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="1" x:Name="statusbar" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Label x:Name="LineCount" Foreground="White" HorizontalAlignment="Right" Content="" />
+                <Label x:Name="CharCount" Foreground="White" HorizontalAlignment="Right" Content="" />
+                <Label x:Name="NumStat" Opacity="0.2" Foreground="White" HorizontalAlignment="Right" Content="NUM"/>
+                <Label x:Name="CapStat" Opacity="0.2" Foreground="White" HorizontalAlignment="Right" Content="CAPS"/>
+                <Label x:Name="InsStat" Opacity="0.2" Foreground="White" HorizontalAlignment="Right" Content="INS" Padding="5,5,20,5" />
+            </StackPanel>
+        </Grid>
 
     </Grid>
 </Window>
