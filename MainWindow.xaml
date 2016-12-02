@@ -361,12 +361,13 @@
             <RowDefinition Height="204*"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-
-        <Border Background="#0FFFFFFF" Grid.Row="1" Grid.Column="1" Grid.RowSpan="3"  BorderThickness="1,1,1,1" CornerRadius="15,0,0,15" Margin="10,0,0,1">
+        <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" >
+            <Border Background="#0FFFFFFF"  BorderThickness="1,1,1,1" CornerRadius="15,0,0,15" Margin="10,0,0,1">
             <Grid Margin="10,10,0,10">
                 <avalonedit:TextEditor x:Name="LOLinput"  Background="#00000000" Foreground="White" FontFamily="Consolas" FontSize="16"  BorderThickness="0" SnapsToDevicePixels="False" WordWrap="True" ShowLineNumbers="True" VerticalScrollBarVisibility="Auto" />
             </Grid>
-        </Border>
+            </Border>
+        </Grid>
         <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" RenderOptions.BitmapScalingMode="NearestNeighbor" Margin="10,5,0,5">
             <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="newFile" Content="&#xE132;"  BorderBrush="{x:Null}" Background="{x:Null}" Foreground="White" FontFamily="Segoe UI Symbol" FontSize="22" Height="40" VerticalAlignment="Top" Click="newFile_Click" ToolTip="New"/>
             <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="openFile" Content="&#xE1C1;" Click="openFile_Click" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FFFFC603" FontFamily="Segoe UI Symbol" FontSize="22" ToolTip="Open"/>

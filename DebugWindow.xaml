@@ -7,10 +7,9 @@
                         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit" x:Class="LOLpreter.DebugWindow"
         mc:Ignorable="d"
-        Title="Debugging Window" Height="263.026" Width="874.359" SnapsToDevicePixels="True" Foreground="White" Background="#FF1D1D1D" >
+        Title="Debugging Window" Height="263.026" Width="874.359" SnapsToDevicePixels="True" Foreground="White" Background="#FF1D1D1D" Closing="Window_Closing" >
     <Window.Resources>
         <ResourceDictionary>
-
             <SolidColorBrush x:Key="Background" Color="#1C1C1C"/>
             <SolidColorBrush x:Key="LightBackground" Color="#2D2D30"/>
             <SolidColorBrush x:Key="Foreground" Color="#FFFFFF"/>
@@ -20,7 +19,6 @@
             <SolidColorBrush x:Key="BorderBrushSelected" Color="#1C97EA"/>
             <SolidColorBrush x:Key="BackgroundNormal" Color="#3F3F46"/>
             <SolidColorBrush x:Key="BorderBrushNormal" Color="#54545C"/>
-
             <Style TargetType="{x:Type TabControl}">
                 <Style.Resources>
                     <Style TargetType="{x:Type TabItem}">
@@ -175,7 +173,6 @@
                     </Style>
                 </Style.Resources>
             </Style>
-
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
