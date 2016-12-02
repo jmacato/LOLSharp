@@ -19,9 +19,9 @@ namespace LOLpreter
 
     public enum ErrorLevel
     {
-        WARNING, //I MEZZED UP A LIL
-        ERROR,   //I POURED MILKZ INTO ZE KEYBOARDZ
-        FATAL    //GTFO RN 
+        Warning, //I MEZZED UP A LIL
+        Error,   //I POURED MILKZ INTO ZE KEYBOARDZ
+        Fatal    //GTFO RN 
     }
 
     public class Error
@@ -39,8 +39,8 @@ namespace LOLpreter
         public static void throwError(ErrorLevel ErrorLevel, ErrorCodes ErrorCode, List<Error> ErrorList, int line = 0, int pos = 0)
         {
             Error curError = new Error();
-            curError.line = line + 1;
-            curError.position = pos + 1;
+            curError.line = line;
+            curError.position = pos;
             curError.ErrorCode = ErrorCode;
             curError.ErrorLevel = ErrorLevel;
             ErrorList.Add(curError);
@@ -63,7 +63,7 @@ namespace LOLpreter
             if (ErrList.Count == 0) { return totalerrors; }
             foreach (Error Errors in ErrList)
             {
-                if (Errors.ErrorLevel == ErrorLevel.FATAL | Errors.ErrorLevel == ErrorLevel.ERROR)
+                if (Errors.ErrorLevel == ErrorLevel.Fatal | Errors.ErrorLevel == ErrorLevel.Error)
                 {
                     totalerrors += 1;
                 }

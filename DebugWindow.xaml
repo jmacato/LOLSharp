@@ -4,25 +4,204 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LOLpreter"
+                        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit" x:Class="LOLpreter.DebugWindow"
         mc:Ignorable="d"
         Title="Debugging Window" Height="263.026" Width="874.359" SnapsToDevicePixels="True" Foreground="White" Background="#FF1D1D1D" >
     <Window.Resources>
+        <ResourceDictionary>
+
+            <SolidColorBrush x:Key="Background" Color="#1C1C1C"/>
+            <SolidColorBrush x:Key="LightBackground" Color="#2D2D30"/>
+            <SolidColorBrush x:Key="Foreground" Color="#FFFFFF"/>
+            <SolidColorBrush x:Key="BackgroundHighlighted" Color="#54545C"/>
+            <SolidColorBrush x:Key="BorderBrushHighlighted" Color="#6A6A75"/>
+            <SolidColorBrush x:Key="BackgroundSelected" Color="#007ACC"/>
+            <SolidColorBrush x:Key="BorderBrushSelected" Color="#1C97EA"/>
+            <SolidColorBrush x:Key="BackgroundNormal" Color="#3F3F46"/>
+            <SolidColorBrush x:Key="BorderBrushNormal" Color="#54545C"/>
+
+            <Style TargetType="{x:Type TabControl}">
+                <Style.Resources>
+                    <Style TargetType="{x:Type TabItem}">
+                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type TabItem}">
+                                    <Grid Background="{TemplateBinding Background}" SnapsToDevicePixels="true" Height="25">
+                                        <ContentPresenter ContentSource="Header" Margin="10,0,10,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <ContentPresenter.Resources>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="{StaticResource Foreground}"/>
+                                                </Style>
+                                            </ContentPresenter.Resources>
+                                        </ContentPresenter>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsSelected" Value="false">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="true">
+                                            <Setter Property="Background" Value="{StaticResource BorderBrushSelected}"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="true">
+                                            <Setter Property="Background" Value="{StaticResource BackgroundSelected}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Style.Resources>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type TabControl}">
+                            <Grid KeyboardNavigation.TabNavigation="Local">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Border Background="Transparent" BorderThickness="0,0,0,3" 
+                                BorderBrush="{StaticResource BackgroundSelected}">
+                                    <TabPanel Name="HeaderPanel" Panel.ZIndex="1" Margin="0,0,4,-1" 
+                                IsItemsHost="True" KeyboardNavigation.TabIndex="1"/>
+                                </Border>
+                                <Border Grid.Row="1" Background="{StaticResource Background}"/>
+                                <ContentPresenter Grid.Row="1" Name="PART_SelectedContentHost" 
+                                          ContentSource="SelectedContent"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style TargetType="DataGrid">
+                <Setter Property="SelectionUnit" Value="Cell"/>
+                <Setter Property="GridLinesVisibility" Value="None"/>
+                <Setter Property="HeadersVisibility" Value="Column"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="Background" Value="{StaticResource LightBackground}"/>
+                <Setter Property="RowBackground" Value="{StaticResource LightBackground}"/>
+                <Style.Resources>
+                    <Style x:Key="ColumnHeaderGripperStyle" TargetType="{x:Type Thumb}">
+                        <Setter Property="Width" Value="8"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Cursor" Value="SizeWE"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Thumb}">
+                                    <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}"/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="SnapsToDevicePixels" Value="True"/>
+                        <Setter Property="MinWidth" Value="120"/>
+                        <Setter Property="MinHeight" Value="25"/>
+                        <Setter Property="Cursor" Value="Hand"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
+                                    <Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border x:Name="BackgroundBorder" Grid.ColumnSpan="2" Background="{StaticResource BackgroundSelected}"/>
+                                            <TextBlock Foreground="{StaticResource Foreground}" FontSize="14" FontWeight="SemiBold">
+                                        <ContentPresenter Margin="6,3,6,3" VerticalAlignment="Center"/>
+                                            </TextBlock>
+                                            <Path x:Name="SortArrow" Visibility="Collapsed" Data="M0,0 L1,0 0.5,1 z" Stretch="Fill" 
+                                      Grid.Column="1" Width="8" Height="6" Fill="{StaticResource Foreground}" Margin="0,0,8,0" 
+                                      VerticalAlignment="Center" RenderTransformOrigin="0.5,0.4" />
+                                        </Grid>
+                                        <Thumb x:Name="PART_LeftHeaderGripper" HorizontalAlignment="Left" Style="{StaticResource ColumnHeaderGripperStyle}"/>
+                                        <Thumb x:Name="PART_RightHeaderGripper" HorizontalAlignment="Right" Style="{StaticResource ColumnHeaderGripperStyle}"/>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="SortDirection" Value="{x:Null}">
+                                            <Setter TargetName="BackgroundBorder" Property="Background" Value="{StaticResource BackgroundNormal}"/>
+                                        </Trigger>
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="IsMouseOver" Value="true" />
+                                                <Condition Property="SortDirection" Value="{x:Null}" />
+                                            </MultiTrigger.Conditions>
+                                            <Setter TargetName="BackgroundBorder" Property="Background" Value="{StaticResource BackgroundHighlighted}"/>
+                                        </MultiTrigger>
+                                        <Trigger Property="SortDirection" Value="Ascending">
+                                            <Setter TargetName="SortArrow" Property="Visibility" Value="Visible"/>
+                                            <Setter TargetName="SortArrow" Property="RenderTransform">
+                                                <Setter.Value>
+                                                    <RotateTransform Angle="180"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                        <Trigger Property="SortDirection" Value="Descending">
+                                            <Setter TargetName="SortArrow" Property="Visibility" Value="Visible"/>
+                                        </Trigger>
+                                        <Trigger Property="DisplayIndex" Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed" TargetName="PART_LeftHeaderGripper"></Setter>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <Style TargetType="{x:Type DataGridCell}">
+                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="MinHeight" Value="28" />
+                        <Setter Property="Foreground" Value="{StaticResource Foreground}"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type DataGridCell}">
+                                    <Border Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                                        <ContentPresenter Margin="6,3,6,3" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource BackgroundHighlighted}"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource BackgroundSelected}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Style.Resources>
+            </Style>
+
+        </ResourceDictionary>
     </Window.Resources>
     <Grid>
-        <TabControl>
-            <TabItem Header="Errors">
-                <Grid Background="#FFE5E5E5">
-                    <DataGrid x:Name="ErrorTable" IsReadOnly="True"/>
+        <TabControl x:Name="DebugTab">
+            <TabItem Header="Errors" >
+                <Grid Margin="-1">
+                    <DataGrid x:Name="ErrorTable" IsReadOnly="True" AutoGenerateColumns="False">
+                        <DataGrid.DataContext>
+                            <local:Error/>
+                        </DataGrid.DataContext>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Code" Binding="{Binding ErrorLevel}" />
+                            <DataGridTextColumn Header="Description" Binding="{Binding ErrorCode}" />
+                            <DataGridTextColumn Header="Line" Binding="{Binding line}" />
+                            <DataGridTextColumn Header="Index" Binding="{Binding position}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
                 </Grid>
             </TabItem>
             <TabItem Header="Tokens">
-                <Grid Background="#FFE5E5E5">
+                <Grid Margin="-1">
                     <DataGrid x:Name="TokenTable" IsReadOnly="True"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Symbols">
-                <Grid Background="#FFE5E5E5">
+                <Grid Margin="-1">
                     <DataGrid x:Name="SymbolTable" IsReadOnly="True"/>
                 </Grid>
             </TabItem>

@@ -9,11 +9,10 @@ using System.Windows;
 using System.Xml;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
-
 namespace LOLpreter
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MetroWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -21,14 +20,13 @@ namespace LOLpreter
         Lexer Lexer = new Lexer();
         Tokenizer Tokenizer = new Tokenizer();
         DebugWindow DebugWindow = new DebugWindow();
-
         /* Property accessors for handling source files */
         public string CurrentDocumentPath { get; set; }
         public bool CurrentDocumentModified = false;
         private string currentDocumentTitle;
         public string CurrentDocumentTitle
         {
-            get {return currentDocumentTitle;}
+            get { return currentDocumentTitle; }
             set
             {
                 currentDocumentTitle = value;
@@ -37,8 +35,8 @@ namespace LOLpreter
                     DocTitle.Text = currentDocumentTitle + " (Modified)";
                     saveFile.IsEnabled = true;
                     this.Title = "LOLCODE Integrated Interpreter Environment - " + DocTitle.Text;
-
-                } else{DocTitle.Text = currentDocumentTitle;}
+                }
+                else { DocTitle.Text = currentDocumentTitle; }
                 if (!(CurrentDocumentPath == ""))
                 {
                     DocTitle.Text += "- (" + CurrentDocumentPath + ")";
@@ -46,12 +44,10 @@ namespace LOLpreter
                 }
             }
         }
-
         public MainWindow()
         {
             InitializeComponent();
         }
-
         #region Event Handlers
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -63,17 +59,20 @@ namespace LOLpreter
                     LOLinput.SyntaxHighlighting = HighlightingLoader.Load(reader, HighlightingManager.Instance);
                 }
             }
-
             currentDocumentTitle = "Untitled.lol";
             CurrentDocumentPath = "";
             CurrentDocumentModified = false;
             CurrentDocumentTitle = "Untitled.lol";
             DocTitle.Text = currentDocumentTitle;
             this.Title = "LOLCODE Integrated Interpreter Environment - " + DocTitle.Text;
-
             LOLinput.TextArea.Caret.PositionChanged += new EventHandler(updatePosBar);
             LOLinput.Document.TextChanged += new EventHandler(LOLinput_TextChanged);
             LOLinput.TextChanged += new EventHandler(LOLinput_TextChanged);
+
+            DebugWindow.ErrorTable.ItemsSource = Lexer.ErrorList;
+            DebugWindow.SymbolTable.ItemsSource = Lexer.StringConstTable;
+
+
         }
         private void newFile_Click(object sender, RoutedEventArgs e)
         {
@@ -88,23 +87,25 @@ namespace LOLpreter
             CurrentDocumentModified = false;
             DocTitle.Text = currentDocumentTitle;
             this.Title = "LOLCODE Integrated Interpreter Environment - " + DocTitle.Text;
-
         }
         private void startProg_Click(object sender, RoutedEventArgs e)
         {
             var x = Lexer.PreProccess(LOLinput.Text);
+            ClearDebugWin();
             if (x == null && ErrorHelper.CountBreakingErrors(Lexer.ErrorList) > 0)
             {
-                DebugWindow.ErrorTable.ItemsSource = null;
-                DebugWindow.ErrorTable.ItemsSource = Lexer.ErrorList;
                 Debug.WriteLine("Parsing Halted.");
+                ShowErrors();
             }
             else
             {
                 Tokenizer.Tokenize(x);
-                DebugWindow.SymbolTable.ItemsSource = null;
-                DebugWindow.SymbolTable.ItemsSource=Lexer.StringConstTable;
+                ShowLexemes();
             }
+            DebugWindow.ErrorTable.ItemsSource = Lexer.ErrorList;
+            DebugWindow.SymbolTable.ItemsSource = Lexer.StringConstTable;
+            DebugWindow.TokenTable.ItemsSource = Lexer.StringConstTable;
+
         }
         private void openFile_Click(object sender, RoutedEventArgs e)
         {
@@ -116,9 +117,7 @@ namespace LOLpreter
             {
                 System.IO.StreamReader sr = new
                    System.IO.StreamReader(dialog.FileName);
-
                 var lolstream = NormalizeEndings(sr.ReadToEnd());
-
                 LOLinput.Document.UndoStack.ClearAll();
                 LOLinput.Document.UndoStack.ClearRedoStack();
                 LOLinput.Document.FileName = (dialog.FileName);
@@ -157,6 +156,35 @@ namespace LOLpreter
         }
         private void debugWin_Click(object sender, RoutedEventArgs e)
         {
+            ToggleDebugWin();
+        }
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            DebugWindow.Close();
+        }
+        #endregion
+        #region Helper Functions
+        /// <summary>
+        /// Display the lexemes on the debugging window
+        /// </summary>
+        public void ShowLexemes()
+        {
+            DebugWindow.Visibility = Visibility.Visible;
+            DebugWindow.DebugTab.SelectedIndex = 1;
+        }
+        /// <summary>
+        /// Display the debugging window when there is errors
+        /// </summary>
+        public void ShowErrors()
+        {
+            DebugWindow.Visibility = Visibility.Visible;
+            DebugWindow.DebugTab.SelectedIndex = 0;
+        }
+        /// <summary>
+        /// Show/Hide the debugging window
+        /// </summary>
+        public void ToggleDebugWin()
+        {
             if (DebugWindow.Visibility == Visibility.Visible)
             {
                 DebugWindow.Visibility = Visibility.Collapsed;
@@ -164,16 +192,17 @@ namespace LOLpreter
             else
             {
                 DebugWindow.Visibility = Visibility.Visible;
-
             }
         }
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        /// <summary>
+        /// Clear debugging window tables
+        /// </summary>
+        public void ClearDebugWin()
         {
-            DebugWindow.Close();
+            DebugWindow.ErrorTable.ItemsSource = null;
+            DebugWindow.SymbolTable.ItemsSource = null;
+            DebugWindow.TokenTable.ItemsSource = null;
         }
-        #endregion
-
-        #region Helper Functions
         /// <summary>
         /// Safely save documents
         /// </summary>
@@ -181,16 +210,15 @@ namespace LOLpreter
         {
             if (CurrentDocumentModified)
             {
-
                 MessageBoxResult result;
                 if (showdialog)
                 {
                     result = MessageBox.Show("Do you want to save your changes?", CurrentDocumentTitle + " is unsaved.", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                } else
+                }
+                else
                 {
                     result = MessageBoxResult.Yes;
                 }
-
                 if (result == MessageBoxResult.Yes)
                 {
                     try
@@ -201,7 +229,6 @@ namespace LOLpreter
                             saveFileDialog1.Filter = "LOLCODE Source files|*.lol|All files (*.*)|*.*";
                             saveFileDialog1.Title = "Save source file";
                             saveFileDialog1.ShowDialog();
-
                             if (saveFileDialog1.FileName == "")
                             {
                                 return;
@@ -221,7 +248,6 @@ namespace LOLpreter
                 }
             }
         }
-        
         /// <summary>
         /// Standardize line endings to windows (CR LF) instead of linux (LF) only
         /// </summary>
@@ -238,7 +264,6 @@ namespace LOLpreter
                 return Regex.Replace(input, "\n", Environment.NewLine);
             }
         }
-        
         /// <summary>
         /// Update Statusbars
         /// </summary>
@@ -249,21 +274,19 @@ namespace LOLpreter
             var x = LOLinput.TextArea.Caret.Position.Location;
             LineCount.Content = "LN " + x.Line.ToString();
             CharCount.Content = "CH " + x.Column.ToString();
-
             var isNumLockToggled = Keyboard.IsKeyToggled(Key.NumLock);
             var isCapsLockToggled = Keyboard.IsKeyToggled(Key.CapsLock);
             var isInsToggled = Keyboard.IsKeyToggled(Key.Insert);
-
             if (isNumLockToggled) { NumStat.Opacity = 1; } else { NumStat.Opacity = 0.2; }
             if (isCapsLockToggled) { CapStat.Opacity = 1; } else { CapStat.Opacity = 0.2; }
             if (isInsToggled) { InsStat.Opacity = 1; } else { InsStat.Opacity = 0.2; }
-
             CurrentDocumentTitle = CurrentDocumentTitle;
             redoText.IsEnabled = LOLinput.Document.UndoStack.CanRedo;
             undoText.IsEnabled = LOLinput.Document.UndoStack.CanUndo;
-
         }
         #endregion
+        private void consoleWin_Click(object sender, RoutedEventArgs e)
+        {
+        }
     }
-
 }
