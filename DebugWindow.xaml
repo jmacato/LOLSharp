@@ -10,21 +10,23 @@
     <Window.Resources>
     </Window.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="10*"/>
-            <RowDefinition Height="200*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="3*"/>
-        </Grid.ColumnDefinitions>
+        <TabControl x:Name="tabControl">
+            <TabItem Header="TabItem">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid x:Name="ErrorTable" IsReadOnly="True"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="TabItem">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid x:Name="TokenTable" IsReadOnly="True"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="TabItem">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid x:Name="SymbolTable" IsReadOnly="True"/>
+                </Grid>
+            </TabItem>
 
-        <TextBlock Margin="10,10,0,0" Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" Text="Token Table" VerticalAlignment="Top" Foreground="#FFFFFF" Height="16"/>
-        <TextBlock Margin="10,10,0,0" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Text="Symbol Table" VerticalAlignment="Top" Foreground="#FFFFFF" Height="16"/>
-        <TextBlock Margin="10,10,0,0" Grid.Row="1" Grid.Column="2" TextWrapping="Wrap" Text="Errors" VerticalAlignment="Top" Foreground="#FFFFFF" Height="16"/>
-
-        <DataGrid Margin="12,31,10,0" Grid.Row="1" Grid.Column="2" x:Name="ErrorTable" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="Black" HorizontalGridLinesBrush="White" VerticalGridLinesBrush="White" CanUserResizeColumns="True" CanUserSortColumns="True" IsReadOnly="True"/>
-        <DataGrid Margin="12,31,10,0" Grid.Row="1" Grid.Column="1" x:Name="SymbolTable" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="Black" HorizontalGridLinesBrush="White" VerticalGridLinesBrush="White" CanUserResizeColumns="True" CanUserSortColumns="True" IsReadOnly="True"/>
-        <DataGrid Margin="12,31,10,0" Grid.Row="1" Grid.Column="2" x:Name="TokenTable" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="Black" HorizontalGridLinesBrush="White" VerticalGridLinesBrush="White" CanUserResizeColumns="True" CanUserSortColumns="True" IsReadOnly="True"/>    </Grid>
+        </TabControl>
+    </Grid>
 </Window>

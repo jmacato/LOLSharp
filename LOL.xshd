@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SyntaxDefinition xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008" name="LOL">
+  <!-- Made by J. Macato | LOLCODE Syntax Definition File for AvalonEdit-->
 	<Color name="Comment" foreground="#7A987A" />
 	<Color name="String" foreground="#FF795D" />
   <Color name="ExpressionOps" foreground="#F58E91" />

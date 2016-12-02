@@ -36,7 +36,7 @@ namespace LOLpreter
     {
 
         //Oopsie, somebody messed up ze lolz
-        public static void throwError(ErrorLevel ErrorLevel, ErrorCodes ErrorCode, ObservableCollection<Error> ErrorList, int line = 0xFFFF, int pos = 0xFFFF)
+        public static void throwError(ErrorLevel ErrorLevel, ErrorCodes ErrorCode, List<Error> ErrorList, int line = 0xFFFF, int pos = 0xFFFF)
         {
             Error curError = new Error();
             curError.line = line + 1;
@@ -57,7 +57,7 @@ namespace LOLpreter
         }
 
         //Count all unignorable errors
-        public static int CountBreakingErrors(ObservableCollection<Error> ErrList)
+        public static int CountBreakingErrors(List<Error> ErrList)
         {
             int totalerrors = 0;
             if (ErrList.Count == 0) { return totalerrors; }

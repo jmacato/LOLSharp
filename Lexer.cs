@@ -20,8 +20,11 @@ namespace LOLpreter
         //Stores Program Table
         public Dictionary<string, string> StringConstTable = new Dictionary<string, string>();
         public Dictionary<string, string> StringConstInverseTable= new Dictionary<string, string>();
-        public ObservableCollection<Error> ErrorList = new ObservableCollection<Error>();
+        public List<Error> ErrorList = new List<Error>();
 
+
+
+        #region Preprocessing
 
         /// <summary>
         /// LOLCODE Preprocessing function
@@ -60,8 +63,17 @@ namespace LOLpreter
                 return null;
             }
 
+
+
             Debug.WriteLine("Preprocessing complete, Passing to tokenizer...");
-            Debug.WriteLine("-------------------");
+
+            Debug.WriteLine("----- DECLARED STRINGS -----");
+
+            foreach (KeyValuePair<string, string> x in StringConstTable)
+            {
+                Debug.WriteLine(x.Key.ToString() + " --> \"" + x.Value.ToString() + "\"");
+            }
+            Debug.WriteLine("----------------------------");
 
             return raw;
         }
@@ -259,6 +271,12 @@ namespace LOLpreter
 
             return key;
         }
+
+        #endregion
+
+
+
+
 
         // UNUSED, for now //
         public string Seek(char[] raw, int index, int length = 1)

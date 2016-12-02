@@ -17,10 +17,12 @@ namespace LOLpreter
     /// </summary>
     public partial class MainWindow : Window
     {
+        /* Declare var, not war */
         Lexer Lexer = new Lexer();
         Tokenizer Tokenizer = new Tokenizer();
         DebugWindow DebugWindow = new DebugWindow();
 
+        /* Property accessors for handling source files */
         public string CurrentDocumentPath { get; set; }
         public bool CurrentDocumentModified = false;
         private string currentDocumentTitle;
@@ -50,11 +52,9 @@ namespace LOLpreter
             InitializeComponent();
         }
 
-        /* Event Handlers */
-
+        #region Event Handlers
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            currentDocumentTitle = "Untitled.lol";
             //Load LOLCODE syntax highlighting file
             using (Stream s = this.GetType().Assembly.GetManifestResourceStream("LOLpreter.LOL.xshd"))
             {
@@ -63,7 +63,8 @@ namespace LOLpreter
                     LOLinput.SyntaxHighlighting = HighlightingLoader.Load(reader, HighlightingManager.Instance);
                 }
             }
-            
+
+            currentDocumentTitle = "Untitled.lol";
             CurrentDocumentPath = "";
             CurrentDocumentModified = false;
             CurrentDocumentTitle = "Untitled.lol";
@@ -152,7 +153,25 @@ namespace LOLpreter
         {
             LOLinput.Undo();
         }
-        
+        private void debugWin_Click(object sender, RoutedEventArgs e)
+        {
+            if (DebugWindow.Visibility == Visibility.Visible)
+            {
+                DebugWindow.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                DebugWindow.Visibility = Visibility.Visible;
+
+            }
+        }
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            DebugWindow.Close();
+        }
+        #endregion
+
+        #region Helper Functions
         /// <summary>
         /// Safely save documents
         /// </summary>
@@ -242,23 +261,7 @@ namespace LOLpreter
             undoText.IsEnabled = LOLinput.Document.UndoStack.CanUndo;
 
         }
-
-        private void debugWin_Click(object sender, RoutedEventArgs e)
-        {
-            if (DebugWindow.Visibility == Visibility.Visible)
-            {
-                DebugWindow.Visibility = Visibility.Collapsed;
-            } else
-            {
-                DebugWindow.Visibility = Visibility.Visible;
-
-            }
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            DebugWindow.Close();
-        }
+        #endregion
     }
 
 }

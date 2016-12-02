@@ -18,12 +18,15 @@ namespace LOLpreter
                 var linenum = ProgTokenTable.Count + 1;
                 ProgTokenTable.Add(linenum, curline.Split(' '));
             }
-
-            foreach(string[] x in ProgTokenTable.Values)
+            foreach (string[] x in ProgTokenTable.Values)
             {
                 Debug.WriteLine("-->" + String.Join("|",x));
             }
 
         }
     }
+
+
+
+
 }
