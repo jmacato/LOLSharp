@@ -10,18 +10,18 @@
     <Window.Resources>
     </Window.Resources>
     <Grid>
-        <TabControl x:Name="tabControl">
-            <TabItem Header="TabItem">
+        <TabControl>
+            <TabItem Header="Errors">
                 <Grid Background="#FFE5E5E5">
                     <DataGrid x:Name="ErrorTable" IsReadOnly="True"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="TabItem">
+            <TabItem Header="Tokens">
                 <Grid Background="#FFE5E5E5">
                     <DataGrid x:Name="TokenTable" IsReadOnly="True"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="TabItem">
+            <TabItem Header="Symbols">
                 <Grid Background="#FFE5E5E5">
                     <DataGrid x:Name="SymbolTable" IsReadOnly="True"/>
                 </Grid>
