@@ -95,12 +95,14 @@ namespace LOLpreter
             var x = Lexer.PreProccess(LOLinput.Text);
             if (x == null && ErrorHelper.CountBreakingErrors(Lexer.ErrorList) > 0)
             {
+                DebugWindow.ErrorTable.ItemsSource = null;
                 DebugWindow.ErrorTable.ItemsSource = Lexer.ErrorList;
                 Debug.WriteLine("Parsing Halted.");
             }
             else
             {
                 Tokenizer.Tokenize(x);
+                DebugWindow.SymbolTable.ItemsSource = null;
                 DebugWindow.SymbolTable.ItemsSource=Lexer.StringConstTable;
             }
         }

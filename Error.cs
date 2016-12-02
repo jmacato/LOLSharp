@@ -36,7 +36,7 @@ namespace LOLpreter
     {
 
         //Oopsie, somebody messed up ze lolz
-        public static void throwError(ErrorLevel ErrorLevel, ErrorCodes ErrorCode, List<Error> ErrorList, int line = 0xFFFF, int pos = 0xFFFF)
+        public static void throwError(ErrorLevel ErrorLevel, ErrorCodes ErrorCode, List<Error> ErrorList, int line = 0, int pos = 0)
         {
             Error curError = new Error();
             curError.line = line + 1;
@@ -49,7 +49,7 @@ namespace LOLpreter
         //Generate standard error message
         public static string generateErrorMessage(Error Err)
         {
-            if (Err.line == 65536)
+            if (Err.line == 0)
             {
                 return (Err.ErrorLevel.ToString() + " : " + Err.ErrorCode.ToString());
             }

@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 D:\Users\Jumar\Desktop\refactor-wpf\App.xaml
-2-844713470
+7-1025167519
 
 1284879766
-122144388493
-DebugWindow.xaml;MainWindow.xaml;
+151791429698
+DebugWindow.xaml;MainWindow.xaml;Themes\MetroDark\MetroDark.MSControls.Core.Implicit.xaml;Themes\MetroDark\MetroDark.MSControls.Toolkit.Implicit.xaml;Themes\MetroDark\Styles.Shared.xaml;Themes\MetroDark\Styles.WPF.xaml;Themes\MetroDark\Theme.Colors.xaml;
 
-True
+False
 
