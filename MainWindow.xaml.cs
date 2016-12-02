@@ -17,9 +17,10 @@ namespace LOLpreter
     public partial class MainWindow : Window
     {
         /* Declare var, not war */
+        DebugWindow DebugWin = new DebugWindow();
         Lexer Lexer = new Lexer();
         Tokenizer Tokenizer = new Tokenizer();
-        DebugWindow DebugWindow = new DebugWindow();
+
         /* Property accessors for handling source files */
         public string CurrentDocumentPath { get; set; }
         public bool CurrentDocumentModified = false;
@@ -44,13 +45,19 @@ namespace LOLpreter
                 }
             }
         }
+
         public MainWindow()
         {
             InitializeComponent();
         }
+
         #region Event Handlers
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+
+            Lexer.DebugWin = DebugWin;
+            Tokenizer.DebugWin = DebugWin;
+
             //Load LOLCODE syntax highlighting file
             using (Stream s = this.GetType().Assembly.GetManifestResourceStream("LOLpreter.LOL.xshd"))
             {
@@ -69,8 +76,8 @@ namespace LOLpreter
             LOLinput.Document.TextChanged += new EventHandler(LOLinput_TextChanged);
             LOLinput.TextChanged += new EventHandler(LOLinput_TextChanged);
 
-            DebugWindow.ErrorTable.ItemsSource = Lexer.ErrorList;
-            DebugWindow.SymbolTable.ItemsSource = Lexer.StringConstTable;
+            DebugWin.ErrorTable.ItemsSource = Lexer.ErrorList;
+            DebugWin.SymbolTable.ItemsSource = Lexer.StringConstTable;
 
 
         }
@@ -94,7 +101,7 @@ namespace LOLpreter
             ClearDebugWin();
             if (x == null && ErrorHelper.CountBreakingErrors(Lexer.ErrorList) > 0)
             {
-                Debug.WriteLine("Parsing Halted.");
+                DebugWin.Print("Parsing Halted.");
                 ShowErrors();
             }
             else
@@ -102,9 +109,9 @@ namespace LOLpreter
                 Tokenizer.Tokenize(x);
                 ShowLexemes();
             }
-            DebugWindow.ErrorTable.ItemsSource = Lexer.ErrorList;
-            DebugWindow.SymbolTable.ItemsSource = Lexer.StringConstTable;
-            DebugWindow.TokenTable.ItemsSource = Lexer.StringConstTable;
+            DebugWin.ErrorTable.ItemsSource = Lexer.ErrorList;
+            DebugWin.SymbolTable.ItemsSource = Lexer.StringConstTable;
+            DebugWin.TokenTable.ItemsSource = Lexer.StringConstTable;
 
         }
         private void openFile_Click(object sender, RoutedEventArgs e)
@@ -160,7 +167,7 @@ namespace LOLpreter
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            DebugWindow.Close();
+            DebugWin.Close();
         }
         #endregion
         #region Helper Functions
@@ -169,29 +176,29 @@ namespace LOLpreter
         /// </summary>
         public void ShowLexemes()
         {
-            DebugWindow.Visibility = Visibility.Visible;
-            DebugWindow.DebugTab.SelectedIndex = 1;
+            DebugWin.Visibility = Visibility.Visible;
+            DebugWin.DebugTab.SelectedIndex = 3;
         }
         /// <summary>
         /// Display the debugging window when there is errors
         /// </summary>
         public void ShowErrors()
         {
-            DebugWindow.Visibility = Visibility.Visible;
-            DebugWindow.DebugTab.SelectedIndex = 0;
+            DebugWin.Visibility = Visibility.Visible;
+            DebugWin.DebugTab.SelectedIndex = 0;
         }
         /// <summary>
         /// Show/Hide the debugging window
         /// </summary>
         public void ToggleDebugWin()
         {
-            if (DebugWindow.Visibility == Visibility.Visible)
+            if (DebugWin.Visibility == Visibility.Visible)
             {
-                DebugWindow.Visibility = Visibility.Collapsed;
+                DebugWin.Visibility = Visibility.Collapsed;
             }
             else
             {
-                DebugWindow.Visibility = Visibility.Visible;
+                DebugWin.Visibility = Visibility.Visible;
             }
         }
         /// <summary>
@@ -199,9 +206,9 @@ namespace LOLpreter
         /// </summary>
         public void ClearDebugWin()
         {
-            DebugWindow.ErrorTable.ItemsSource = null;
-            DebugWindow.SymbolTable.ItemsSource = null;
-            DebugWindow.TokenTable.ItemsSource = null;
+            DebugWin.ErrorTable.ItemsSource = null;
+            DebugWin.SymbolTable.ItemsSource = null;
+            DebugWin.TokenTable.ItemsSource = null;
         }
         /// <summary>
         /// Safely save documents

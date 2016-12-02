@@ -202,6 +202,11 @@
                     <DataGrid x:Name="SymbolTable" IsReadOnly="True"/>
                 </Grid>
             </TabItem>
+            <TabItem Header="Parser Output">
+                <Grid>
+                    <TextBox x:Name="debugtxt" Background="Transparent" FontFamily="Consolas" Margin="5" AcceptsReturn="True" IsReadOnly="True" Foreground="White"/>
+                </Grid>
+            </TabItem>
 
         </TabControl>
     </Grid>

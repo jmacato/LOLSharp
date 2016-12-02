@@ -29,5 +29,9 @@ namespace LOLpreter
             this.Visibility = Visibility.Collapsed;
             e.Cancel = true;
         }
+        public void Print(string x)
+        {
+            debugtxt.Text += x + "\r\n";
+        }
     }
 }

@@ -7,6 +7,9 @@ namespace LOLpreter
 {
     class Lexer
     {
+
+        public DebugWindow DebugWin;
+
         public const string UNICODE_ELLIPSIS = "\u2026";
         public const string UNICODE_SECTION = "\u00A7";
         public const string UNICODE_NEWLINE = "\n";
@@ -29,32 +32,35 @@ namespace LOLpreter
             StringConstTable.Clear();
             StringConstInverseTable.Clear();
             ErrorList.Clear();
-            Debug.WriteLine("-------------------");
+            DebugWin.Print("-------------------");
+
+            //Start Processing
             FirstFilter(ref raw);
             TrimToDust(ref raw);
             CheckForProgStartEnd(raw);
-            ProcessComments(ref raw);
             GenerateStrConstTable(ref raw);
             SecondFilter(ref raw);
+            ProcessComments(ref raw);
             CheckForUnclosedQuotes(raw);
             TrimToDust(ref raw);
+
             //Return nothing when there is a error
             if (ErrorHelper.CountBreakingErrors(ErrorList) > 0)
             {
                 foreach (Error Errors in ErrorList)
                 {
-                    Debug.WriteLine(ErrorHelper.generateErrorMessage(Errors));
-                    Debug.WriteLine("-------------------");
+                    DebugWin.Print(ErrorHelper.generateErrorMessage(Errors));
+                    DebugWin.Print("-------------------");
                 }
                 return null;
             }
-            Debug.WriteLine("Preprocessing complete, Passing to tokenizer...");
-            Debug.WriteLine("----- DECLARED STRINGS -----");
+            DebugWin.Print("Preprocessing complete, Passing to tokenizer...");
+            DebugWin.Print("----- DECLARED STRINGS -----");
             foreach (KeyValuePair<string, string> x in StringConstTable)
             {
-                Debug.WriteLine(x.Key.ToString() + " --> \"" + x.Value.ToString() + "\"");
+                DebugWin.Print(x.Key.ToString() + " --> \"" + x.Value.ToString() + "\"");
             }
-            Debug.WriteLine("----------------------------");
+            DebugWin.Print("----------------------------");
             return raw;
         }
 
@@ -79,7 +85,7 @@ namespace LOLpreter
             catch (Exception ex)
             {
                 ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.COMPILER_ERROR, ErrorList);
-                Debug.WriteLine(ex.Message + "\r\n" + ex.StackTrace);
+                DebugWin.Print(ex.Message + "\r\n" + ex.StackTrace);
                 return;
             }
         }
@@ -147,7 +153,7 @@ namespace LOLpreter
             raw = Regex.Replace(raw, "\t", "");
             //Remove Tabs
 
-            raw = Regex.Replace(raw, @"AN \b|OF \b| AN\b| OF\b", "");
+            raw = Regex.Replace(raw, @"AN \b| AN\b", "");
             //Remove Arity and OF's
 
             raw = Regex.Replace(raw, "[ ]{2,}", " ", RegexOptions.Multiline);
