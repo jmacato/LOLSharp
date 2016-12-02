@@ -150,14 +150,17 @@ namespace LOLpreter
             raw = Regex.Replace(raw, ",", "\r\n");
             //Convert soft linefeed to hard
 
-            raw = Regex.Replace(raw, "\t", "");
-            //Remove Tabs
+            raw = Regex.Replace(raw, "\t|\\?", "");
+            //Remove Tabs and question marks
 
             raw = Regex.Replace(raw, @"AN \b| AN\b", "");
             //Remove Arity and OF's
 
             raw = Regex.Replace(raw, "[ ]{2,}", " ", RegexOptions.Multiline);
             //Remove Tabs
+
+            raw = Regex.Replace(raw, "\\!", " !");
+
         }
 
         /// <summary>

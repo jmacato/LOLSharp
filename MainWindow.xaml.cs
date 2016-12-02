@@ -209,6 +209,7 @@ namespace LOLpreter
             DebugWin.ErrorTable.ItemsSource = null;
             DebugWin.SymbolTable.ItemsSource = null;
             DebugWin.TokenTable.ItemsSource = null;
+            DebugWin.debugtxt.Text = "";
         }
         /// <summary>
         /// Safely save documents

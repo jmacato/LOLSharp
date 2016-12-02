@@ -14,12 +14,13 @@ namespace LOLpreter
         #region Declares
 
         //First pass token table
-        public List<string[]> ProgTokenTableStg1 = new List<string[]>();
+        public Dictionary<int,string[]> ProgTokenTableStg1 = new Dictionary<int, string[]>();
         //Second table for classified tokens
         public List<Token> ProgTokenTableStg2 = new List<Token>();
         //Lists definitions of each token, to be displayed in debugwin
         public Dictionary<Token, string> TokenDescriptorTable = new Dictionary<Token, string>();
         public Dictionary<string, Variable> VariableMemory = new Dictionary<string, Variable>();
+        public Stack<string> BranchingStack = new Stack<string>();
 
         Dictionary<string, string> CompressOps = new Dictionary<string, string>
                                     {
@@ -32,7 +33,7 @@ namespace LOLpreter
                                         {@"MOD OF","MOD-OF"},
                                         {@"BIGGR OF","BIGGR-OF"},
                                         {@"SMALLR OF","SMALLR-OF"},
-                                        {@"O RLY\?","O-RLY"},
+                                        {@"O RLY?","O RLY?"},
                                         {@"YA RLY","YA-RLY"},
                                         {@"NO WAI","NO-WAI"},
                                         {@"IM IN YR","IM-IN-YR"},
@@ -65,9 +66,11 @@ namespace LOLpreter
         /// <param name="raw"></param>
         public void Tokenize(string raw)
         {
-            ProgTokenTableStg1.Clear();
 
-            DebugWin.Print("-**-*-*-**--* PRETOKEN *-*-*-*-*--*-*-");
+            ProgTokenTableStg1.Clear();
+            ProgTokenTableStg2.Clear();
+            TokenDescriptorTable.Clear();
+            VariableMemory.Clear();
 
             foreach (string x in raw.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
             {
@@ -76,15 +79,13 @@ namespace LOLpreter
                 {
                     curline = Regex.Replace(curline, s, CompressOps[s]);
                 }
-                DebugWin.Print(curline);
-                var linenum = ProgTokenTableStg1.Count + 1;
-                ProgTokenTableStg1.Add(curline.Split(' '));
-
-
+                var linenum = ProgTokenTableStg1.Count;
+                ProgTokenTableStg1.Add(linenum, curline.Split(' '));
+                DebugWin.Print(linenum.ToString().PadRight(5) + curline);
 
             }
+            DebugWin.Print("-**-*-*-**--* er *-*-*-*-*--*-*-");
 
-            DebugWin.Print("-**-*-*-**--* PRETOKEN END *-*-*--*-*-");
 
             tokenClassify(ProgTokenTableStg1);
 
@@ -101,69 +102,96 @@ namespace LOLpreter
         /// Big-ass function to classify the variables
         /// </summary>
         /// <param name="progTokenTableStg1"></param>
-        private void tokenClassify(List<string[]> progTokenTableStg1)
+        private void tokenClassify(Dictionary<int, string[]> progTokenTableStg1)
         {
-            int line = 0;
-            foreach (string[] curline in ProgTokenTableStg1)
-            {
-                int tokenCount = curline.Length;
-                for (int indx = 0; indx < tokenCount - 1; indx++){
-                    string frame = curline[indx];
 
+            for (int line = 0;line < progTokenTableStg1.Keys.ToArray().Length - 1; line++)
+            {
+                string[] curline = ProgTokenTableStg1[line];
+                int tokenCount = curline.Length;
+                for (int indx = 0; indx < tokenCount; indx++){
+                    string frame = curline[indx].Trim();
                     switch (frame)
                     {
                         case "I-HAS-A":
-                            var varname = curline[indx + 1];
-                            if (tokenCount > 2 && curline[indx + 2]=="ITZ")
+                            indx++;
+                            var varname = curline[indx];
+                            indx++;
+                            if (tokenCount > 2 && curline[indx] == "ITZ")
                             {
-                                var varvalue = curline[indx + 3];
+                                indx++;
+                                var varvalue = curline[indx];
                                 Create2ndStgToken(line, OperandType.Command, "DCLV");
                                 Create2ndStgToken(line, OperandType.Variable, varname);
                                 Create2ndStgToken(line, OperandType.Literal, varvalue);
-                                VariableMemory.Add(varname, new Variable() { name=varname, DataType= DetermineDataType(varvalue),Value=varvalue});
-                                indx = tokenCount;
+                                VariableMemory.Add(varname, new Variable() { name = varname, DataType = DetermineDataType(varvalue), Value = varvalue });
+                                DebugWin.Print(atos(line) + " DECLARE-->" + varname + " TYPE " + VariableMemory[varname].DataType.ToString());
+                                DebugWin.Print(" " + varname + "  ASSIGN-->" + varvalue);
                             }
                             else
                             {
                                 Create2ndStgToken(line, OperandType.Command, "DCLN");
                                 Create2ndStgToken(line, OperandType.Variable, varname);
-                                VariableMemory.Add(varname, new Variable() { name = varname, DataType = DataTypes.NOOB});
-                                indx = tokenCount;
+                                VariableMemory.Add(varname, new Variable() { name = varname, DataType = DataTypes.NOOB });
+                                DebugWin.Print(atos(line) + " DECLARE-->" + varname + " TYPE " + VariableMemory[varname].DataType.ToString());
                             }
+                            indx = tokenCount;
                             break;
+
                         case "VISIBLE":
                             var command = "CPRT";
-                            if (curline.Last() == "!"){command = "CRLN";} 
+                            if (curline.Last() == "!") { command = "CPLN"; }
                             if (tokenCount > 2)
                             {
                                 Create2ndStgToken(line, OperandType.Command, command);
 
+                                DebugWin.Print(atos(line) + " " + command + "-->" + curline[indx + 1]);
                             }
+                            else
+                            {
+                                Create2ndStgToken(line, OperandType.Command, command);
+                                Create2ndStgToken(line, OperandType.Expression, curline[indx + 1]);
+                                DebugWin.Print(atos(line) + " " + command + "-->" + curline[indx + 1]);
+                            }
+                            indx = tokenCount;
                             break;
+
+                        case "GIMMEH":
+                            Create2ndStgToken(line, OperandType.Command, "HLTI");
+                            DebugWin.Print("HLTI" + "-->" + curline[indx + 1]);
+                            indx = tokenCount;
+                            break;
+
                         default:
 
                             if (VariableMemory.ContainsKey(curline[indx]))
                             {
-                                if (curline[indx+1] == "R")
+                                if (tokenCount == 1)
                                 {
-                                    var x = string.Join(" ", curline, indx + 2, tokenCount - 2);
-                                    DebugWin.Print(atos(line)+" " + curline[indx] + "  ASSIGN-->" + x +" | TYPE: " + VariableMemory[curline[indx]].DataType.ToString());
-
+                                    DebugWin.Print(atos(line) + "  VAREXIST-->" + curline[indx] + " | TYPE: " + VariableMemory[curline[indx]].DataType.ToString());
                                     indx = tokenCount;
-                                    break;
+                                } else
+                                {
+                                    if (curline[indx] == "R")
+                                    {
+                                        var x = string.Join(" ", curline, indx + 2, tokenCount - 2);
+                                        DebugWin.Print(atos(line) + " " + curline[indx] + "  ASSIGN-->" + x);
+                                        indx = tokenCount;
+                                        break;
+                                    }
                                 }
-                                DebugWin.Print(atos(line) + "  VAREXIST-->" + curline[indx] + " | TYPE: " + VariableMemory[curline[indx]].DataType.ToString());
-                                indx = tokenCount;
+
                                 break;
                             }
 
-                            DebugWin.Print(atos(line) + "-->" + curline[indx]);
 
+
+                            DebugWin.Print(atos(line) + " - UNPROCESSED - " + String.Join(" ", curline));
+                            indx = tokenCount;
                             break;
+
                     }
                 }
-
-                line++;
             }
         }
 
@@ -211,12 +239,11 @@ namespace LOLpreter
                         return DataTypes.TROOF;
                     case "Integer Literal":
                         return DataTypes.NUMBR;
-                    case "String":
-                        return DataTypes.YARN;
-                    default:
-                        return DataTypes.NOOB;
                 }
             }
+
+            if (expression.Contains(Lexer.UNICODE_SECTION))
+            {return DataTypes.YARN;}
             return DataTypes.NOOB;
         }
 
