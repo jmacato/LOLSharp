@@ -20,7 +20,16 @@ namespace LOLpreter
         //Lists definitions of each token, to be displayed in debugwin
         public Dictionary<Token, string> TokenDescriptorTable = new Dictionary<Token, string>();
         public Dictionary<string, Variable> VariableMemory = new Dictionary<string, Variable>();
+
         public Stack<Token> BranchingStack = new Stack<Token>();
+
+        public static Dictionary<string, Variable> BuiltInVariables()
+        {
+            Dictionary<string, Variable> x = new Dictionary<string, Variable>() {
+            {"IT", new Variable() { name="IT", DataType=DataTypes.NOOB, value=null} },
+            {"REG_CMP", new Variable() { name="REG_CMP", DataType=DataTypes.NOOB, value=null}},};
+            return x;
+        }
 
         Dictionary<string, string> CompressOps = new Dictionary<string, string>
                                     {
@@ -77,6 +86,7 @@ namespace LOLpreter
             ProgTokenTableStg2.Clear();
             TokenDescriptorTable.Clear();
             VariableMemory.Clear();
+            VariableMemory = BuiltInVariables();
             prog_asm.Clear();
             BranchingStack.Clear();
             jumplabels.Clear();
@@ -213,19 +223,28 @@ namespace LOLpreter
                             indx = tokenCount;
                             break;
 
+                        case "ADD":
+                        case "SUB":
+                        case "PROD":
+                        case "QUOT":
+                        case "MOD":
+                        case "MAX":
+                        case "MIN":
+                            lolasm += Newline("ASGN IT "+String.Join(" ", curline));
+                            break;
                         default:
                             if (VariableMemory.ContainsKey(curline[indx]))
                             {                                
                                 if (tokenCount == 1)
                                 {
-                                    lolasm += Newline("EQUL IT " + curline[indx]); //IT <-- variable
+                                    lolasm += Newline("ASGN IT " + curline[indx]); //IT <-- variable
                                     indx = tokenCount;
                                 } else
                                 {
                                     if (curline[indx+1] == "R")
                                     {
                                         var x = String.Join(" ", curline.Skip(2));
-                                        lolasm += Newline("EQUL "+ curline[indx] + " " + x);
+                                        lolasm += Newline("ASGN " + curline[indx] + " " + x);
                                         indx = tokenCount;
                                         break;
                                     }

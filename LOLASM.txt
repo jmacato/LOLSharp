@@ -1,0 +1,44 @@
+LOLCODE INTERMEDIATE LANGUAGE
+
+
+Registers 
+
+REG_IT - Dynamic Variable that acts as a default of all expressions
+REG_CMP - Integer variable that can be modified by conditional statements
+ -> 0 - No operation
+ -> 1 - Equal
+ -> 2 - Less than
+ -> 3 - Greater than
+ 
+ REG_ORLY -> Boolean variable exclusive for ORLY Block
+ 
+Lone expressions:
+
+	ASGN <dest>|default:IT <expressions>
+ 
+ 
+I HAS A 
+ -> DCLV [var] [val]
+    Declare variable with value
+ -> DCLN [var]
+	Declare variable without initial value (Default to NOOB)
+VISIBLE
+ -> CPRT [val]
+	Print to console
+	
+	# Every arguments or expression will be typecasted to string
+	# and every tokenized expression will have separate CPRT/CPLN command 
+	# on the bytecode.
+
+ -> CPLN [val]
+	Print to console with newline, activated by "!" command
+	
+GIMME
+ -< INPT [var]
+	Stores to val the resulting input, Default return is string
+	
+ORLY BLOCK & WTF
+	-> ORLY  
+
+	block ends will be turned to labels
+	

@@ -62,6 +62,7 @@ namespace LOLpreter
             Tokenizer.ErrorList = Lexer.ErrorList;
             Interpreter.Console = Console;
             Interpreter.Tokenizer = Tokenizer;
+            Interpreter.MainWindow = this;
 
             //Load LOLCODE syntax highlighting file
             using (Stream s = this.GetType().Assembly.GetManifestResourceStream("LOLpreter.LOL.xshd"))
