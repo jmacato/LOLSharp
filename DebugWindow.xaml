@@ -197,9 +197,9 @@
                     <DataGrid x:Name="TokenTable" IsReadOnly="True"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Live Symbols">
+            <TabItem Header="Live Symbols" x:Name="SymbolTab">
                 <Grid Margin="-1">
-                    <DataGrid x:Name="SymbolTable" IsReadOnly="True" AutoGenerateColumns="False">
+                    <DataGrid x:Name="SymbolTable" IsReadOnly="True"  AutoGenerateColumns="False">
                         <DataGrid.DataContext>
                             <local:Variable/>
                         </DataGrid.DataContext>

@@ -19,6 +19,15 @@ namespace LOLpreter
     /// </summary>
     public partial class DebugWindow : Window
     {
+
+        public void setSymbols(List<Variable> x)
+        {
+
+            SymbolTable.ItemsSource = null;
+            SymbolTable.ItemsSource = x;
+
+        }
+
         public DebugWindow()
         {
             InitializeComponent();

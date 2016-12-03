@@ -58,12 +58,12 @@ namespace LOLpreter
                                         {@"HOW IZ I","HOW-IZ-I"},
                                         {@"IF U SAY SO","IF-U-SAY-SO"},
                                         {@"I IZ","I-IZ"},
-                                        {@"BOTH OF","_AND"},
-                                        {@"NOT","_NOT"},
-                                        {@"EITHER OF","_OR"},
-                                        {@"WON OF","_XOR"},
+                                        {@"BOTH OF","AND"},
+                                        {@"NOT","NOT"},
+                                        {@"EITHER OF","OR"},
+                                        {@"WON OF","XOR"},
                                         {@"ALL OF","AAND"},
-                                        {@"ANY OF","A_OR"},
+                                        {@"ANY OF","ALOR"},
                                         {@"IS NOW A","IS-NOW-A"},
                                         {@"FOUND YR","FOUND-YR"}
                                     };
@@ -160,13 +160,27 @@ namespace LOLpreter
 
                         case "VISIBLE":
 
-                            String.Join(" ", curline.Skip(2));
+                            //Get teh op arguments
+                            var vis_Arg = String.Join(" ", curline.Skip(1));
 
-                            for (Int64 vsargs = 1; vsargs < tokenCount; vsargs++) //Enumerate all arguments and make separate ASMlike commands
+                            if (Interpreter.DetExpressionType(vis_Arg) != ExpressionType.None)
                             {
-                                lolasm += Newline("CPRT " + curline[vsargs]);
+                                lolasm += Newline("ASGN CON_BUF " + vis_Arg.Replace("!", "").Trim()); //Transform expression into the Assign Operand
+                                lolasm += Newline("CPRT CON_BUF"); //Print the result
+                            }
+                            else
+                            {
+                                for (Int64 vsargs = 1; vsargs < tokenCount; vsargs++) //Enumerate all arguments and make separate ASMlike commands
+                                {
+                                    lolasm += Newline("CPRT " + curline[vsargs]);
+                                }
                             }
 
+                            if (!vis_Arg.Contains("!"))
+                            {
+                                lolasm += Newline("CPLN");
+                            }
+                            
                             indx = tokenCount;
                             break;
 
@@ -241,13 +255,14 @@ namespace LOLpreter
                         case "MOD":
                         case "MAX":
                         case "MIN":
-                        case "_AND":
-                        case "__OR":
-                        case "_XOR":
-                        case "_NOT":
+                        case "AND":
+                        case "OR":
+                        case "XOR":
+                        case "NOT":
                         case "AAND":
-                        case "A_OR":
+                        case "ALOR":
                             lolasm += Newline("ASGN IT "+String.Join(" ", curline));
+                            indx = tokenCount;
                             break;
                         default:
                             if (VariableMemory.ContainsKey(curline[indx]))

@@ -62,6 +62,8 @@ namespace LOLpreter
             Tokenizer.ErrorList = Lexer.ErrorList;
             Interpreter.Console = Console;
             Interpreter.Tokenizer = Tokenizer;
+            Interpreter.Lexer = Lexer;
+
             Interpreter.MainWindow = this;
 
             //Load LOLCODE syntax highlighting file
@@ -175,7 +177,7 @@ namespace LOLpreter
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            DebugWin.Close();
+            Application.Current.Shutdown();
         }
         #endregion
         #region Helper Functions
@@ -219,14 +221,33 @@ namespace LOLpreter
             if (Console.Visibility == Visibility.Visible)
             {
                 Console.Visibility = Visibility.Collapsed;
+                
             }
             else
             {
                 Console.Visibility = Visibility.Visible;
+                debugWin.Visibility = Visibility.Visible;
+
                 Console.Activate();
             }
         }
+        /// <summary>
+        /// Clear debugging window tables
+        /// </summary>
+        public void RefreshDebugWin()
+        {
+            if (DebugWin.IsVisible)
+            {
+                DebugWin.ErrorTable.ItemsSource = null;
+                DebugWin.SymbolTable.ItemsSource = null;
+                DebugWin.TokenTable.ItemsSource = null;
+                DebugWin.ErrorTable.ItemsSource = Lexer.ErrorList;
+                DebugWin.SymbolTable.ItemsSource = Lexer.StringConstTable;
+                DebugWin.TokenTable.ItemsSource = Lexer.StringConstTable;
+                DebugWin.debugtxt.Text = "";
+            }
 
+        }
         /// <summary>
         /// Clear debugging window tables
         /// </summary>

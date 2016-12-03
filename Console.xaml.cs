@@ -27,7 +27,6 @@ namespace LOLpreter
 
         public bool awaitinput = false;
 
-
         public Console()
         {
             InitializeComponent();
@@ -119,8 +118,12 @@ namespace LOLpreter
             this.Dispatcher.Invoke(() => Out.CaretBrush = new SolidColorBrush(Colors.Transparent));
         }
 
+        public bool HaltExec = false;
+
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (!HaltExec) { HaltExec = true; }
             this.Visibility = Visibility.Collapsed;
             e.Cancel = true;
         }

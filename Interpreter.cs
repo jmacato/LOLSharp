@@ -13,6 +13,8 @@ namespace LOLpreter
         public Console Console;
         public Tokenizer Tokenizer;
         public MainWindow MainWindow;
+        public Lexer Lexer;
+
 
         public Dictionary<string, string> StringTable { get; set; }
         public Dictionary<string, Variable> WorkingMem = new Dictionary<string, Variable>();
@@ -33,12 +35,14 @@ namespace LOLpreter
         private void ExecutionThread_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             Console.WriteLine("\r\n\r\n[PROGRAM TERMINATED]");
+            MainWindow.startProg.IsEnabled = true;
         }
+
 
         private void ExecutionThread_DoWork(object sender, DoWorkEventArgs e)
         {
-
             for (Int64 l = 0; l < prog.Length - 1; l++){
+                if (Console.HaltExec) {Console.HaltExec = false; return; }
 
                 string[] lex;
                 lex = prog[l].Split(' ');
@@ -58,14 +62,7 @@ namespace LOLpreter
                             break;
 
                         case "CPRT":
-                            if (lex[i + 1] == "!")
-                            {
-                                i++;
-                                Console.WriteLine("");
-                                i = lex.Length;
-                                break;
-                            }
-                            else if (CheckIfVar(lex[i + 1]) == true)
+                            if (CheckIfVar(lex[i + 1]) == true)
                             {
                                 i++;
                                 string tmp = GetVar(lex[i]).ToString();
@@ -86,6 +83,10 @@ namespace LOLpreter
                             i = lex.Length;
                             break;
 
+                        case "CPLN":
+                            Console.Write("\r\n");
+                            i = lex.Length;
+                            break;
                         case "NOP":
                             i = lex.Length;
                             break;
@@ -94,12 +95,15 @@ namespace LOLpreter
                             var inputvar = lex[i + 1];
                             if (!CheckIfVar(inputvar)) { return; }
                             Console.StartIn();
-                            while (Console.awaitinput) { System.Threading.Thread.Sleep(2); }
+                            while (Console.awaitinput) {
+                                System.Threading.Thread.Sleep(2);
+                                if (Console.HaltExec) { Console.HaltExec = false; return; }
+                            }
                             SetVar(inputvar, Console.ReadBuffer());
                             i = lex.Length;
                             break;
 
-                        case "ASGN":
+                        case "ASGN": //Assign variable with value/expression
                             i++;
                             var ASGNvar = lex[i];
 
@@ -110,7 +114,7 @@ namespace LOLpreter
                             i = lex.Length;
                             break;
 
-                        case "DCLV":
+                        case "DCLV": //Declare variable with initializer
                             var varname = lex[i+1];
                             object value = lex[i+3];
 
@@ -127,7 +131,7 @@ namespace LOLpreter
                             i = lex.Length;
                             break;
 
-                        case "DCLN":
+                        case "DCLN": //Declare variable without initializer
                             var varname_n = lex[i+1];
 
                             if (WorkingMem.ContainsKey(varname_n)) {
@@ -142,6 +146,15 @@ namespace LOLpreter
                             break;
                         
                     }
+                   System.Threading.Thread.Sleep(60);
+                    var lni = String.Join(" ", lex);
+                    
+                    MainWindow.Dispatcher.BeginInvoke((Action)(() =>
+                    {
+                        Lexer.DebugWin.setSymbols(WorkingMem.Values.ToList());
+                       // System.Threading.Thread.Sleep(250);
+
+                    }));
                 }
             }
 
@@ -241,25 +254,25 @@ namespace LOLpreter
                         r = Math.Min(CDb(x), CDb(y));
                         LiteralsStack.Push(r);
                         break;
-                    case "_AND":
+                    case "AND":
                         y = LiteralsStack.Pop();
                         x = LiteralsStack.Pop();
                         r = CBl(x) & CBl(y);
                         LiteralsStack.Push(r);
                         break;
-                    case "__OR":
+                    case "OR":
                         y = LiteralsStack.Pop();
                         x = LiteralsStack.Pop();
                         r = CBl(x) | CBl(y);
                         LiteralsStack.Push(r);
                         break;
-                    case "_XOR":
+                    case "XOR":
                         y = LiteralsStack.Pop();
                         x = LiteralsStack.Pop();
                         r = CBl(x) ^ CBl(y);
                         LiteralsStack.Push(r);
                         break;
-                    case "_NOT":
+                    case "NOT":
                         x = LiteralsStack.Pop();
                         r = !CBl(x);
                         LiteralsStack.Push(r);
@@ -272,11 +285,34 @@ namespace LOLpreter
                         } while (LiteralsStack.Count != 0);
                         LiteralsStack.Push(r);
                         break;
-                    case "A_OR":
+                    case "ALOR":
                         r = CBl(LiteralsStack.Pop());
                         do
                         {
                             r = CBl(r) | CBl(LiteralsStack.Pop());
+                        } while (LiteralsStack.Count != 0);
+                        LiteralsStack.Push(r);
+                        break;
+                    case "MKAY":
+                        break;
+                    case "SMOOSH":
+                        if (LiteralsStack.Peek().ToString().Contains(Lexer.UNICODE_SECTION))
+                        {
+                            r = StringTable[LiteralsStack.Pop().ToString()];
+                        } else
+                        {
+                            r = LiteralsStack.Pop().ToString();
+                        }
+                        do
+                        {
+                            if (LiteralsStack.Peek().ToString().Contains(Lexer.UNICODE_SECTION))
+                            {
+                                r += StringTable[LiteralsStack.Pop().ToString()];
+                            }
+                            else
+                            {
+                                r += LiteralsStack.Pop().ToString();
+                            }
                         } while (LiteralsStack.Count != 0);
                         LiteralsStack.Push(r);
                         break;
@@ -293,10 +329,14 @@ namespace LOLpreter
                 }
             }
 
-            if(LiteralsStack.Count > 1) { ErrorHelper.throwError(ErrorLevel.Error, ErrorCodes.MULTIPLE_DECLARATION, Tokenizer.ErrorList); return null; }
+            if(LiteralsStack.Count > 1) {
+                ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STACK_OVERFLOW, Tokenizer.ErrorList);
+                return null; }
             return LiteralsStack.Pop();
         }
         
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -348,14 +388,14 @@ namespace LOLpreter
         /// </summary>
         /// <param name="exp"></param>
         /// <returns></returns>
-        public ExpressionType DetExpressionType(string exp)
+        public static ExpressionType DetExpressionType(string exp)
         {
-            string[] BoolOps = {"BOTH-OF",
-                                "EITHER-OF",
-                                "WON-OF",
-                                "NOT",
-                                "ALL-OF",
-                                "ANY-OF"};
+            string[] BoolOps = {"AND",
+                                "XOR",
+                                "OR",
+                                "AAND",
+                                "ALOR",
+                                "NOT"};
 
             string[] NumOps = {"ADD",
                                 "SUB",

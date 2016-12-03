@@ -19,7 +19,8 @@ namespace LOLpreter
         STRAY_CONDITIONALS,
         SYNTAX_ERROR,
         MULTIPLE_DECLARATION,
-        UNKNOWN_OR_UNDECLARED_VARIABLE
+        UNKNOWN_OR_UNDECLARED_VARIABLE,
+        STACK_OVERFLOW
     }
 
     public enum ErrorLevel
