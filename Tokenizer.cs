@@ -26,13 +26,13 @@ namespace LOLpreter
                                     {
                                         {@"I HAS A","I-HAS-A"},
                                         {@"BOTH SAEM","BOTH-SAEM"},
-                                        {@"SUM OF","SUM-OF"},
-                                        {@"DIFF OF","DIFF OF"},
-                                        {@"PRODUKT OF","PRODUKT-OF"},
-                                        {@"QUOSHUNT OF","QUOSHUNT-OF"},
-                                        {@"MOD OF","MOD-OF"},
-                                        {@"BIGGR OF","BIGGR-OF"},
-                                        {@"SMALLR OF","SMALLR-OF"},
+                                        {@"SUM OF","ADD"},
+                                        {@"DIFF OF","SUB"},
+                                        {@"PRODUKT OF","PROD"},
+                                        {@"QUOSHUNT OF","QUOT"},
+                                        {@"MOD OF","MOD"},
+                                        {@"BIGGR OF","MAX"},
+                                        {@"SMALLR OF","MIN"},
                                         {@"O RLY?","O-RLY?"},
                                         {@"YA RLY","YA-RLY"},
                                         {@"NO WAI","NO-WAI"},
@@ -100,11 +100,12 @@ namespace LOLpreter
 
         /// <summary>
         /// Big-ass function to classify the variables
+        /// and simplify them
         /// </summary>
         /// <param name="progTokenTableStg1"></param>
         private void tokenClassify(Dictionary<int, string[]> progTokenTableStg1)
         {
-
+            string lolasm = "";
             for (int line = 0;line < progTokenTableStg1.Keys.ToArray().Length - 1; line++)
             {
                 string[] curline = ProgTokenTableStg1[line];
@@ -114,6 +115,7 @@ namespace LOLpreter
                     switch (frame)
                     {
                         case "I-HAS-A":
+
                             indx++;
                             var varname = curline[indx];
                             indx++;
@@ -121,25 +123,29 @@ namespace LOLpreter
                             {
                                 indx++;
                                 var varvalue = String.Join("|",curline[indx]);
+
                                 Add2ndStgToken(line, OperandType.Command, "DCLV");
                                 Add2ndStgToken(line, OperandType.Variable, varname);
                                 Add2ndStgToken(line, OperandType.Expression, varvalue);
+
                                 VariableMemory.Add(varname, new Variable() { name = varname, DataType = DetermineDataType(varvalue), Value = varvalue });
-                                DebugWin.Print("DCLV "+ varname + " EQ " + varvalue + " TYPE " + VariableMemory[varname].DataType.ToString());
+                                lolasm += Newline("DCLV "+ varname + " EQ " + varvalue);
                             }
                             else
                             {
                                 Add2ndStgToken(line, OperandType.Command, "DCLN");
                                 Add2ndStgToken(line, OperandType.Variable, varname);
+
                                 VariableMemory.Add(varname, new Variable() { name = varname, DataType = DataTypes.NOOB });
-                                DebugWin.Print("DCLN " + varname + " TYPE " + VariableMemory[varname].DataType.ToString());
+                                lolasm += Newline("DCLN " + varname);
                             }
                             indx = tokenCount;
                             break;
 
                         case "VISIBLE":
+
                             var command = "CPRT";
-                            if (curline.Last() == "!") { command = "CPLN"; }
+                            if (curline.Last() == "!") { command = "CPLN"; } //Switch to visible with feed when ! exist 
                             if (tokenCount > 2)
                             {
                                 if (command=="CPLN") { tokenCount -= 1; } //Exclude the ! token
@@ -147,76 +153,112 @@ namespace LOLpreter
                                 {
                                     Add2ndStgToken(line, OperandType.Command, command);
                                     Add2ndStgToken(line, OperandType.Expression, curline[vsargs]);
-                                    DebugWin.Print(command + " " + curline[vsargs]);
+                                    lolasm += Newline(command + " " + curline[vsargs]);
                                 }
                             }
                             else
                             {
                                 Add2ndStgToken(line, OperandType.Command, command);
                                 Add2ndStgToken(line, OperandType.Expression, curline[indx + 1]);
-                                DebugWin.Print(command + " " + curline[indx + 1]);
+                                lolasm += Newline(command + " " + curline[indx + 1]);
                             }
+
                             indx = tokenCount;
                             break;
+
                         case "GIMMEH":
-                            Add2ndStgToken(line, OperandType.Command, "HLTI");
+
+                            Add2ndStgToken(line, OperandType.Command, "INPT");
                             Add2ndStgToken(line, OperandType.Argument, curline[indx + 1]);
-                            DebugWin.Print("HLTI" + "-->" + curline[indx + 1]);
+                            lolasm += Newline("INPT" + " " + curline[indx + 1]);
+
                             indx = tokenCount;
                             break;
+
                         case "WTF":
                         case "WTF?":
                             BranchingStack.Push(CreateToken(line, OperandType.Command, "SWTC"));
-                            DebugWin.Print("SWTC");
+                            lolasm += Newline("SWTC");
+
                             indx = tokenCount;
                             break;
+
                         case "O-RLY":
                         case "O-RLY?":
+
                             BranchingStack.Push(CreateToken(line, OperandType.Command, "COMP"));
-                            DebugWin.Print("COMP");
+                            lolasm += Newline("COMP");
+
                             indx = tokenCount;
                             break;
+
                         case "OIC":
+
                             if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_ENDING, ErrorList, line); break; }
                             var k = BranchingStack.Pop();
+
                             var labelName = k.tokenStr + "_" + k.lineAddress.ToString();
-                            DebugWin.Print(":"+ labelName);
+                            lolasm += Newline(":" + labelName);
                             Add2ndStgToken(line, OperandType.Label, labelName);
+
                             indx = tokenCount;
                             break;
+
                         case "YA-RLY":
                         case "YA-RLY?":
+
                             if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList,line); break; }
                             var yr = BranchingStack.Peek();
+
                             var labelNameYRL = yr.tokenStr + "_" + yr.lineAddress.ToString();
                             Add2ndStgToken(line, OperandType.Command, "JNT");
                             Add2ndStgToken(line, OperandType.Label, labelNameYRL);
-                            DebugWin.Print("JNT [" + labelNameYRL + "]");
+                            lolasm += Newline("JNT [" + labelNameYRL + "]");
+
                             indx = tokenCount;
                             break;
-                        case "NO-RLY":
-                        case "NO-RLY?":
+
+                        case "NO-WAI":
+                        case "NO-WAI?":
+
                             if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
                             var nr = BranchingStack.Peek();
-                            DebugWin.Print("JNT [" + nr.tokenStr + "_" + nr.lineAddress.ToString() + "]");
-                            Add2ndStgToken(line, OperandType.Command, "JNT");
-                            Add2ndStgToken(line, OperandType.Expression, curline[indx + 1]);
+
+                            var labelNameNRL = nr.tokenStr + "_" + nr.lineAddress.ToString();
+                            Add2ndStgToken(line, OperandType.Command, "JNF");
+                            Add2ndStgToken(line, OperandType.Label, labelNameNRL);
+                            lolasm += Newline("JNF [" + labelNameNRL + "]");
+
                             indx = tokenCount;
                             break;
-                        default:
 
+                        case "GTFO":
+
+                            if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
+                            var gt = BranchingStack.Peek();
+
+                            var labelNameGTFO = gt.tokenStr + "_" + gt.lineAddress.ToString();
+                            Add2ndStgToken(line, OperandType.Command, "JMP");
+                            Add2ndStgToken(line, OperandType.Label, labelNameGTFO);
+                            lolasm += Newline("JMP [" + labelNameGTFO + "]");
+
+                            indx = tokenCount;
+                            break;
+
+                        default:
                             if (VariableMemory.ContainsKey(curline[indx]))
                             {
+                                
                                 if (tokenCount == 1)
                                 {
-                                    DebugWin.Print("  VAREXIST-->" + curline[indx] + " | TYPE: " + VariableMemory[curline[indx]].DataType.ToString());
+                                    lolasm += Newline("EQUL " + curline[indx]+" "+ "REG_IT");
                                     indx = tokenCount;
                                 } else
                                 {
-                                    if (curline[indx] == "R")
+                                    if (curline[indx+1] == "R")
                                     {
                                         var x = string.Join(" ", curline, indx + 2, tokenCount - 2);
-                                        DebugWin.Print(curline[indx] + "  ASSIGN-->" + x);
+                                        lolasm += Newline("EQUL "+ curline[indx] + " " + x);
                                         indx = tokenCount;
                                         break;
                                     }
@@ -224,18 +266,30 @@ namespace LOLpreter
 
                                 break;
                             }
+                            
 
-
-
-                            DebugWin.Print(String.Join(" ", curline));
+                            lolasm += Newline(String.Join(" ", curline));
                             indx = tokenCount;
                             break;
 
                     }
                 }
             }
+            int lin = 0;
+            string filter = "";
+            foreach(string ln in lolasm.Split("\r\n".ToCharArray(),StringSplitOptions.RemoveEmptyEntries))
+            {
+                DebugWin.Print(lin.ToString().PadRight(8) + ln);
+                filter += ln;
+                lin++;
+            }
+            lolasm = filter;
         }
 
+        public string Newline(string s)
+        {
+            return s + "\r\n";
+        }
         public void Add2ndStgToken(int programAddress, OperandType OperandType, string tokenStr, DataTypes DataType = DataTypes.NOOB)
         {
             ProgTokenTableStg2.Add(new Token() { OperandType = OperandType, tokenStr = tokenStr, DataType = DataType, lineAddress=programAddress });

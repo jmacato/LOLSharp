@@ -141,25 +141,13 @@ namespace LOLpreter
         /// <param name="raw">The raw text to process</param>
         private void SecondFilter(ref string raw)
         {
-            raw = Regex.Replace(raw, @"\.\.\.\r\n", "");
-            //Remove elipsis with newline
-
-            raw = Regex.Replace(raw, UNICODE_ELLIPSIS + "\r\n", "");
-            //Remove elipsis pt2
-
-            raw = Regex.Replace(raw, ",", "\r\n");
-            //Convert soft linefeed to hard
-
-            raw = Regex.Replace(raw, "\t|\\?", "");
-            //Remove Tabs and question marks
-
-            raw = Regex.Replace(raw, @"AN \b| AN\b", "");
-            //Remove Arity and OF's
-
+            raw = Regex.Replace(raw, @"\.\.\.\r\n", "");                        //Remove elipsis with newline
+            raw = Regex.Replace(raw, UNICODE_ELLIPSIS + "\r\n", "");            //Remove elipsis pt2
+            raw = Regex.Replace(raw, ",", "\r\n");                              //Convert soft linefeed to hard
+            raw = Regex.Replace(raw, "\t|\\?", "");                             //Remove Tabs and question marks
+            raw = Regex.Replace(raw, @"AN \b| AN\b", "");                       //Remove Arity and OF's
+            raw = Regex.Replace(raw, "\\!| \\!", " !");
             raw = Regex.Replace(raw, "[ ]{2,}", " ", RegexOptions.Multiline);
-            //Remove Tabs
-
-            raw = Regex.Replace(raw, "\\!", " !");
 
         }
 
