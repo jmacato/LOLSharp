@@ -211,7 +211,7 @@ namespace LOLpreter
                     case "QUOT":
                         y = LiteralsStack.Pop();
                         x = LiteralsStack.Pop();
-                        r = x / y;
+                        r = y / x;
                         LiteralsStack.Push(r);
                         break;
                     case "MOD":
