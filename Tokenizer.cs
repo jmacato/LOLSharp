@@ -142,8 +142,13 @@ namespace LOLpreter
                             if (curline.Last() == "!") { command = "CPLN"; }
                             if (tokenCount > 2)
                             {
-                                Add2ndStgToken(line, OperandType.Command, command);
-                                DebugWin.Print(command + " " + curline[indx + 1]);
+                                if (command=="CPLN") { tokenCount -= 1; } //Exclude the ! token
+                                for(int vsargs=1; vsargs<tokenCount;vsargs++) //Enumerate all arguments and make separate ASMlike commands
+                                {
+                                    Add2ndStgToken(line, OperandType.Command, command);
+                                    Add2ndStgToken(line, OperandType.Expression, curline[vsargs]);
+                                    DebugWin.Print(command + " " + curline[vsargs]);
+                                }
                             }
                             else
                             {
@@ -155,6 +160,7 @@ namespace LOLpreter
                             break;
                         case "GIMMEH":
                             Add2ndStgToken(line, OperandType.Command, "HLTI");
+                            Add2ndStgToken(line, OperandType.Argument, curline[indx + 1]);
                             DebugWin.Print("HLTI" + "-->" + curline[indx + 1]);
                             indx = tokenCount;
                             break;
@@ -167,20 +173,25 @@ namespace LOLpreter
                         case "O-RLY":
                         case "O-RLY?":
                             BranchingStack.Push(CreateToken(line, OperandType.Command, "COMP"));
-                            DebugWin.Print("BRNC");
+                            DebugWin.Print("COMP");
                             indx = tokenCount;
                             break;
                         case "OIC":
                             if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_ENDING, ErrorList, line); break; }
                             var k = BranchingStack.Pop();
-                            DebugWin.Print(":"+k.tokenStr+"_"+k.lineAddress.ToString());
+                            var labelName = k.tokenStr + "_" + k.lineAddress.ToString();
+                            DebugWin.Print(":"+ labelName);
+                            Add2ndStgToken(line, OperandType.Label, labelName);
                             indx = tokenCount;
                             break;
                         case "YA-RLY":
                         case "YA-RLY?":
                             if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList,line); break; }
                             var yr = BranchingStack.Peek();
-                            DebugWin.Print("JNT [" + yr.tokenStr + "_" + yr.lineAddress.ToString()+"]");
+                            var labelNameYRL = yr.tokenStr + "_" + yr.lineAddress.ToString();
+                            Add2ndStgToken(line, OperandType.Command, "JNT");
+                            Add2ndStgToken(line, OperandType.Label, labelNameYRL);
+                            DebugWin.Print("JNT [" + labelNameYRL + "]");
                             indx = tokenCount;
                             break;
                         case "NO-RLY":
@@ -188,6 +199,8 @@ namespace LOLpreter
                             if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
                             var nr = BranchingStack.Peek();
                             DebugWin.Print("JNT [" + nr.tokenStr + "_" + nr.lineAddress.ToString() + "]");
+                            Add2ndStgToken(line, OperandType.Command, "JNT");
+                            Add2ndStgToken(line, OperandType.Expression, curline[indx + 1]);
                             indx = tokenCount;
                             break;
                         default:
@@ -274,7 +287,9 @@ namespace LOLpreter
         Command,
         Expression,
         Literal,
-        Variable
+        Variable,
+        Argument,
+        Label
     }
 
     public enum DataTypes
