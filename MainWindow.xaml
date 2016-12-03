@@ -378,7 +378,7 @@
             <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Padding="0" Margin="10,3,10,3" Opacity="0.5"/>
             <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="startProg" Content="&#xE102;" Click="startProg_Click" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FF3AFF00" FontFamily="Segoe UI Symbol" FontSize="22" ToolTip="Run the Lulz"  />
             <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="debugWin" Content="&#xE178;" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FFFF5100" FontFamily="Segoe UI Symbol" FontSize="22" ToolTip="Show Debugging Window" Click="debugWin_Click"  />
-            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="consoleWin" Content="&#xE147;" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FF5FCCFF" FontFamily="Segoe UI Symbol" FontSize="22" ToolTip="Show Console Window"  />
+            <Button SnapsToDevicePixels="True" Style="{StaticResource ResourceKey=MetroButton}" x:Name="consoleWin" Content="&#xE147;" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FF5FCCFF" FontFamily="Segoe UI Symbol" FontSize="22" ToolTip="Show Console Window" Click="consoleWin_Click_1"  />
             <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Padding="0" Margin="10,3,10,3" Opacity="0.5"/>
             <TextBlock x:Name="DocTitle" Text="" Foreground="#7FFFFFFF" VerticalAlignment="Center" FontSize="16" TextTrimming="CharacterEllipsis" TextOptions.TextFormattingMode="Display" TextOptions.TextHintingMode="Fixed" Margin="0,10" Width="Auto" />
         </StackPanel>

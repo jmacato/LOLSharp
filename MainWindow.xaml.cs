@@ -207,8 +207,26 @@ namespace LOLpreter
             else
             {
                 DebugWin.Visibility = Visibility.Visible;
+                DebugWin.Activate();
             }
         }
+
+        /// <summary>
+        /// Show/Hide the Console window
+        /// </summary>
+        public void ToggleConsole()
+        {
+            if (Console.Visibility == Visibility.Visible)
+            {
+                Console.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                Console.Visibility = Visibility.Visible;
+                Console.Activate();
+            }
+        }
+
         /// <summary>
         /// Clear debugging window tables
         /// </summary>
@@ -303,6 +321,11 @@ namespace LOLpreter
         #endregion
         private void consoleWin_Click(object sender, RoutedEventArgs e)
         {
+        }
+
+        private void consoleWin_Click_1(object sender, RoutedEventArgs e)
+        {
+            ToggleConsole();
         }
     }
 }

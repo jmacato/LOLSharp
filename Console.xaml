@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LOLpreter"
         mc:Ignorable="d"
-        Title="Console" Height="361" Width="612.667" Background="#FF1D1D1D" Closing="Window_Closing">
+        Title="Console" Height="361" Width="612.667" Background="#FF1D1D1D" Closing="Window_Closing" PreviewKeyUp="Window_PreviewKeyUp">
     <Grid>
         <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" >
             <Border Background="#0FFFFFFF"  BorderThickness="1,1,1,1" CornerRadius="15" Margin="10,10,10,25">
                 <Grid Margin="10,10,0,10">
-                    <TextBox x:Name="Out"  Background="#00000000" Foreground="White" FontFamily="Consolas" FontSize="16"  BorderThickness="0" SnapsToDevicePixels="False" VerticalScrollBarVisibility="Auto" KeyUp="Out_KeyUp" Loaded="Out_Loaded" IsReadOnlyCaretVisible="True"/>
+                    <TextBox x:Name="Out" Background="#00000000" Foreground="White" FontFamily="Consolas" FontSize="16"  BorderThickness="0" SnapsToDevicePixels="False" VerticalScrollBarVisibility="Auto" Loaded="Out_Loaded" IsReadOnlyCaretVisible="True" IsReadOnly="True"/>
                 </Grid>
             </Border>
         </Grid>

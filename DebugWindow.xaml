@@ -197,14 +197,23 @@
                     <DataGrid x:Name="TokenTable" IsReadOnly="True"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Symbols">
+            <TabItem Header="Live Symbols">
                 <Grid Margin="-1">
-                    <DataGrid x:Name="SymbolTable" IsReadOnly="True"/>
+                    <DataGrid x:Name="SymbolTable" IsReadOnly="True" AutoGenerateColumns="False">
+                        <DataGrid.DataContext>
+                            <local:Variable/>
+                        </DataGrid.DataContext>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Variable Name" Binding="{Binding name}" />
+                            <DataGridTextColumn Header="Type" Binding="{Binding DataTypes}" />
+                            <DataGridTextColumn Header="Value" Binding="{Binding value}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
                 </Grid>
             </TabItem>
             <TabItem Header="Parser Output">
                 <Grid>
-                    <TextBox  x:Name="debugtxt" Background="Transparent" FontFamily="Consolas" Margin="5" AcceptsReturn="True" IsReadOnly="True" Foreground="White" FontSize="16"/>
+                    <TextBox BorderThickness="0" x:Name="debugtxt" Background="Transparent" FontFamily="Consolas" Margin="5" AcceptsReturn="True" IsReadOnly="True" Foreground="White" FontSize="16"/>
                 </Grid>
             </TabItem>
 

@@ -23,7 +23,10 @@ namespace LOLpreter
     {
 
         public string inputbuffer = "";
+        public int freezePoint = 0;
+
         public bool awaitinput = false;
+
 
         public Console()
         {
@@ -57,6 +60,7 @@ namespace LOLpreter
             this.Dispatcher.Invoke(() => {
                 Out.CaretBrush = new SolidColorBrush(Colors.White);
                 Out.CaretIndex = Out.Text.Length;
+                freezePoint = Out.Text.Length;
             });
         }
 
@@ -66,6 +70,7 @@ namespace LOLpreter
         /// <returns>User input</returns>
         public string ReadBuffer()
         {
+            freezePoint = 0;
             this.Dispatcher.Invoke(() => {
                 Out.CaretBrush = new SolidColorBrush(Colors.Transparent);
                 Out.CaretIndex = Out.Text.Length;
@@ -75,7 +80,10 @@ namespace LOLpreter
             return x;
         }
 
-        private void Out_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        /// <summary>
+        /// Emulate a terminal
+        /// </summary>
+        private void Window_PreviewKeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (awaitinput)
             {
@@ -84,10 +92,25 @@ namespace LOLpreter
                     awaitinput = false;
                     Out.Text += "\r\n";
                     return;
+                } else if (e.Key == Key.Back){
+                    if(inputbuffer.Length > 0)
+                    {
+                        inputbuffer= inputbuffer.Substring(0, inputbuffer.Length - 1);
+                        Out.Text= Out.Text.Substring(0, Out.Text.Length - 1);
+                    }
+                    else
+                    {
+                        Out.CaretIndex = freezePoint;
+                    }
+                }
+                else {
+                    inputbuffer += GetCharFromKey(e.Key);
+                    Out.Text += GetCharFromKey(e.Key);
                 }
 
-                inputbuffer += GetCharFromKey(e.Key);
             }
+            e.Handled = true;
+
             Out.CaretIndex = Out.Text.Length;
         }
 
@@ -102,6 +125,7 @@ namespace LOLpreter
             e.Cancel = true;
         }
 
+        #region Key Translation
         public enum MapType : uint
         {
             MAPVK_VK_TO_VSC = 0x0,
@@ -157,6 +181,8 @@ namespace LOLpreter
             }
             return ch;
         }
+        #endregion
+
 
 
     }

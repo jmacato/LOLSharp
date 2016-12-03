@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace LOLpreter
 {
@@ -27,7 +32,10 @@ namespace LOLpreter
         {
             Dictionary<string, Variable> x = new Dictionary<string, Variable>() {
             {"IT", new Variable() { name="IT", DataType=DataTypes.NOOB, value=null} },
-            {"REG_CMP", new Variable() { name="REG_CMP", DataType=DataTypes.NOOB, value=null}},};
+            {"REG_CMP", new Variable() { name="REG_CMP", DataType=DataTypes.NOOB, value=null}},
+            {"CON_BUF", new Variable() { name="CON_BUF", DataType=DataTypes.NOOB, value=null}}
+
+            };
             return x;
         }
 
@@ -50,11 +58,12 @@ namespace LOLpreter
                                         {@"HOW IZ I","HOW-IZ-I"},
                                         {@"IF U SAY SO","IF-U-SAY-SO"},
                                         {@"I IZ","I-IZ"},
-                                        {@"BOTH OF","BOTH-OF"},
-                                        {@"EITHER OF","EITHER-OF"},
-                                        {@"WON OF","WON-OF"},
-                                        {@"ALL OF","ALL-OF"},
-                                        {@"ANY OF","ANY-OF"},
+                                        {@"BOTH OF","_AND"},
+                                        {@"NOT","_NOT"},
+                                        {@"EITHER OF","_OR"},
+                                        {@"WON OF","_XOR"},
+                                        {@"ALL OF","AAND"},
+                                        {@"ANY OF","A_OR"},
                                         {@"IS NOW A","IS-NOW-A"},
                                         {@"FOUND YR","FOUND-YR"}
                                     };
@@ -150,7 +159,9 @@ namespace LOLpreter
                             break;
 
                         case "VISIBLE":
-                            
+
+                            String.Join(" ", curline.Skip(2));
+
                             for (Int64 vsargs = 1; vsargs < tokenCount; vsargs++) //Enumerate all arguments and make separate ASMlike commands
                             {
                                 lolasm += Newline("CPRT " + curline[vsargs]);
@@ -230,6 +241,12 @@ namespace LOLpreter
                         case "MOD":
                         case "MAX":
                         case "MIN":
+                        case "_AND":
+                        case "__OR":
+                        case "_XOR":
+                        case "_NOT":
+                        case "AAND":
+                        case "A_OR":
                             lolasm += Newline("ASGN IT "+String.Join(" ", curline));
                             break;
                         default:
@@ -382,3 +399,5 @@ namespace LOLpreter
     }
 
 }
+
+

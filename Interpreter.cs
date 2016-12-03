@@ -15,10 +15,7 @@ namespace LOLpreter
         public MainWindow MainWindow;
 
         public Dictionary<string, string> StringTable { get; set; }
-        public Dictionary<string, Variable> WorkingMem = new Dictionary<string, Variable>() {
-            {"IT", new Variable() { name="IT", DataType=DataTypes.NOOB, value=null} } ,
-            {"REG_CMP", new Variable() { name="REG_CMP", DataType=DataTypes.NOOB, value=null} } ,
-        };
+        public Dictionary<string, Variable> WorkingMem = new Dictionary<string, Variable>();
 
         BackgroundWorker ExecutionThread = new BackgroundWorker();
         public string[] prog;
@@ -97,7 +94,7 @@ namespace LOLpreter
                             var inputvar = lex[i + 1];
                             if (!CheckIfVar(inputvar)) { return; }
                             Console.StartIn();
-                            while (Console.awaitinput) { System.Threading.Thread.Sleep(50); }
+                            while (Console.awaitinput) { System.Threading.Thread.Sleep(2); }
                             SetVar(inputvar, Console.ReadBuffer());
                             i = lex.Length;
                             break;
@@ -109,12 +106,7 @@ namespace LOLpreter
                             var ASGN_ExprArray = lex.Skip(2).Take(lex.Length - 2).ToArray();
                             var ASGN_ExprString = String.Join(" ", ASGN_ExprArray);
                             var ASGN_ExpType = DetExpressionType(ASGN_ExprString);
-
-                            if (ASGN_ExpType == ExpressionType.Numerical)
-                            {
-                                SetVar(ASGNvar, ProcessNumericalExpression(ASGN_ExprArray));
-                            }
-
+                            SetVar(ASGNvar, ProcessExpression(ASGN_ExprArray));
                             i = lex.Length;
                             break;
 
@@ -165,27 +157,44 @@ namespace LOLpreter
             MainWindow.Dispatcher.BeginInvoke((Action)(() =>
             {
                 MainWindow.startProg.IsEnabled = false;
+                Console.Visibility = Visibility.Visible;
+                Console.Activate();
             }));
 
             WorkingMem.Clear();
             WorkingMem = Tokenizer.BuiltInVariables();
 
-            if (Console.Visibility == Visibility.Collapsed) { Console.Visibility = Visibility.Visible;}
             prog = progin;
             ExecutionThread.RunWorkerAsync();
         }
 
-        public Stack<string> OperatorStack = new Stack<string>();
-        public Stack<double> LiteralsStack = new Stack<double>();
+        public Stack<object> LiteralsStack = new Stack<object>();
+
+        public double CDb(object x)
+        {
+            return Convert.ToDouble(x);
+        }
+        public bool CBl(object x)
+        {
+            if (x.ToString().ToUpper().Contains("WIN"))
+            {
+                return true;
+            }
+            else if (x.ToString().ToUpper().Contains("FAIL"))
+            {
+                return false;
+            }
+            return Convert.ToBoolean(x);
+        }
 
         /// <summary>
-        /// 
+        /// Parse a math expression to final result
         /// </summary>
         /// <param name="Ops"></param>
         /// <returns></returns>
-        public double ProcessNumericalExpression(string[] Ops)
+        public object ProcessExpression(string[] Ops)
         {
-            double x = 0, y = 0, r = 0;
+            object x = 0, y = 0, r = 0;
             foreach (string op in Ops.Reverse())
             {
                 switch (op)
@@ -193,60 +202,101 @@ namespace LOLpreter
                     case "ADD":
                         y = LiteralsStack.Pop();
                         x = LiteralsStack.Pop();
-                        r = x + y;
+                        r = CDb(x) + CDb(y);
                         LiteralsStack.Push(r);
                         break;
                     case "SUB":
                         y = LiteralsStack.Pop();
                         x = LiteralsStack.Pop();
-                        r = x - y;
+                        r = CDb(x) - CDb(y);
                         LiteralsStack.Push(r);
                         break;
                     case "PROD":
                         y = LiteralsStack.Pop();
                         x = LiteralsStack.Pop();
-                        r = x * y;
+                        r = CDb(x) * CDb(y);
                         LiteralsStack.Push(r);
                         break;
                     case "QUOT":
                         y = LiteralsStack.Pop();
                         x = LiteralsStack.Pop();
-                        r = y / x;
+                        r = CDb(y) / CDb(x);
                         LiteralsStack.Push(r);
                         break;
                     case "MOD":
                         y = LiteralsStack.Pop();
                         x = LiteralsStack.Pop();
-                        r = x % y;
+                        r = CDb(x) % CDb(y);
                         LiteralsStack.Push(r);
                         break;
                     case "MAX":
                         y = LiteralsStack.Pop();
                         x = LiteralsStack.Pop();
-                        r = Math.Max(x, y);
+                        r = Math.Max(CDb(x), CDb(y));
                         LiteralsStack.Push(r);
                         break;
                     case "MIN":
                         y = LiteralsStack.Pop();
                         x = LiteralsStack.Pop();
-                        r = Math.Min(x, y);
+                        r = Math.Min(CDb(x), CDb(y));
+                        LiteralsStack.Push(r);
+                        break;
+                    case "_AND":
+                        y = LiteralsStack.Pop();
+                        x = LiteralsStack.Pop();
+                        r = CBl(x) & CBl(y);
+                        LiteralsStack.Push(r);
+                        break;
+                    case "__OR":
+                        y = LiteralsStack.Pop();
+                        x = LiteralsStack.Pop();
+                        r = CBl(x) | CBl(y);
+                        LiteralsStack.Push(r);
+                        break;
+                    case "_XOR":
+                        y = LiteralsStack.Pop();
+                        x = LiteralsStack.Pop();
+                        r = CBl(x) ^ CBl(y);
+                        LiteralsStack.Push(r);
+                        break;
+                    case "_NOT":
+                        x = LiteralsStack.Pop();
+                        r = !CBl(x);
+                        LiteralsStack.Push(r);
+                        break;
+                    case "AAND":
+                        r = CBl(LiteralsStack.Pop());
+                        do
+                        {
+                            r = CBl(r) & CBl(LiteralsStack.Pop());
+                        } while (LiteralsStack.Count != 0);
+                        LiteralsStack.Push(r);
+                        break;
+                    case "A_OR":
+                        r = CBl(LiteralsStack.Pop());
+                        do
+                        {
+                            r = CBl(r) | CBl(LiteralsStack.Pop());
+                        } while (LiteralsStack.Count != 0);
                         LiteralsStack.Push(r);
                         break;
                     default:
                         if (CheckIfVar(op))
                         {
                             var u = GetVar(op);
-                            LiteralsStack.Push(Convert.ToDouble(u));
+                            LiteralsStack.Push(u);
                         } else
                         {
-                            LiteralsStack.Push(Convert.ToDouble(op));
+                            LiteralsStack.Push(op);
                         }
                         break;
                 }
             }
+
+            if(LiteralsStack.Count > 1) { ErrorHelper.throwError(ErrorLevel.Error, ErrorCodes.MULTIPLE_DECLARATION, Tokenizer.ErrorList); return null; }
             return LiteralsStack.Pop();
         }
-
+        
         /// <summary>
         /// 
         /// </summary>
