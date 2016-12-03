@@ -7,12 +7,12 @@ using System.Text.RegularExpressions;
 
 namespace LOLpreter
 {
-    class Tokenizer
+    public class Tokenizer
     {
         public DebugWindow DebugWin;
-        
-        #region Declares
 
+        #region Declares
+        public List<Error> ErrorList;
         //First pass token table
         public Dictionary<int,string[]> ProgTokenTableStg1 = new Dictionary<int, string[]>();
         //Second table for classified tokens
@@ -20,7 +20,7 @@ namespace LOLpreter
         //Lists definitions of each token, to be displayed in debugwin
         public Dictionary<Token, string> TokenDescriptorTable = new Dictionary<Token, string>();
         public Dictionary<string, Variable> VariableMemory = new Dictionary<string, Variable>();
-        public Stack<string> BranchingStack = new Stack<string>();
+        public Stack<Token> BranchingStack = new Stack<Token>();
 
         Dictionary<string, string> CompressOps = new Dictionary<string, string>
                                     {
@@ -33,7 +33,7 @@ namespace LOLpreter
                                         {@"MOD OF","MOD-OF"},
                                         {@"BIGGR OF","BIGGR-OF"},
                                         {@"SMALLR OF","SMALLR-OF"},
-                                        {@"O RLY?","O RLY?"},
+                                        {@"O RLY?","O-RLY?"},
                                         {@"YA RLY","YA-RLY"},
                                         {@"NO WAI","NO-WAI"},
                                         {@"IM IN YR","IM-IN-YR"},
@@ -120,20 +120,19 @@ namespace LOLpreter
                             if (tokenCount > 2 && curline[indx] == "ITZ")
                             {
                                 indx++;
-                                var varvalue = curline[indx];
-                                Create2ndStgToken(line, OperandType.Command, "DCLV");
-                                Create2ndStgToken(line, OperandType.Variable, varname);
-                                Create2ndStgToken(line, OperandType.Literal, varvalue);
+                                var varvalue = String.Join("|",curline[indx]);
+                                Add2ndStgToken(line, OperandType.Command, "DCLV");
+                                Add2ndStgToken(line, OperandType.Variable, varname);
+                                Add2ndStgToken(line, OperandType.Expression, varvalue);
                                 VariableMemory.Add(varname, new Variable() { name = varname, DataType = DetermineDataType(varvalue), Value = varvalue });
-                                DebugWin.Print(atos(line) + " DECLARE-->" + varname + " TYPE " + VariableMemory[varname].DataType.ToString());
-                                DebugWin.Print(" " + varname + "  ASSIGN-->" + varvalue);
+                                DebugWin.Print("DCLV "+ varname + " EQ " + varvalue + " TYPE " + VariableMemory[varname].DataType.ToString());
                             }
                             else
                             {
-                                Create2ndStgToken(line, OperandType.Command, "DCLN");
-                                Create2ndStgToken(line, OperandType.Variable, varname);
+                                Add2ndStgToken(line, OperandType.Command, "DCLN");
+                                Add2ndStgToken(line, OperandType.Variable, varname);
                                 VariableMemory.Add(varname, new Variable() { name = varname, DataType = DataTypes.NOOB });
-                                DebugWin.Print(atos(line) + " DECLARE-->" + varname + " TYPE " + VariableMemory[varname].DataType.ToString());
+                                DebugWin.Print("DCLN " + varname + " TYPE " + VariableMemory[varname].DataType.ToString());
                             }
                             indx = tokenCount;
                             break;
@@ -143,39 +142,68 @@ namespace LOLpreter
                             if (curline.Last() == "!") { command = "CPLN"; }
                             if (tokenCount > 2)
                             {
-                                Create2ndStgToken(line, OperandType.Command, command);
-
-                                DebugWin.Print(atos(line) + " " + command + "-->" + curline[indx + 1]);
+                                Add2ndStgToken(line, OperandType.Command, command);
+                                DebugWin.Print(command + " " + curline[indx + 1]);
                             }
                             else
                             {
-                                Create2ndStgToken(line, OperandType.Command, command);
-                                Create2ndStgToken(line, OperandType.Expression, curline[indx + 1]);
-                                DebugWin.Print(atos(line) + " " + command + "-->" + curline[indx + 1]);
+                                Add2ndStgToken(line, OperandType.Command, command);
+                                Add2ndStgToken(line, OperandType.Expression, curline[indx + 1]);
+                                DebugWin.Print(command + " " + curline[indx + 1]);
                             }
                             indx = tokenCount;
                             break;
-
                         case "GIMMEH":
-                            Create2ndStgToken(line, OperandType.Command, "HLTI");
+                            Add2ndStgToken(line, OperandType.Command, "HLTI");
                             DebugWin.Print("HLTI" + "-->" + curline[indx + 1]);
                             indx = tokenCount;
                             break;
-
+                        case "WTF":
+                        case "WTF?":
+                            BranchingStack.Push(CreateToken(line, OperandType.Command, "SWTC"));
+                            DebugWin.Print("SWTC");
+                            indx = tokenCount;
+                            break;
+                        case "O-RLY":
+                        case "O-RLY?":
+                            BranchingStack.Push(CreateToken(line, OperandType.Command, "COMP"));
+                            DebugWin.Print("BRNC");
+                            indx = tokenCount;
+                            break;
+                        case "OIC":
+                            if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_ENDING, ErrorList, line); break; }
+                            var k = BranchingStack.Pop();
+                            DebugWin.Print(":"+k.tokenStr+"_"+k.lineAddress.ToString());
+                            indx = tokenCount;
+                            break;
+                        case "YA-RLY":
+                        case "YA-RLY?":
+                            if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList,line); break; }
+                            var yr = BranchingStack.Peek();
+                            DebugWin.Print("JNT [" + yr.tokenStr + "_" + yr.lineAddress.ToString()+"]");
+                            indx = tokenCount;
+                            break;
+                        case "NO-RLY":
+                        case "NO-RLY?":
+                            if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
+                            var nr = BranchingStack.Peek();
+                            DebugWin.Print("JNT [" + nr.tokenStr + "_" + nr.lineAddress.ToString() + "]");
+                            indx = tokenCount;
+                            break;
                         default:
 
                             if (VariableMemory.ContainsKey(curline[indx]))
                             {
                                 if (tokenCount == 1)
                                 {
-                                    DebugWin.Print(atos(line) + "  VAREXIST-->" + curline[indx] + " | TYPE: " + VariableMemory[curline[indx]].DataType.ToString());
+                                    DebugWin.Print("  VAREXIST-->" + curline[indx] + " | TYPE: " + VariableMemory[curline[indx]].DataType.ToString());
                                     indx = tokenCount;
                                 } else
                                 {
                                     if (curline[indx] == "R")
                                     {
                                         var x = string.Join(" ", curline, indx + 2, tokenCount - 2);
-                                        DebugWin.Print(atos(line) + " " + curline[indx] + "  ASSIGN-->" + x);
+                                        DebugWin.Print(curline[indx] + "  ASSIGN-->" + x);
                                         indx = tokenCount;
                                         break;
                                     }
@@ -186,7 +214,7 @@ namespace LOLpreter
 
 
 
-                            DebugWin.Print(atos(line) + " - UNPROCESSED - " + String.Join(" ", curline));
+                            DebugWin.Print(String.Join(" ", curline));
                             indx = tokenCount;
                             break;
 
@@ -195,9 +223,14 @@ namespace LOLpreter
             }
         }
 
-        public void Create2ndStgToken(int programAddress, OperandType OperandType, string tokenStr, DataTypes DataType = DataTypes.NOOB)
+        public void Add2ndStgToken(int programAddress, OperandType OperandType, string tokenStr, DataTypes DataType = DataTypes.NOOB)
         {
             ProgTokenTableStg2.Add(new Token() { OperandType = OperandType, tokenStr = tokenStr, DataType = DataType, lineAddress=programAddress });
+        }
+
+        public Token CreateToken(int programAddress, OperandType OperandType, string tokenStr, DataTypes DataType = DataTypes.NOOB)
+        {
+           return (new Token() { OperandType = OperandType, tokenStr = tokenStr, DataType = DataType, lineAddress = programAddress });
         }
 
         public string atos(object stringIn)
@@ -208,21 +241,7 @@ namespace LOLpreter
         /// <summary>
         /// Determines the datatypes of literals
         /// </summary>
-        /// <param name="value"></param>
-        ///// <returns></returns>
-        //public DataTypes DetermineDataType(object value)
-        //{
-        //    int x1 ;
-        //    bool isInteger = int.TryParse(value.ToString(), out x1);
-        //    double x2;
-        //    bool isFloat = double.TryParse(value.ToString(), out x2);
-        //    if (isInteger) { return DataTypes.NUMBR; }
-        //    if (isFloat) { return DataTypes.NUMBAR; }
-        //    if (value.ToString().Contains(Lexer.UNICODE_SECTION)) { return DataTypes.YARN; }
-        //    if (value.ToString().Contains("WIN") || value.ToString().Contains("FAIL")) { return DataTypes.TROOF;}
-        //    return DataTypes.NOOB;
-        //}
-
+        /// <param name="expression"></param>
         public DataTypes DetermineDataType(string expression)
         {
             var results = from Arg in DTRegex
@@ -249,9 +268,7 @@ namespace LOLpreter
 
 
     }
-
-
-
+    
     public enum OperandType
     {
         Command,

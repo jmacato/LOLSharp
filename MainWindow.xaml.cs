@@ -20,7 +20,7 @@ namespace LOLpreter
         DebugWindow DebugWin = new DebugWindow();
         Lexer Lexer = new Lexer();
         Tokenizer Tokenizer = new Tokenizer();
-
+        
         /* Property accessors for handling source files */
         public string CurrentDocumentPath { get; set; }
         public bool CurrentDocumentModified = false;
@@ -57,7 +57,7 @@ namespace LOLpreter
 
             Lexer.DebugWin = DebugWin;
             Tokenizer.DebugWin = DebugWin;
-
+            Tokenizer.ErrorList = Lexer.ErrorList;
             //Load LOLCODE syntax highlighting file
             using (Stream s = this.GetType().Assembly.GetManifestResourceStream("LOLpreter.LOL.xshd"))
             {
