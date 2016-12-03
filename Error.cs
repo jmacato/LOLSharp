@@ -16,7 +16,9 @@ namespace LOLpreter
         INVALID_MULTILINE_COMMENT,
         STRAY_COMMENT_DELIMITER,
         STRAY_ENDING,
-        STRAY_CONDITIONALS
+        STRAY_CONDITIONALS,
+        SYNTAX_ERROR,
+        MULTIPLE_DECLARATION
     }
 
     public enum ErrorLevel
@@ -30,15 +32,15 @@ namespace LOLpreter
     {
         public ErrorLevel ErrorLevel { get; set; }
         public ErrorCodes ErrorCode { get; set; }
-        public int line { get; set; }
-        public int position { get; set; }
+        public Int64 line { get; set; }
+        public Int64 position { get; set; }
     }
     
     public static class ErrorHelper
     {
 
         //Oopsie, somebody messed up ze lolz
-        public static void throwError(ErrorLevel ErrorLevel, ErrorCodes ErrorCode, List<Error> ErrorList, int line = 0, int pos = 0)
+        public static void throwError(ErrorLevel ErrorLevel, ErrorCodes ErrorCode, List<Error> ErrorList, Int64 line = 0, Int64 pos = 0)
         {
             Error curError = new Error();
             curError.line = line;
@@ -59,9 +61,9 @@ namespace LOLpreter
         }
 
         //Count all unignorable errors
-        public static int CountBreakingErrors(List<Error> ErrList)
+        public static Int64 CountBreakingErrors(List<Error> ErrList)
         {
-            int totalerrors = 0;
+            Int64 totalerrors = 0;
             if (ErrList.Count == 0) { return totalerrors; }
             foreach (Error Errors in ErrList)
             {

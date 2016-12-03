@@ -1,0 +1,19 @@
+﻿<Window x:Class="LOLpreter.Console"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LOLpreter"
+        mc:Ignorable="d"
+        Title="Console" Height="361" Width="612.667" Background="#FF1D1D1D" Closing="Window_Closing">
+    <Grid>
+        <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" >
+            <Border Background="#0FFFFFFF"  BorderThickness="1,1,1,1" CornerRadius="15" Margin="10,10,10,25">
+                <Grid Margin="10,10,0,10">
+                    <RichTextBox x:Name="Out"  Background="#00000000" Foreground="White" FontFamily="Consolas" FontSize="16"  BorderThickness="0" SnapsToDevicePixels="False" VerticalScrollBarVisibility="Auto" KeyUp="Out_KeyUp" Loaded="Out_Loaded" IsReadOnly="True" IsReadOnlyCaretVisible="True" />
+                </Grid>
+            </Border>
+        </Grid>
+
+    </Grid>
+</Window>

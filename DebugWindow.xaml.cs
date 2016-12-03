@@ -31,7 +31,7 @@ namespace LOLpreter
         }
         public void Print(string x)
         {
-            debugtxt.Text += x + "\r\n";
+            debugtxt.Text += x + "\n";
         }
     }
 }

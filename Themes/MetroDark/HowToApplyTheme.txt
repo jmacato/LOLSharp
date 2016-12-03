@@ -1,4 +1,4 @@
-﻿To apply the Infragistics WPF MetroDark theme to your WPF application, paste the following code into your App.xaml
+﻿To apply the Infragistics WPF MetroDark theme to your WPF application, paste the following code Int6464o your App.xaml
 
     <Application.Resources>
         <ResourceDictionary>

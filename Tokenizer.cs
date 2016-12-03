@@ -14,7 +14,7 @@ namespace LOLpreter
         #region Declares
         public List<Error> ErrorList;
         //First pass token table
-        public Dictionary<int,string[]> ProgTokenTableStg1 = new Dictionary<int, string[]>();
+        public Dictionary<Int64,string[]> ProgTokenTableStg1 = new Dictionary<Int64, string[]>();
         //Second table for classified tokens
         public List<Token> ProgTokenTableStg2 = new List<Token>();
         //Lists definitions of each token, to be displayed in debugwin
@@ -58,6 +58,12 @@ namespace LOLpreter
                             {@"""[^\""]*""","String"},
                             {@"[A-Za-z][A-Za-z0-9_]*","Variable"}
                         };
+
+        public string lolasm = "";
+        public List<string> prog_asm = new List<string>();
+        public Dictionary<string,Int64> jumplabels = new Dictionary<string, Int64>();
+
+
         #endregion
 
         /// <summary>
@@ -71,6 +77,10 @@ namespace LOLpreter
             ProgTokenTableStg2.Clear();
             TokenDescriptorTable.Clear();
             VariableMemory.Clear();
+            prog_asm.Clear();
+            BranchingStack.Clear();
+            jumplabels.Clear();
+            lolasm = "";
 
             foreach (string x in raw.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
             {
@@ -85,57 +95,44 @@ namespace LOLpreter
 
             }
             DebugWin.Print("-**-*-*-**--* er *-*-*-*-*--*-*-");
-
-
-            tokenClassify(ProgTokenTableStg1);
-
-            DebugWin.Print("-**-*-*-**--* OPCODES *-*-*-*-*--*-*-");
-
-            foreach (Token s in ProgTokenTableStg2)
-            {
-                DebugWin.Print("0x"+s.lineAddress.ToString("X").PadRight(10, ' ') + "| " + atos(s.OperandType).PadLeft(10, ' ')+ " "+ s.tokenStr );
-            }
-
+            tokenRestruct(ProgTokenTableStg1);
         }
 
         /// <summary>
-        /// Big-ass function to classify the variables
-        /// and simplify them
+        /// Big-ass function to restructure the program
         /// </summary>
         /// <param name="progTokenTableStg1"></param>
-        private void tokenClassify(Dictionary<int, string[]> progTokenTableStg1)
+        private void tokenRestruct(Dictionary<Int64, string[]> progTokenTableStg1)
         {
-            string lolasm = "";
-            for (int line = 0;line < progTokenTableStg1.Keys.ToArray().Length - 1; line++)
+            for (Int64 line = 0;line < progTokenTableStg1.Keys.ToArray().Length; line++)
             {
                 string[] curline = ProgTokenTableStg1[line];
-                int tokenCount = curline.Length;
-                for (int indx = 0; indx < tokenCount; indx++){
+                Int64 tokenCount = curline.Length;
+                for (Int64 indx = 0; indx < tokenCount; indx++){
                     string frame = curline[indx].Trim();
                     switch (frame)
                     {
-                        case "I-HAS-A":
-
+                        case "HAI": //Program start
+                            lolasm += Newline("START");
+                            indx = tokenCount;
+                            break;
+                        case "KTHXBYE": //Program end
+                            lolasm += Newline("END");
+                            indx = tokenCount;
+                            break;
+                        case "I-HAS-A": //Variable declare
                             indx++;
                             var varname = curline[indx];
                             indx++;
                             if (tokenCount > 2 && curline[indx] == "ITZ")
                             {
                                 indx++;
-                                var varvalue = String.Join("|",curline[indx]);
-
-                                Add2ndStgToken(line, OperandType.Command, "DCLV");
-                                Add2ndStgToken(line, OperandType.Variable, varname);
-                                Add2ndStgToken(line, OperandType.Expression, varvalue);
-
-                                VariableMemory.Add(varname, new Variable() { name = varname, DataType = DetermineDataType(varvalue), Value = varvalue });
+                                var varvalue = String.Join("|", curline.Skip(3));
+                                VariableMemory.Add(varname, new Variable() { name = varname, DataType = DetermineDataType(varvalue), value = varvalue });
                                 lolasm += Newline("DCLV "+ varname + " EQ " + varvalue);
                             }
                             else
                             {
-                                Add2ndStgToken(line, OperandType.Command, "DCLN");
-                                Add2ndStgToken(line, OperandType.Variable, varname);
-
                                 VariableMemory.Add(varname, new Variable() { name = varname, DataType = DataTypes.NOOB });
                                 lolasm += Newline("DCLN " + varname);
                             }
@@ -143,35 +140,17 @@ namespace LOLpreter
                             break;
 
                         case "VISIBLE":
-
-                            var command = "CPRT";
-                            if (curline.Last() == "!") { command = "CPLN"; } //Switch to visible with feed when ! exist 
-                            if (tokenCount > 2)
+                            
+                            for (Int64 vsargs = 1; vsargs < tokenCount; vsargs++) //Enumerate all arguments and make separate ASMlike commands
                             {
-                                if (command=="CPLN") { tokenCount -= 1; } //Exclude the ! token
-                                for(int vsargs=1; vsargs<tokenCount;vsargs++) //Enumerate all arguments and make separate ASMlike commands
-                                {
-                                    Add2ndStgToken(line, OperandType.Command, command);
-                                    Add2ndStgToken(line, OperandType.Expression, curline[vsargs]);
-                                    lolasm += Newline(command + " " + curline[vsargs]);
-                                }
-                            }
-                            else
-                            {
-                                Add2ndStgToken(line, OperandType.Command, command);
-                                Add2ndStgToken(line, OperandType.Expression, curline[indx + 1]);
-                                lolasm += Newline(command + " " + curline[indx + 1]);
+                                lolasm += Newline("CPRT " + curline[vsargs]);
                             }
 
                             indx = tokenCount;
                             break;
 
                         case "GIMMEH":
-
-                            Add2ndStgToken(line, OperandType.Command, "INPT");
-                            Add2ndStgToken(line, OperandType.Argument, curline[indx + 1]);
                             lolasm += Newline("INPT" + " " + curline[indx + 1]);
-
                             indx = tokenCount;
                             break;
 
@@ -179,7 +158,6 @@ namespace LOLpreter
                         case "WTF?":
                             BranchingStack.Push(CreateToken(line, OperandType.Command, "SWTC"));
                             lolasm += Newline("SWTC");
-
                             indx = tokenCount;
                             break;
 
@@ -188,7 +166,6 @@ namespace LOLpreter
 
                             BranchingStack.Push(CreateToken(line, OperandType.Command, "COMP"));
                             lolasm += Newline("COMP");
-
                             indx = tokenCount;
                             break;
 
@@ -196,11 +173,9 @@ namespace LOLpreter
 
                             if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_ENDING, ErrorList, line); break; }
                             var k = BranchingStack.Pop();
-
                             var labelName = k.tokenStr + "_" + k.lineAddress.ToString();
-                            lolasm += Newline(":" + labelName);
-                            Add2ndStgToken(line, OperandType.Label, labelName);
-
+                            jumplabels.Add(labelName, line);
+                            lolasm += Newline("NOP");
                             indx = tokenCount;
                             break;
 
@@ -211,9 +186,7 @@ namespace LOLpreter
                             var yr = BranchingStack.Peek();
 
                             var labelNameYRL = yr.tokenStr + "_" + yr.lineAddress.ToString();
-                            Add2ndStgToken(line, OperandType.Command, "JNT");
-                            Add2ndStgToken(line, OperandType.Label, labelNameYRL);
-                            lolasm += Newline("JNT [" + labelNameYRL + "]");
+                            lolasm += Newline("JNT " + labelNameYRL + "");
 
                             indx = tokenCount;
                             break;
@@ -225,9 +198,7 @@ namespace LOLpreter
                             var nr = BranchingStack.Peek();
 
                             var labelNameNRL = nr.tokenStr + "_" + nr.lineAddress.ToString();
-                            Add2ndStgToken(line, OperandType.Command, "JNF");
-                            Add2ndStgToken(line, OperandType.Label, labelNameNRL);
-                            lolasm += Newline("JNF [" + labelNameNRL + "]");
+                            lolasm += Newline("JNF " + labelNameNRL + "");
 
                             indx = tokenCount;
                             break;
@@ -238,64 +209,84 @@ namespace LOLpreter
                             var gt = BranchingStack.Peek();
 
                             var labelNameGTFO = gt.tokenStr + "_" + gt.lineAddress.ToString();
-                            Add2ndStgToken(line, OperandType.Command, "JMP");
-                            Add2ndStgToken(line, OperandType.Label, labelNameGTFO);
-                            lolasm += Newline("JMP [" + labelNameGTFO + "]");
-
+                            lolasm += Newline("JMP " + labelNameGTFO + "");
                             indx = tokenCount;
                             break;
 
                         default:
                             if (VariableMemory.ContainsKey(curline[indx]))
-                            {
-                                
+                            {                                
                                 if (tokenCount == 1)
                                 {
-                                    lolasm += Newline("EQUL " + curline[indx]+" "+ "REG_IT");
+                                    lolasm += Newline("EQUL IT " + curline[indx]); //IT <-- variable
                                     indx = tokenCount;
                                 } else
                                 {
                                     if (curline[indx+1] == "R")
                                     {
-                                        var x = string.Join(" ", curline, indx + 2, tokenCount - 2);
+                                        var x = String.Join(" ", curline.Skip(2));
                                         lolasm += Newline("EQUL "+ curline[indx] + " " + x);
                                         indx = tokenCount;
                                         break;
                                     }
                                 }
-
                                 break;
                             }
                             
 
                             lolasm += Newline(String.Join(" ", curline));
+                            ErrorHelper.throwError(ErrorLevel.Error, ErrorCodes.SYNTAX_ERROR, ErrorList, line);
                             indx = tokenCount;
                             break;
 
                     }
                 }
             }
-            int lin = 0;
-            string filter = "";
-            foreach(string ln in lolasm.Split("\r\n".ToCharArray(),StringSplitOptions.RemoveEmptyEntries))
+
+
+            //Print the processed assembly and remove empty lines
+            Int64 lin = 0;
+            foreach (string ln in lolasm.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
             {
-                DebugWin.Print(lin.ToString().PadRight(8) + ln);
-                filter += ln;
+                prog_asm.Add(ln);
+            }
+
+            List<string> tempproglist = new List<string>();
+
+            //Replace labels with hard-address
+            foreach(string prgline in prog_asm)
+            {
+                var x = prgline;
+                foreach(string lbl in jumplabels.Keys)
+                {
+                    x = x.Replace(lbl, "0x" + jumplabels[lbl].ToString("X"));
+                }
+                tempproglist.Add(x);
+            }
+
+            prog_asm = tempproglist;
+
+            lin = 0;
+            foreach (string item in prog_asm)
+            {
+               DebugWin.Print(lin.ToString("X").PadRight(8) + item);
                 lin++;
             }
-            lolasm = filter;
+
+            //lolasm = filter;
+
         }
 
         public string Newline(string s)
         {
             return s + "\r\n";
         }
-        public void Add2ndStgToken(int programAddress, OperandType OperandType, string tokenStr, DataTypes DataType = DataTypes.NOOB)
+        public void Add2ndStgToken(Int64 programAddress, OperandType OperandType, string tokenStr, DataTypes DataType = DataTypes.NOOB)
         {
             ProgTokenTableStg2.Add(new Token() { OperandType = OperandType, tokenStr = tokenStr, DataType = DataType, lineAddress=programAddress });
         }
 
-        public Token CreateToken(int programAddress, OperandType OperandType, string tokenStr, DataTypes DataType = DataTypes.NOOB)
+        public Token CreateToken(Int64 programAddress, OperandType OperandType, string tokenStr, DataTypes DataType = DataTypes.NOOB)
         {
            return (new Token() { OperandType = OperandType, tokenStr = tokenStr, DataType = DataType, lineAddress = programAddress });
         }
@@ -359,13 +350,13 @@ namespace LOLpreter
     {
         public string name { get; set; }
         public DataTypes DataType { get; set; }
-        public object Value { get; set; }
+        public object value { get; set; }
 
     }
 
     public class Token
     {
-        public int lineAddress { get; set; }
+        public Int64 lineAddress { get; set; }
         public OperandType OperandType { get; set; }
         public string tokenStr { get; set; }
         public DataTypes DataType { get; set; }

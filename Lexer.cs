@@ -157,7 +157,7 @@ namespace LOLpreter
         /// <param name="raw">The raw text to process</param>
         private void CheckForUnclosedQuotes(string raw)
         {
-            int line = 1, pos;
+            Int64 line = 1, pos;
             foreach (string target_line in raw.Split(UNICODE_NEWLINE.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
             {
                 if (target_line.Contains('"'))
@@ -184,7 +184,7 @@ namespace LOLpreter
                 newraw += Regex.Replace(target_line, @"""[^\""]*""", "$COLLAPSED$", RegexOptions.Singleline) + UNICODE_NEWLINE;
             }
 
-            int line = 1, pos = 0;
+            Int64 line = 1, pos = 0;
 
             foreach (string target_line in newraw.Split(UNICODE_NEWLINE.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
             {
@@ -236,7 +236,7 @@ namespace LOLpreter
         /// <param name="m">The matching string to be stored.</param>
         public string MakeStrConstKey(Match m)
         {
-            int StrConstCount = StringConstTable.Count();
+            Int64 StrConstCount = StringConstTable.Count();
             //Remove leading and trailing quotes
             var match = m.ToString().Trim('"');
             //Check if the exact string already exist, if it does, return the existing key
@@ -256,10 +256,10 @@ namespace LOLpreter
         }
         #endregion
         // UNUSED, for now //
-        public string Seek(char[] raw, int index, int length = 1)
+        public string Seek(char[] raw, Int64 index, Int64 length = 1)
         {
             string ret = "";
-            for (int i = index; i < length; i++)
+            for (Int64 i = index; i < length; i++)
             {
                 ret += raw[i];
             }

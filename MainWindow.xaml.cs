@@ -20,7 +20,9 @@ namespace LOLpreter
         DebugWindow DebugWin = new DebugWindow();
         Lexer Lexer = new Lexer();
         Tokenizer Tokenizer = new Tokenizer();
-        
+        Console Console = new Console();
+        Interpreter Interpreter = new Interpreter();
+
         /* Property accessors for handling source files */
         public string CurrentDocumentPath { get; set; }
         public bool CurrentDocumentModified = false;
@@ -58,6 +60,9 @@ namespace LOLpreter
             Lexer.DebugWin = DebugWin;
             Tokenizer.DebugWin = DebugWin;
             Tokenizer.ErrorList = Lexer.ErrorList;
+            Interpreter.Console = Console;
+            Interpreter.Tokenizer = Tokenizer;
+
             //Load LOLCODE syntax highlighting file
             using (Stream s = this.GetType().Assembly.GetManifestResourceStream("LOLpreter.LOL.xshd"))
             {
@@ -99,6 +104,7 @@ namespace LOLpreter
         {
             var x = Lexer.PreProccess(LOLinput.Text);
             ClearDebugWin();
+
             if (x == null && ErrorHelper.CountBreakingErrors(Lexer.ErrorList) > 0)
             {
                 DebugWin.Print("Parsing Halted.");
@@ -107,7 +113,8 @@ namespace LOLpreter
             else
             {
                 Tokenizer.Tokenize(x);
-                ShowLexemes();
+                Interpreter.StringTable = Lexer.StringConstTable;
+                Interpreter.Run(Tokenizer.prog_asm.ToArray());
             }
             DebugWin.ErrorTable.ItemsSource = Lexer.ErrorList;
             DebugWin.SymbolTable.ItemsSource = Lexer.StringConstTable;
@@ -249,9 +256,9 @@ namespace LOLpreter
                         CurrentDocumentModified = false;
                         CurrentDocumentTitle = CurrentDocumentTitle;
                     }
-                    catch (Exception ex)
+                    catch
                     {
-                        throw ex;
+                        throw;
                     }
                 }
             }
