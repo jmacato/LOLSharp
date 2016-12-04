@@ -123,7 +123,8 @@ namespace LOLpreter
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (!HaltExec) { HaltExec = true; }
+            if (!HaltExec) { HaltExec = true;}
+
             this.Visibility = Visibility.Collapsed;
             e.Cancel = true;
         }

@@ -42,3 +42,18 @@ ORLY BLOCK & WTF
 
 	block ends will be turned to labels
 	
+Boolean Operators
+
+	IEQ | x == y
+	NEQ | x != y 
+	XOR | x | y
+	AND | x & y
+
+Conditional Jump Operators
+
+	IT variable comparators
+	JEQI
+	JNQI
+	
+
+Unconditional Jump - JMP [Label]

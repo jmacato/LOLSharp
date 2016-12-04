@@ -35,14 +35,15 @@ namespace LOLpreter
         private void ExecutionThread_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             Console.WriteLine("\r\n\r\n[PROGRAM TERMINATED]");
-            MainWindow.startProg.IsEnabled = true;
         }
 
 
         private void ExecutionThread_DoWork(object sender, DoWorkEventArgs e)
         {
             for (Int64 l = 0; l < prog.Length - 1; l++){
-                if (Console.HaltExec) {Console.HaltExec = false; return; }
+                if (Console.HaltExec) {
+                    StopExec();
+                    return; }
 
                 string[] lex;
                 lex = prog[l].Split(' ');
@@ -61,7 +62,7 @@ namespace LOLpreter
                             i = lex.Length;
                             break;
 
-                        case "CPRT":
+                        case "CPRT": //Write to console
                             if (CheckIfVar(lex[i + 1]) == true)
                             {
                                 i++;
@@ -83,21 +84,24 @@ namespace LOLpreter
                             i = lex.Length;
                             break;
 
-                        case "CPLN":
+                        case "CPLN"://Write newline
                             Console.Write("\r\n");
                             i = lex.Length;
                             break;
-                        case "NOP":
+                        case "NOP": //No operation
                             i = lex.Length;
                             break;
-
+                        case "SWTC": //Switch WTF
+                        case "COMP": //Comp ORLY
+                            i = lex.Length;
+                            break;
                         case "INPT":
                             var inputvar = lex[i + 1];
-                            if (!CheckIfVar(inputvar)) { return; }
+                            if (!CheckIfVar(inputvar)) {StopExec(); return; }
                             Console.StartIn();
                             while (Console.awaitinput) {
                                 System.Threading.Thread.Sleep(2);
-                                if (Console.HaltExec) { Console.HaltExec = false; return; }
+                                if (Console.HaltExec) { StopExec(); return; }
                             }
                             SetVar(inputvar, Console.ReadBuffer());
                             i = lex.Length;
@@ -118,15 +122,24 @@ namespace LOLpreter
                             var varname = lex[i+1];
                             object value = lex[i+3];
 
+                            //Check if variable already exists
                             if (WorkingMem.ContainsKey(varname))
                             {
                                 ErrorHelper.throwError(ErrorLevel.Error, ErrorCodes.MULTIPLE_DECLARATION, Tokenizer.ErrorList, l);
                                 l = prog.Length;
+                                StopExec();
                                 return;
                             }
 
                             var dt_dclv = Tokenizer.DetermineDataType(value.ToString());
-                            WorkingMem.Add(varname, new Variable() { name = varname, DataType = dt_dclv, value = value });
+                            if (CheckIfVar(value.ToString()))
+                            {
+                                WorkingMem.Add(varname, new Variable() { name = varname, DataType = dt_dclv, value = GetVar(value.ToString()) });
+                            }
+                            else
+                            {
+                                WorkingMem.Add(varname, new Variable() { name = varname, DataType = dt_dclv, value = value });
+                            }
 
                             i = lex.Length;
                             break;
@@ -144,7 +157,55 @@ namespace LOLpreter
 
                             i = lex.Length;
                             break;
-                        
+                        case "JMP": //Assign variable with value/expression
+                            i++;
+                            l = Convert.ToInt64(lex[i],16); 
+                            i = lex.Length;
+                            break;
+                        case "JNT": //Continue if true, Jump if not
+                            i++;
+                            var JNT_IT = CBl(WorkingMem["IT"]);
+                            var JNT_LB = Convert.ToInt64(lex[i], 16);
+                            if (JNT_IT != true)
+                            {
+                                l = JNT_LB;
+                            }
+                            i = lex.Length;
+                            break;
+                        case "JNF": //Continue if false, Jump if not
+                            i++;
+                            var JNF_IT = CBl(WorkingMem["IT"]);
+                            var JNF_LB = Convert.ToInt64(lex[i], 16);
+                            if (JNF_IT != false)
+                            {
+                                l = JNF_LB;
+                            }
+                            i = lex.Length;
+                            break;
+                        case "JNQ": //Continue if equal, Jump if not
+                            i++;
+                            string JNQ_IT = WorkingMem["IT"].value.ToString();
+                            object JNQ_VL = lex[i];
+                            var JNQ_LB = Convert.ToInt64(lex[i+1], 16);
+
+                            if (JNQ_VL.ToString().Contains(Lexer.UNICODE_SECTION))
+                            {
+                                if (JNQ_IT != StringTable[JNQ_VL.ToString()])
+                                {
+                                    l = JNQ_LB;
+                                }
+                            } else 
+                            {
+                                if (JNQ_IT != JNQ_VL.ToString())
+                                {
+                                    l = JNQ_LB;
+                                }
+                            }
+                            i = lex.Length;
+                            break;
+                        default:
+                            Console.WriteLine("[" + head + "] Illegal/Unimplemented Instruction");
+                            break;
                     }
                    System.Threading.Thread.Sleep(60);
                     var lni = String.Join(" ", lex);
@@ -157,19 +218,21 @@ namespace LOLpreter
                     }));
                 }
             }
+        }
 
+        public void StopExec()
+        {
             MainWindow.Dispatcher.BeginInvoke((Action)(() =>
             {
-                MainWindow.startProg.IsEnabled = true;
+                Console.HaltExec = false;
+                Tokenizer.DebugWin.Activate();
             }));
-
         }
 
         public void Run(string[] progin)
         {
             MainWindow.Dispatcher.BeginInvoke((Action)(() =>
             {
-                MainWindow.startProg.IsEnabled = false;
                 Console.Visibility = Visibility.Visible;
                 Console.Activate();
             }));
@@ -189,14 +252,52 @@ namespace LOLpreter
         }
         public bool CBl(object x)
         {
-            if (x.ToString().ToUpper().Contains("WIN"))
+
+            var isString = x is string;
+            var isInt = x is int | x is double;
+            var isVariable = x is Variable;
+
+
+            if (isVariable)
             {
-                return true;
+                x = (((Variable)x).value);
+                isString = x is string;
+                isInt = x is int | x is double;
             }
-            else if (x.ToString().ToUpper().Contains("FAIL"))
+
+            if (isString)
             {
-                return false;
+                var cmp = x.ToString().ToUpper();
+                if (cmp.Contains("WIN"))
+                {
+                    return true;
+                }
+                else if (cmp.Contains("FAIL"))
+                {
+                    return false;
+                } else if (cmp==""||cmp=="0")
+                {
+                    return false;
+                } else
+                {
+                    return true;
+                }
             }
+
+            if (isInt)
+            {
+                var cmp = Convert.ToDouble(x);
+                if (cmp>0)
+                {
+                    return true;
+                }
+                else if (cmp==0)
+                {
+                    return false;
+                }
+            }
+
+            
             return Convert.ToBoolean(x);
         }
 
@@ -221,7 +322,7 @@ namespace LOLpreter
                     case "SUB":
                         y = LiteralsStack.Pop();
                         x = LiteralsStack.Pop();
-                        r = CDb(x) - CDb(y);
+                        r = CDb(y) - CDb(x);
                         LiteralsStack.Push(r);
                         break;
                     case "PROD":
@@ -239,7 +340,7 @@ namespace LOLpreter
                     case "MOD":
                         y = LiteralsStack.Pop();
                         x = LiteralsStack.Pop();
-                        r = CDb(x) % CDb(y);
+                        r = CDb(y) % CDb(x);
                         LiteralsStack.Push(r);
                         break;
                     case "MAX":
@@ -293,6 +394,18 @@ namespace LOLpreter
                         } while (LiteralsStack.Count != 0);
                         LiteralsStack.Push(r);
                         break;
+                    case "IEQ":
+                        y = LiteralsStack.Pop();
+                        x = LiteralsStack.Pop();
+                        r = (x.ToString() == y.ToString());
+                        LiteralsStack.Push(r);
+                        break;
+                    case "NEQ":
+                        y = LiteralsStack.Pop();
+                        x = LiteralsStack.Pop();
+                        r = (x.ToString() != y.ToString());
+                        LiteralsStack.Push(r);
+                        break;
                     case "MKAY":
                         break;
                     case "SMOOSH":
@@ -323,7 +436,18 @@ namespace LOLpreter
                             LiteralsStack.Push(u);
                         } else
                         {
-                            LiteralsStack.Push(op);
+
+                            if (op.ToString().Contains("WIN"))
+                            {
+                                LiteralsStack.Push(true);
+                            }
+                            else if (op.ToString().Contains("FAIL"))
+                            {
+                                LiteralsStack.Push(false);
+                            } else
+                            {
+                                LiteralsStack.Push(op);
+                            }
                         }
                         break;
                 }

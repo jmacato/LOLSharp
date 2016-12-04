@@ -19,7 +19,7 @@ namespace LOLpreter
         #region Declares
         public List<Error> ErrorList;
         //First pass token table
-        public Dictionary<Int64,string[]> ProgTokenTableStg1 = new Dictionary<Int64, string[]>();
+        public Dictionary<Int64, string[]> ProgTokenTableStg1 = new Dictionary<Int64, string[]>();
         //Second table for classified tokens
         public List<Token> ProgTokenTableStg2 = new List<Token>();
         //Lists definitions of each token, to be displayed in debugwin
@@ -33,7 +33,8 @@ namespace LOLpreter
             Dictionary<string, Variable> x = new Dictionary<string, Variable>() {
             {"IT", new Variable() { name="IT", DataType=DataTypes.NOOB, value=null} },
             {"REG_CMP", new Variable() { name="REG_CMP", DataType=DataTypes.NOOB, value=null}},
-            {"CON_BUF", new Variable() { name="CON_BUF", DataType=DataTypes.NOOB, value=null}}
+            {"CON_BUF", new Variable() { name="CON_BUF", DataType=DataTypes.NOOB, value=null}},
+            {"TMP_ASN", new Variable() { name="TMP_ASN", DataType=DataTypes.NOOB, value=null}}
 
             };
             return x;
@@ -42,7 +43,8 @@ namespace LOLpreter
         Dictionary<string, string> CompressOps = new Dictionary<string, string>
                                     {
                                         {@"I HAS A","I-HAS-A"},
-                                        {@"BOTH SAEM","BOTH-SAEM"},
+                                        {@"BOTH SAEM","IEQ"},
+                                        {@"DIFFRINT","NEQ"},
                                         {@"SUM OF","ADD"},
                                         {@"DIFF OF","SUB"},
                                         {@"PRODUKT OF","PROD"},
@@ -79,7 +81,7 @@ namespace LOLpreter
 
         public string lolasm = "";
         public List<string> prog_asm = new List<string>();
-        public Dictionary<string,Int64> jumplabels = new Dictionary<string, Int64>();
+        public Dictionary<string, Int64> jumplabels = new Dictionary<string, Int64>();
 
 
         #endregion
@@ -103,7 +105,7 @@ namespace LOLpreter
 
             foreach (string x in raw.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
             {
-               var curline = x;
+                var curline = x;
                 foreach (string s in CompressOps.Keys)
                 {
                     curline = Regex.Replace(curline, s, CompressOps[s]);
@@ -123,11 +125,13 @@ namespace LOLpreter
         /// <param name="progTokenTableStg1"></param>
         private void tokenRestruct(Dictionary<Int64, string[]> progTokenTableStg1)
         {
-            for (Int64 line = 0;line < progTokenTableStg1.Keys.ToArray().Length; line++)
+            int bLabelCount = 0;
+            for (Int64 line = 0; line < progTokenTableStg1.Keys.ToArray().Length; line++)
             {
                 string[] curline = ProgTokenTableStg1[line];
                 Int64 tokenCount = curline.Length;
-                for (Int64 indx = 0; indx < tokenCount; indx++){
+                for (Int64 indx = 0; indx < tokenCount; indx++)
+                {
                     string frame = curline[indx].Trim();
                     switch (frame)
                     {
@@ -146,9 +150,18 @@ namespace LOLpreter
                             if (tokenCount > 2 && curline[indx] == "ITZ")
                             {
                                 indx++;
-                                var varvalue = String.Join("|", curline.Skip(3));
+                                var varvalue = String.Join(" ", curline.Skip(3));
                                 VariableMemory.Add(varname, new Variable() { name = varname, DataType = DetermineDataType(varvalue), value = varvalue });
-                                lolasm += Newline("DCLV "+ varname + " EQ " + varvalue);
+
+                                if (Interpreter.DetExpressionType(varvalue) != ExpressionType.None)
+                                {
+                                  lolasm += Newline("ASGN TMP_ASN " + varvalue);
+                                    lolasm += Newline("DCLV " + varname + " EQ TMP_ASN");
+                                }
+                                else
+                                {
+                                    lolasm += Newline("DCLV " + varname + " EQ " + varvalue);
+                                }
                             }
                             else
                             {
@@ -180,7 +193,7 @@ namespace LOLpreter
                             {
                                 lolasm += Newline("CPLN");
                             }
-                            
+
                             indx = tokenCount;
                             break;
 
@@ -203,38 +216,102 @@ namespace LOLpreter
                             lolasm += Newline("COMP");
                             indx = tokenCount;
                             break;
-
+                        case "OMG":
+                            if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
+                            var Omg_k = BranchingStack.Peek();
+                            if (Omg_k.tokenStr == "SWTC")
+                            {
+                                if (bLabelCount > 0)
+                                {
+                                    var omgpLB = "SWTC_" + Omg_k.lineAddress.ToString();
+                                    lolasm += Newline("JMP " + omgpLB); //Add jumps from the previous OMG statement to skip the others
+                                    var omg_pLB2 = "SWTC" + Omg_k.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                                    lolasm += Newline("LABEL " + omg_pLB2);
+                                    indx++;
+                                }
+                                bLabelCount++;
+                                var omg_lbl = "SWTC" + Omg_k.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                                lolasm += Newline("JNQ " + curline[indx] + " " + omg_lbl);
+                            }
+                            else
+                            {
+                                ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.SYNTAX_ERROR, ErrorList, line);
+                            }
+                            indx = tokenCount;
+                            break;
+                        case "OMGWTF":
+                            if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
+                            var Omgw_k = BranchingStack.Peek();
+                            if (Omgw_k.tokenStr == "SWTC")
+                            {
+                                var omgw_lbl = "SWTC" + Omgw_k.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                                lolasm += Newline("LABEL " + omgw_lbl);
+                                indx++;
+                            }
+                            else
+                            {
+                                ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.SYNTAX_ERROR, ErrorList, line);
+                            }
+                            indx = tokenCount;
+                            break;
                         case "OIC":
 
-                            if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_ENDING, ErrorList, line); break; }
+                            if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
                             var k = BranchingStack.Pop();
-                            var labelName = k.tokenStr + "_" + k.lineAddress.ToString();
-                            jumplabels.Add(labelName, line);
-                            lolasm += Newline("NOP");
+
+                            if (k.tokenStr == "SWTC")
+                            {
+                                var OIC_lbl = k.tokenStr +"_" + k.lineAddress.ToString();
+                                lolasm += Newline("LABEL " + OIC_lbl);
+                            } else
+                            {
+                                var OIC_lbl = k.tokenStr + k.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                                lolasm += Newline("LABEL " + OIC_lbl);
+                            }
+
+                            bLabelCount = 0;
                             indx = tokenCount;
                             break;
 
                         case "YA-RLY":
                         case "YA-RLY?":
 
-                            if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList,line); break; }
+                            if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
                             var yr = BranchingStack.Peek();
-
-                            var labelNameYRL = yr.tokenStr + "_" + yr.lineAddress.ToString();
-                            lolasm += Newline("JNT " + labelNameYRL + "");
-
+                            if (yr.tokenStr == "COMP")
+                            {
+                                var yr_lbl = "COMP" + yr.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                                lolasm += Newline("LABEL " + yr_lbl);
+                                indx++;
+                                bLabelCount++;
+                                yr_lbl = "COMP" + yr.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                                lolasm += Newline("JNT " + yr_lbl);
+                            }
+                            else
+                            {
+                                ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.SYNTAX_ERROR, ErrorList, line);
+                            }
                             indx = tokenCount;
                             break;
 
+
                         case "NO-WAI":
                         case "NO-WAI?":
-
                             if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
-                            var nr = BranchingStack.Peek();
-
-                            var labelNameNRL = nr.tokenStr + "_" + nr.lineAddress.ToString();
-                            lolasm += Newline("JNF " + labelNameNRL + "");
-
+                            var nw = BranchingStack.Peek();
+                            if (nw.tokenStr == "COMP")
+                            {
+                                var nw_lbl = "COMP" + nw.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                                lolasm += Newline("LABEL " + nw_lbl+"");
+                                indx++;
+                                bLabelCount++;
+                                nw_lbl = "COMP" + nw.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                                lolasm += Newline("JNF " + nw_lbl);
+                            }
+                            else
+                            {
+                                ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.SYNTAX_ERROR, ErrorList, line);
+                            }
                             indx = tokenCount;
                             break;
 
@@ -244,7 +321,7 @@ namespace LOLpreter
                             var gt = BranchingStack.Peek();
 
                             var labelNameGTFO = gt.tokenStr + "_" + gt.lineAddress.ToString();
-                            lolasm += Newline("JMP " + labelNameGTFO + "");
+                            lolasm += Newline("JMP " + labelNameGTFO);
                             indx = tokenCount;
                             break;
 
@@ -261,20 +338,24 @@ namespace LOLpreter
                         case "NOT":
                         case "AAND":
                         case "ALOR":
-                            lolasm += Newline("ASGN IT "+String.Join(" ", curline));
+                        case "IEQ":
+                        case "NEQ":
+                            lolasm += Newline("ASGN IT " + String.Join(" ", curline));
                             indx = tokenCount;
                             break;
                         default:
                             if (VariableMemory.ContainsKey(curline[indx]))
-                            {                                
+                            {
                                 if (tokenCount == 1)
                                 {
                                     lolasm += Newline("ASGN IT " + curline[indx]); //IT <-- variable
                                     indx = tokenCount;
-                                } else
+                                }
+                                else
                                 {
-                                    if (curline[indx+1] == "R")
+                                    if (curline[indx + 1] == "R")
                                     {
+
                                         var x = String.Join(" ", curline.Skip(2));
                                         lolasm += Newline("ASGN " + curline[indx] + " " + x);
                                         indx = tokenCount;
@@ -284,7 +365,6 @@ namespace LOLpreter
                                 break;
                             }
                             
-
                             lolasm += Newline(String.Join(" ", curline));
                             ErrorHelper.throwError(ErrorLevel.Error, ErrorCodes.SYNTAX_ERROR, ErrorList, line);
                             indx = tokenCount;
@@ -302,13 +382,33 @@ namespace LOLpreter
                 prog_asm.Add(ln);
             }
 
+            int lbladd = 0;
+            List<string> templabellist = new List<string>();
+
+            //Assign labels with their addresses
+            foreach (string prgline in prog_asm)
+            {
+                var x = prgline.Split(' ');
+                if (x[0] == "LABEL")
+                {
+                    jumplabels.Add(x[1], Convert.ToInt64(lbladd));
+                    templabellist.Add("NOP");
+                }
+                else
+                {
+                    templabellist.Add(prgline);
+                }
+                lbladd++;
+
+            }
+
             List<string> tempproglist = new List<string>();
 
             //Replace labels with hard-address
-            foreach(string prgline in prog_asm)
+            foreach (string prgline in templabellist)
             {
                 var x = prgline;
-                foreach(string lbl in jumplabels.Keys)
+                foreach (string lbl in jumplabels.Keys)
                 {
                     x = x.Replace(lbl, "0x" + jumplabels[lbl].ToString("X"));
                 }
@@ -320,7 +420,7 @@ namespace LOLpreter
             lin = 0;
             foreach (string item in prog_asm)
             {
-               DebugWin.Print(lin.ToString("X").PadRight(8) + item);
+                DebugWin.Print(lin.ToString("X").PadRight(8) + item);
                 lin++;
             }
 
@@ -334,12 +434,12 @@ namespace LOLpreter
         }
         public void Add2ndStgToken(Int64 programAddress, OperandType OperandType, string tokenStr, DataTypes DataType = DataTypes.NOOB)
         {
-            ProgTokenTableStg2.Add(new Token() { OperandType = OperandType, tokenStr = tokenStr, DataType = DataType, lineAddress=programAddress });
+            ProgTokenTableStg2.Add(new Token() { OperandType = OperandType, tokenStr = tokenStr, DataType = DataType, lineAddress = programAddress });
         }
 
         public Token CreateToken(Int64 programAddress, OperandType OperandType, string tokenStr, DataTypes DataType = DataTypes.NOOB)
         {
-           return (new Token() { OperandType = OperandType, tokenStr = tokenStr, DataType = DataType, lineAddress = programAddress });
+            return (new Token() { OperandType = OperandType, tokenStr = tokenStr, DataType = DataType, lineAddress = programAddress });
         }
 
         public string atos(object stringIn)
@@ -371,13 +471,13 @@ namespace LOLpreter
             }
 
             if (expression.Contains(Lexer.UNICODE_SECTION))
-            {return DataTypes.YARN;}
+            { return DataTypes.YARN; }
             return DataTypes.NOOB;
         }
 
 
     }
-    
+
     public enum OperandType
     {
         Command,

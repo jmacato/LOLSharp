@@ -41,6 +41,7 @@ namespace LOLpreter
             GenerateStrConstTable(ref raw);
             SecondFilter(ref raw);
             ProcessComments(ref raw);
+            raw = Regex.Replace(raw, ",", "\r\n"); //Convert soft linefeed to hard
             CheckForUnclosedQuotes(raw);
             TrimToDust(ref raw);
 
@@ -142,8 +143,8 @@ namespace LOLpreter
         private void SecondFilter(ref string raw)
         {
             raw = Regex.Replace(raw, @"\.\.\.\r\n", "");                        //Remove elipsis with newline
+            raw = Regex.Replace(raw, @"\.\.\.\r\n", "");                        //Remove elipsis with newline
             raw = Regex.Replace(raw, UNICODE_ELLIPSIS + "\r\n", " ");            //Remove elipsis pt2
-            raw = Regex.Replace(raw, ",", "\r\n");                              //Convert soft linefeed to hard
             raw = Regex.Replace(raw, "\t|\\?", "");                             //Remove Tabs and question marks
             raw = Regex.Replace(raw, @"AN \b| AN\b", "");                       //Remove Arity and OF's
             raw = Regex.Replace(raw, "\\!| \\!", " !");
