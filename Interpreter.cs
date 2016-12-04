@@ -84,7 +84,6 @@ namespace LOLpreter
                             }
                             i = lex.Length;
                             break;
-
                         case "CPLN"://Write newline
                             Console.Write("\r\n");
                             i = lex.Length;
@@ -107,7 +106,6 @@ namespace LOLpreter
                             SetVar(inputvar, Console.ReadBuffer());
                             i = lex.Length;
                             break;
-
                         case "ASGN": //Assign variable with value/expression
                             i++;
                             var ASGNvar = lex[i];
