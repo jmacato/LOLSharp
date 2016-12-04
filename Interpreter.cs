@@ -173,6 +173,16 @@ namespace LOLpreter
                             }
                             i = lex.Length;
                             break;
+                        case "JNTM": //Continue if true, Jump if not
+                            i++;
+                            var JNM_IT = CBl(WorkingMem["REG_CMP"]);
+                            var JNM_LB = Convert.ToInt64(lex[i], 16);
+                            if (JNM_IT != true)
+                            {
+                                l = JNM_LB;
+                            }
+                            i = lex.Length;
+                            break;
                         case "JNF": //Continue if false, Jump if not
                             i++;
                             var JNF_IT = CBl(WorkingMem["IT"]);

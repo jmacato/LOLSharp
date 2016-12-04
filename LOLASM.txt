@@ -57,3 +57,46 @@ Conditional Jump Operators
 	
 
 Unconditional Jump - JMP [Label]
+
+
+----- Decision Disassembly for ORLY Block -----
+
+
+/assembler registers
+--> ifNoCondExist - bool
+--> ifYesCondExist - bool
+--> IT variable
+--> Dictionary MebbeExps, key is the line of the mebbe op, value is the expression
+--> CondOpCount = -1;
+
+BOTH SAEM <1exp>	
+O RLY?					--> COMP [Jump Table Label] //EXP COMP_15_GEN
+
+if(condopcoount=-1) dont create jump
+if(condopcount>-1)  { add jump to end}
+
+
+YA RLY					--> LABEL [COMP_15_YES]
+
+* add condopcoount +1
+* ifYesCondExist=true
+
+VISIBLE <2exp>			-->*ignore*
+MEBBE <3exp>			-->
+
+if(condopcoount=-1) dont create jump
+if(condopcount>-1)      --> JMP [COMP15]
+store argument w/ key to mebbedict
+
+MEBBE <4exp>
+VISIBLE <5exp>
+NO WAI
+
+if(condopcoount=-1) dont create jump
+if(condopcount>-1)  { add jump to end}
+store argument w/ key to mebbedict
+
+VISIBLE <6exp>
+OIC						--> LABEL COMP_15_GEN ;Generate the conditions
+						if (ifNoCondExist)
+						--> JNs

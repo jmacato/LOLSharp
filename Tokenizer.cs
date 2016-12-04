@@ -125,7 +125,7 @@ namespace LOLpreter
         /// <param name="progTokenTableStg1"></param>
         private void tokenRestruct(Dictionary<Int64, string[]> progTokenTableStg1)
         {
-            int bLabelCount = 0;
+            int bLabelCount = 0; bool cmpNoExist = false;
             for (Int64 line = 0; line < progTokenTableStg1.Keys.ToArray().Length; line++)
             {
                 string[] curline = ProgTokenTableStg1[line];
@@ -214,6 +214,10 @@ namespace LOLpreter
 
                             BranchingStack.Push(CreateToken(line, OperandType.Command, "COMP"));
                             lolasm += Newline("COMP");
+                            lolasm += Newline("JNT COMP" + line.ToString());
+                            lolasm += Newline("JMP COMP_" + line.ToString() + "_YES");
+                            lolasm += Newline("JNF COMP" + line.ToString());
+                            lolasm += Newline("JMP COMP_" + line.ToString() + "_NO");
                             indx = tokenCount;
                             break;
                         case "OMG":
@@ -266,12 +270,17 @@ namespace LOLpreter
                             {
                                 var OIC_lbl = k.tokenStr +"_" + k.lineAddress.ToString();
                                 lolasm += Newline("LABEL " + OIC_lbl);
-                            } else
+                            } else if (k.tokenStr == "COMP")
                             {
-                                var OIC_lbl = k.tokenStr + k.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                                var OIC_lbl = k.tokenStr + k.lineAddress.ToString();
                                 lolasm += Newline("LABEL " + OIC_lbl);
-                            }
+                                if (!cmpNoExist)
+                                {
+                                    lolasm += Newline("LABEL " + OIC_lbl+"_NO");
+                                }
 
+                            }
+                            cmpNoExist = false;
                             bLabelCount = 0;
                             indx = tokenCount;
                             break;
@@ -283,12 +292,11 @@ namespace LOLpreter
                             var yr = BranchingStack.Peek();
                             if (yr.tokenStr == "COMP")
                             {
-                                var yr_lbl = "COMP" + yr.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                                var yr_lbl = "COMP_" + yr.lineAddress.ToString() + "_YES";
                                 lolasm += Newline("LABEL " + yr_lbl);
                                 indx++;
-                                bLabelCount++;
-                                yr_lbl = "COMP" + yr.lineAddress.ToString() + "_" + bLabelCount.ToString();
-                                lolasm += Newline("JNT " + yr_lbl);
+                                //yr_lbl = "COMP" + yr.lineAddress.ToString();
+                                //lolasm += Newline("JNT " + yr_lbl);
                             }
                             else
                             {
@@ -297,42 +305,42 @@ namespace LOLpreter
                             indx = tokenCount;
                             break;
 
-                        //case "MEBBE":
+                        case "MEBBE":
 
-                        //    if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
-                        //    var mb = BranchingStack.Peek();
-                        //    if (mb.tokenStr == "COMP")
-                        //    {
-                                
-                        //        var yr_lbl = "COMP" + mb.lineAddress.ToString() + "_" + bLabelCount.ToString();
-                        //        lolasm += Newline("LABEL " + yr_lbl);
-                        //        indx++;
-                        //        bLabelCount++;
+                            if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
+                            var mb = BranchingStack.Peek();
+                            if (mb.tokenStr == "COMP")
+                            {
 
-                        //        var varvalue = String.Join(" ", curline.Skip(1));
-                        //        lolasm += Newline("ASGN IT " + varvalue);
-                        //        yr_lbl = "COMP" + mb.lineAddress.ToString() + "_" + bLabelCount.ToString();
-                        //        lolasm += Newline("JNT " + yr_lbl);
-                        //    }
-                        //    else
-                        //    {
-                        //        ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.SYNTAX_ERROR, ErrorList, line);
-                        //    }
-                        //    indx = tokenCount;
-                        //    break;
+                                var yr_lbl = "COMP_" + mb.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                                lolasm += Newline("LABEL " + yr_lbl);
+                                indx++;
+                                bLabelCount++;
+
+                                var varvalue = String.Join(" ", curline.Skip(1));
+                                lolasm += Newline("ASGN REG_CMP " + varvalue);
+                                yr_lbl = "COMP_" + mb.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                                lolasm += Newline("JNTM " + yr_lbl);
+                            }
+                            else
+                            {
+                                ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.SYNTAX_ERROR, ErrorList, line);
+                            }
+                            indx = tokenCount;
+                            break;
 
                         case "NO-WAI":
                         case "NO-WAI?":
                             if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
+                            cmpNoExist = true;
                             var nw = BranchingStack.Peek();
                             if (nw.tokenStr == "COMP")
                             {
-                                var nw_lbl = "COMP" + nw.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                                var nw_lbl = "COMP_" + nw.lineAddress.ToString() + "_NO";
                                 lolasm += Newline("LABEL " + nw_lbl+"");
                                 indx++;
-                                bLabelCount++;
-                                nw_lbl = "COMP" + nw.lineAddress.ToString() + "_" + bLabelCount.ToString();
-                                lolasm += Newline("JNF " + nw_lbl);
+                                //nw_lbl = "COMP" + nw.lineAddress.ToString();
+                                //lolasm += Newline("JMP " + nw_lbl);
                             }
                             else
                             {
