@@ -117,7 +117,7 @@ namespace LOLpreter
             {
                 Tokenizer.Tokenize(x);
                 Interpreter.StringTable = Lexer.StringConstTable;
-                //Interpreter.Run(Tokenizer.prog_asm.ToArray());
+                Interpreter.Run(Tokenizer.prog_asm.ToArray());
             }
             DebugWin.ErrorTable.ItemsSource = Lexer.ErrorList;
             DebugWin.SymbolTable.ItemsSource = Lexer.StringConstTable;

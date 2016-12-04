@@ -125,7 +125,14 @@ namespace LOLpreter
         /// <param name="progTokenTableStg1"></param>
         private void tokenRestruct(Dictionary<Int64, string[]> progTokenTableStg1)
         {
-            int bLabelCount = 0; bool cmpNoExist = false;
+            int bLabelCount = 0;
+
+            bool cmpNoExist = false;
+            bool cmpYesExist = false;
+            int cmpCmdCnt = 0;
+            Dictionary<long, string> cmpElseDict = new Dictionary<long, string>();
+
+
             for (Int64 line = 0; line < progTokenTableStg1.Keys.ToArray().Length; line++)
             {
                 string[] curline = ProgTokenTableStg1[line];
@@ -208,18 +215,6 @@ namespace LOLpreter
                             lolasm += Newline("SWTC");
                             indx = tokenCount;
                             break;
-
-                        case "O-RLY":
-                        case "O-RLY?":
-
-                            BranchingStack.Push(CreateToken(line, OperandType.Command, "COMP"));
-                            lolasm += Newline("COMP");
-                            lolasm += Newline("JNT COMP" + line.ToString());
-                            lolasm += Newline("JMP COMP_" + line.ToString() + "_YES");
-                            lolasm += Newline("JNF COMP" + line.ToString());
-                            lolasm += Newline("JMP COMP_" + line.ToString() + "_NO");
-                            indx = tokenCount;
-                            break;
                         case "OMG":
                             if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
                             var Omg_k = BranchingStack.Peek();
@@ -236,9 +231,6 @@ namespace LOLpreter
                                     bLabelCount++;
                                     var omg_lbl = "SWTC" + Omg_k.lineAddress.ToString() + "_" + bLabelCount.ToString();
                                     lolasm += Newline("JNQ " + curline[indx] + " " + omg_lbl);
-                                
-                                
-
                             }
                             else
                             {
@@ -272,31 +264,87 @@ namespace LOLpreter
                                 lolasm += Newline("LABEL " + OIC_lbl);
                             } else if (k.tokenStr == "COMP")
                             {
-                                var OIC_lbl = k.tokenStr + k.lineAddress.ToString();
-                                lolasm += Newline("LABEL " + OIC_lbl);
-                                if (!cmpNoExist)
+                                if (cmpCmdCnt > 0) //If not 1st op, add jmp to end
                                 {
-                                    lolasm += Newline("LABEL " + OIC_lbl+"_NO");
+                                    var yr_lbl_e = "COMP" + k.lineAddress.ToString();
+                                    lolasm += Newline("JMP " + yr_lbl_e);
+                                }
+                                var OIC_lbl = "COMP_"+ k.lineAddress.ToString();
+                                lolasm += Newline("LABEL " + OIC_lbl + "_TBL");
+
+                                if (cmpYesExist)
+                                {
+                                    lolasm += Newline("JT " + OIC_lbl + "_YES");
                                 }
 
+                                if (cmpElseDict.Count > 0)
+                                {
+                                    foreach (int elseKeys in cmpElseDict.Keys)
+                                    {
+                                        lolasm += Newline("ASGN REG_CMP " + cmpElseDict[elseKeys]);
+                                        lolasm += Newline("JTX " + OIC_lbl + "_M" + elseKeys.ToString());
+                                    }
+                                }
+                                if (cmpNoExist)
+                                {
+                                    lolasm += Newline("JF " + OIC_lbl + "_NO");
+                                }
+                                lolasm += Newline("LABEL " + k.tokenStr + k.lineAddress.ToString());
+
                             }
+
+                            cmpYesExist = false;
                             cmpNoExist = false;
+                            cmpElseDict.Clear();
+                            cmpCmdCnt = 0;
+
                             bLabelCount = 0;
                             indx = tokenCount;
                             break;
-
+                        case "O-RLY":
+                        case "O-RLY?":
+                            BranchingStack.Push(CreateToken(line, OperandType.Command, "COMP"));
+                            lolasm += Newline("JMP COMP_"+line.ToString()+"_TBL");
+                            indx = tokenCount;
+                            break;
                         case "YA-RLY":
                         case "YA-RLY?":
-
                             if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
                             var yr = BranchingStack.Peek();
                             if (yr.tokenStr == "COMP")
                             {
+                                if (cmpCmdCnt > 0) //If not 1st op, add jmp to end
+                                {
+                                    var yr_lbl_e = "COMP" + yr.lineAddress.ToString();
+                                    lolasm += Newline("JMP " + yr_lbl_e);
+                                }
+                                cmpYesExist = true;
+                                cmpCmdCnt++;
                                 var yr_lbl = "COMP_" + yr.lineAddress.ToString() + "_YES";
                                 lolasm += Newline("LABEL " + yr_lbl);
-                                indx++;
-                                //yr_lbl = "COMP" + yr.lineAddress.ToString();
-                                //lolasm += Newline("JNT " + yr_lbl);
+                            }
+                            else
+                            {
+                                ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.SYNTAX_ERROR, ErrorList, line);
+                            }
+                            indx = tokenCount;
+                            break;
+                        case "NO-WAI":
+                        case "NO-WAI?":
+                            if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
+                            cmpNoExist = true;
+                            var nw = BranchingStack.Peek();
+                            if (nw.tokenStr == "COMP")
+                            {
+                                if (cmpCmdCnt > 0) //If not 1st op, add jmp to end
+                                {
+                                    var nw_lbl_e = "COMP" + nw.lineAddress.ToString();
+                                    lolasm += Newline("JMP " + nw_lbl_e);
+                                }
+                                cmpNoExist = true;
+                                cmpCmdCnt++;
+                                var nw_lbl = "COMP_" + nw.lineAddress.ToString() + "_NO";
+                                lolasm += Newline("LABEL " + nw_lbl);
                             }
                             else
                             {
@@ -306,41 +354,22 @@ namespace LOLpreter
                             break;
 
                         case "MEBBE":
-
                             if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
                             var mb = BranchingStack.Peek();
                             if (mb.tokenStr == "COMP")
                             {
+                                if (cmpCmdCnt > 0) //If not 1st op, add jmp to end
+                                {
+                                    var nw_lbl_e = "COMP" + mb.lineAddress.ToString();
+                                    lolasm += Newline("JMP " + nw_lbl_e);
+                                }
 
-                                var yr_lbl = "COMP_" + mb.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                                var yr_lbl = "COMP_" + mb.lineAddress.ToString() + "_M" + line.ToString();
                                 lolasm += Newline("LABEL " + yr_lbl);
-                                indx++;
-                                bLabelCount++;
 
                                 var varvalue = String.Join(" ", curline.Skip(1));
-                                lolasm += Newline("ASGN REG_CMP " + varvalue);
-                                yr_lbl = "COMP_" + mb.lineAddress.ToString() + "_" + bLabelCount.ToString();
-                                lolasm += Newline("JNTM " + yr_lbl);
-                            }
-                            else
-                            {
-                                ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.SYNTAX_ERROR, ErrorList, line);
-                            }
-                            indx = tokenCount;
-                            break;
+                                cmpElseDict.Add(line, varvalue);
 
-                        case "NO-WAI":
-                        case "NO-WAI?":
-                            if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
-                            cmpNoExist = true;
-                            var nw = BranchingStack.Peek();
-                            if (nw.tokenStr == "COMP")
-                            {
-                                var nw_lbl = "COMP_" + nw.lineAddress.ToString() + "_NO";
-                                lolasm += Newline("LABEL " + nw_lbl+"");
-                                indx++;
-                                //nw_lbl = "COMP" + nw.lineAddress.ToString();
-                                //lolasm += Newline("JMP " + nw_lbl);
                             }
                             else
                             {
@@ -419,37 +448,37 @@ namespace LOLpreter
             int lbladd = 0;
             List<string> templabellist = new List<string>();
 
-            ////Assign labels with their addresses
-            //foreach (string prgline in prog_asm)
-            //{
-            //    var x = prgline.Split(' ');
-            //    if (x[0] == "LABEL")
-            //    {
-            //        jumplabels.Add(x[1], Convert.ToInt64(lbladd));
-            //        templabellist.Add("NOP");
-            //    }
-            //    else
-            //    {
-            //        templabellist.Add(prgline);
-            //    }
-            //    lbladd++;
+            //Assign labels with their addresses
+            foreach (string prgline in prog_asm)
+            {
+                var x = prgline.Split(' ');
+                if (x[0] == "LABEL")
+                {
+                    jumplabels.Add(x[1], Convert.ToInt64(lbladd));
+                    templabellist.Add("NOP");
+                }
+                else
+                {
+                    templabellist.Add(prgline);
+                }
+                lbladd++;
 
-            //}
+            }
 
-            //List<string> tempproglist = new List<string>();
+            List<string> tempproglist = new List<string>();
 
-            ////Replace labels with hard-address
-            //foreach (string prgline in templabellist)
-            //{
-            //    var x = prgline;
-            //    foreach (string lbl in jumplabels.Keys)
-            //    {
-            //        x = x.Replace(lbl, "0x" + jumplabels[lbl].ToString("X"));
-            //    }
-            //    tempproglist.Add(x);
-            //}
+            //Replace labels with hard-address
+            foreach (string prgline in templabellist)
+            {
+                var x = prgline;
+                foreach (string lbl in jumplabels.Keys)
+                {
+                    x = x.Replace(lbl, "0x" + jumplabels[lbl].ToString("X"));
+                }
+                tempproglist.Add(x);
+            }
 
-            //prog_asm = tempproglist;
+            prog_asm = tempproglist;
 
             lin = 0;
             foreach (string item in prog_asm)

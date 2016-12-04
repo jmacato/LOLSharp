@@ -163,33 +163,33 @@ namespace LOLpreter
                             l = Convert.ToInt64(lex[i],16); 
                             i = lex.Length;
                             break;
-                        case "JNT": //Continue if true, Jump if not
+                        case "JT": //Jump if true
                             i++;
-                            var JNT_IT = CBl(WorkingMem["IT"]);
-                            var JNT_LB = Convert.ToInt64(lex[i], 16);
-                            if (JNT_IT != true)
+                            var JT_IT = CBl(WorkingMem["IT"]);
+                            var JT_LB = Convert.ToInt64(lex[i], 16);
+                            if (JT_IT == true)
                             {
-                                l = JNT_LB;
+                                l = JT_LB;
                             }
                             i = lex.Length;
                             break;
-                        case "JNTM": //Continue if true, Jump if not
+                        case "JTX": //Jump if true, use REG_CMP as comparison
                             i++;
-                            var JNM_IT = CBl(WorkingMem["REG_CMP"]);
-                            var JNM_LB = Convert.ToInt64(lex[i], 16);
-                            if (JNM_IT != true)
+                            var JTX_IT = CBl(WorkingMem["REG_CMP"]);
+                            var JTX_LB = Convert.ToInt64(lex[i], 16);
+                            if (JTX_IT == true)
                             {
-                                l = JNM_LB;
+                                l = JTX_LB;
                             }
                             i = lex.Length;
                             break;
-                        case "JNF": //Continue if false, Jump if not
+                        case "JF": //Jump if false
                             i++;
-                            var JNF_IT = CBl(WorkingMem["IT"]);
-                            var JNF_LB = Convert.ToInt64(lex[i], 16);
-                            if (JNF_IT != false)
+                            var JF_IT = CBl(WorkingMem["IT"]);
+                            var JF_LB = Convert.ToInt64(lex[i], 16);
+                            if (JF_IT == false)
                             {
-                                l = JNF_LB;
+                                l = JF_LB;
                             }
                             i = lex.Length;
                             break;
