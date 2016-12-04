@@ -26,6 +26,7 @@ namespace LOLpreter
         {
             Console = new Console();
             Tokenizer = new Tokenizer();
+            ExecutionThread = new BackgroundWorker();
             ExecutionThread.WorkerSupportsCancellation = true;
             ExecutionThread.DoWork += ExecutionThread_DoWork;
             ExecutionThread.RunWorkerCompleted += ExecutionThread_RunWorkerCompleted; ;
@@ -231,6 +232,13 @@ namespace LOLpreter
 
         public void Run(string[] progin)
         {
+
+            Console = new Console();
+            ExecutionThread = new BackgroundWorker();
+            ExecutionThread.WorkerSupportsCancellation = true;
+            ExecutionThread.DoWork += ExecutionThread_DoWork;
+            ExecutionThread.RunWorkerCompleted += ExecutionThread_RunWorkerCompleted; ;
+
             MainWindow.Dispatcher.BeginInvoke((Action)(() =>
             {
                 Console.Visibility = Visibility.Visible;

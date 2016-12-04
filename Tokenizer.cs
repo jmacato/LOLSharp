@@ -229,6 +229,7 @@ namespace LOLpreter
                                     lolasm += Newline("LABEL " + omg_pLB2);
                                     indx++;
                                 }
+                                indx++;
                                 bLabelCount++;
                                 var omg_lbl = "SWTC" + Omg_k.lineAddress.ToString() + "_" + bLabelCount.ToString();
                                 lolasm += Newline("JNQ " + curline[indx] + " " + omg_lbl);
