@@ -112,10 +112,7 @@ namespace LOLpreter
                 }
                 var linenum = ProgTokenTableStg1.Count;
                 ProgTokenTableStg1.Add(linenum, curline.Split(' '));
-                DebugWin.Print(linenum.ToString().PadRight(5) + curline);
-
             }
-            DebugWin.Print("-**-*-*-**--* er *-*-*-*-*--*-*-");
             tokenRestruct(ProgTokenTableStg1);
         }
 
@@ -130,6 +127,7 @@ namespace LOLpreter
             bool cmpNoExist = false;
             bool cmpYesExist = false;
             int cmpCmdCnt = 0;
+            bool swtOWExist = false;
             Dictionary<long, string> cmpElseDict = new Dictionary<long, string>();
 
 
@@ -190,7 +188,7 @@ namespace LOLpreter
                             }
                             else
                             {
-                                for (Int64 vsargs = 1; vsargs < tokenCount; vsargs++) //Enumerate all arguments and make separate ASMlike commands
+                                for (Int64 vsargs = 1; vsargs < tokenCount; vsargs++) //Enumerate all arguments and make separate commands
                                 {
                                     lolasm += Newline("CPRT " + curline[vsargs]);
                                 }
@@ -243,6 +241,7 @@ namespace LOLpreter
                             var Omgw_k = BranchingStack.Peek();
                             if (Omgw_k.tokenStr == "SWTC")
                             {
+                                swtOWExist = true;
                                 var omgw_lbl = "SWTC" + Omgw_k.lineAddress.ToString() + "_" + bLabelCount.ToString();
                                 lolasm += Newline("LABEL " + omgw_lbl);
                                 indx++;
@@ -260,6 +259,14 @@ namespace LOLpreter
 
                             if (k.tokenStr == "SWTC")
                             {
+
+                                if (!swtOWExist)
+                                {
+                                    var omgw_lbl = "SWTC" + k.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                                    lolasm += Newline("LABEL " + omgw_lbl);
+                                    swtOWExist = false;
+                                }
+
                                 var OIC_lbl = k.tokenStr +"_" + k.lineAddress.ToString();
                                 lolasm += Newline("LABEL " + OIC_lbl);
                             } else if (k.tokenStr == "COMP")
@@ -290,14 +297,11 @@ namespace LOLpreter
                                     lolasm += Newline("JF " + OIC_lbl + "_NO");
                                 }
                                 lolasm += Newline("LABEL " + k.tokenStr + k.lineAddress.ToString());
-
+                                cmpYesExist = false;
+                                cmpNoExist = false;
+                                cmpElseDict.Clear();
+                                cmpCmdCnt = 0;
                             }
-
-                            cmpYesExist = false;
-                            cmpNoExist = false;
-                            cmpElseDict.Clear();
-                            cmpCmdCnt = 0;
-
                             bLabelCount = 0;
                             indx = tokenCount;
                             break;
@@ -483,7 +487,20 @@ namespace LOLpreter
             lin = 0;
             foreach (string item in prog_asm)
             {
-                DebugWin.Print(lin.ToString("X").PadRight(8) + item);
+                string algn_tok = "";
+                try
+                {
+                    string[] tok = item.Split(' ').Take(2).ToArray();
+                    algn_tok = tok[0].PadRight(6) + tok[1].PadRight(12) + " " + String.Join(" ", item.Split(' ').Skip(2).ToArray());
+                    DebugWin.Print(lin.ToString("X").PadRight(8) + algn_tok);
+                }
+                catch (Exception ex)
+                {
+                    DebugWin.Print(lin.ToString("X").PadRight(8) + item.PadRight(12));
+                    ex = ex;
+                }
+
+
                 lin++;
             }
 
