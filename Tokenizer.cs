@@ -297,6 +297,29 @@ namespace LOLpreter
                             indx = tokenCount;
                             break;
 
+                        //case "MEBBE":
+
+                        //    if (BranchingStack.Count == 0) { ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.STRAY_CONDITIONALS, ErrorList, line); break; }
+                        //    var mb = BranchingStack.Peek();
+                        //    if (mb.tokenStr == "COMP")
+                        //    {
+                                
+                        //        var yr_lbl = "COMP" + mb.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                        //        lolasm += Newline("LABEL " + yr_lbl);
+                        //        indx++;
+                        //        bLabelCount++;
+
+                        //        var varvalue = String.Join(" ", curline.Skip(1));
+                        //        lolasm += Newline("ASGN IT " + varvalue);
+                        //        yr_lbl = "COMP" + mb.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                        //        lolasm += Newline("JNT " + yr_lbl);
+                        //    }
+                        //    else
+                        //    {
+                        //        ErrorHelper.throwError(ErrorLevel.Fatal, ErrorCodes.SYNTAX_ERROR, ErrorList, line);
+                        //    }
+                        //    indx = tokenCount;
+                        //    break;
 
                         case "NO-WAI":
                         case "NO-WAI?":
@@ -388,37 +411,37 @@ namespace LOLpreter
             int lbladd = 0;
             List<string> templabellist = new List<string>();
 
-            //Assign labels with their addresses
-            foreach (string prgline in prog_asm)
-            {
-                var x = prgline.Split(' ');
-                if (x[0] == "LABEL")
-                {
-                    jumplabels.Add(x[1], Convert.ToInt64(lbladd));
-                    templabellist.Add("NOP");
-                }
-                else
-                {
-                    templabellist.Add(prgline);
-                }
-                lbladd++;
+            ////Assign labels with their addresses
+            //foreach (string prgline in prog_asm)
+            //{
+            //    var x = prgline.Split(' ');
+            //    if (x[0] == "LABEL")
+            //    {
+            //        jumplabels.Add(x[1], Convert.ToInt64(lbladd));
+            //        templabellist.Add("NOP");
+            //    }
+            //    else
+            //    {
+            //        templabellist.Add(prgline);
+            //    }
+            //    lbladd++;
 
-            }
+            //}
 
-            List<string> tempproglist = new List<string>();
+            //List<string> tempproglist = new List<string>();
 
-            //Replace labels with hard-address
-            foreach (string prgline in templabellist)
-            {
-                var x = prgline;
-                foreach (string lbl in jumplabels.Keys)
-                {
-                    x = x.Replace(lbl, "0x" + jumplabels[lbl].ToString("X"));
-                }
-                tempproglist.Add(x);
-            }
+            ////Replace labels with hard-address
+            //foreach (string prgline in templabellist)
+            //{
+            //    var x = prgline;
+            //    foreach (string lbl in jumplabels.Keys)
+            //    {
+            //        x = x.Replace(lbl, "0x" + jumplabels[lbl].ToString("X"));
+            //    }
+            //    tempproglist.Add(x);
+            //}
 
-            prog_asm = tempproglist;
+            //prog_asm = tempproglist;
 
             lin = 0;
             foreach (string item in prog_asm)
