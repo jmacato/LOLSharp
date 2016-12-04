@@ -208,14 +208,12 @@ namespace LOLpreter
                             Console.WriteLine("[" + head + "] Illegal/Unimplemented Instruction");
                             break;
                     }
-                   System.Threading.Thread.Sleep(60);
+                    //  System.Threading.Thread.Sleep(60);
                     var lni = String.Join(" ", lex);
-                    
+
                     MainWindow.Dispatcher.BeginInvoke((Action)(() =>
                     {
                         Lexer.DebugWin.setSymbols(WorkingMem.Values.ToList());
-                       // System.Threading.Thread.Sleep(250);
-
                     }));
                 }
             }

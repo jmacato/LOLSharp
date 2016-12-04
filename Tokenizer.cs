@@ -227,12 +227,14 @@ namespace LOLpreter
                                     lolasm += Newline("JMP " + omgpLB); //Add jumps from the previous OMG statement to skip the others
                                     var omg_pLB2 = "SWTC" + Omg_k.lineAddress.ToString() + "_" + bLabelCount.ToString();
                                     lolasm += Newline("LABEL " + omg_pLB2);
-                                    indx++;
                                 }
-                                indx++;
-                                bLabelCount++;
-                                var omg_lbl = "SWTC" + Omg_k.lineAddress.ToString() + "_" + bLabelCount.ToString();
-                                lolasm += Newline("JNQ " + curline[indx] + " " + omg_lbl);
+                                    indx++;
+                                    bLabelCount++;
+                                    var omg_lbl = "SWTC" + Omg_k.lineAddress.ToString() + "_" + bLabelCount.ToString();
+                                    lolasm += Newline("JNQ " + curline[indx] + " " + omg_lbl);
+                                
+                                
+
                             }
                             else
                             {
