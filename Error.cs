@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
-namespace LOLpreter
+namespace LOLSharp
 {
     public enum ErrorCodes
     {

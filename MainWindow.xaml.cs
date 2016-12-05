@@ -9,7 +9,7 @@ using System.Windows;
 using System.Xml;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
-namespace LOLpreter
+namespace LOLSharp
 {
     /// <summary>
     /// Interaction logic for MetroWindow.xaml
@@ -37,13 +37,11 @@ namespace LOLpreter
                 {
                     DocTitle.Text = currentDocumentTitle + " (Modified)";
                     saveFile.IsEnabled = true;
-                    this.Title = "LOLCODE Integrated Interpreter Environment - " + DocTitle.Text;
                 }
                 else { DocTitle.Text = currentDocumentTitle; }
-                if (!(CurrentDocumentPath == ""))
+                if (CurrentDocumentPath != "")
                 {
                     DocTitle.Text += "- (" + CurrentDocumentPath + ")";
-                    this.Title = "LOLCODE Integrated Interpreter Environment - " + DocTitle.Text;
                 }
             }
         }
@@ -67,7 +65,7 @@ namespace LOLpreter
             Interpreter.MainWindow = this;
 
             //Load LOLCODE syntax highlighting file
-            using (Stream s = this.GetType().Assembly.GetManifestResourceStream("LOLpreter.LOL.xshd"))
+            using (Stream s = this.GetType().Assembly.GetManifestResourceStream("LOLSharp.LOL.xshd"))
             {
                 using (XmlTextReader reader = new XmlTextReader(s))
                 {
@@ -79,7 +77,7 @@ namespace LOLpreter
             CurrentDocumentModified = false;
             CurrentDocumentTitle = "Untitled.lol";
             DocTitle.Text = currentDocumentTitle;
-            this.Title = "LOLCODE Integrated Interpreter Environment - " + DocTitle.Text;
+            this.Title = "LOLSharp";
             LOLinput.TextArea.Caret.PositionChanged += new EventHandler(updatePosBar);
             LOLinput.Document.TextChanged += new EventHandler(LOLinput_TextChanged);
             LOLinput.TextChanged += new EventHandler(LOLinput_TextChanged);
@@ -101,7 +99,7 @@ namespace LOLpreter
             saveFile.IsEnabled = false;
             CurrentDocumentModified = false;
             DocTitle.Text = currentDocumentTitle;
-            this.Title = "LOLCODE Integrated Interpreter Environment - " + DocTitle.Text;
+            this.Title = "LOLSharp - " + DocTitle.Text;
         }
         private void startProg_Click(object sender, RoutedEventArgs e)
         {

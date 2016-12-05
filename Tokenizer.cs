@@ -10,7 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 
-namespace LOLpreter
+namespace LOLSharp
 {
     public class Tokenizer
     {
@@ -497,7 +497,7 @@ namespace LOLpreter
                 catch (Exception ex)
                 {
                     DebugWin.Print(lin.ToString("X").PadRight(8) + item.PadRight(12));
-                    ex = ex;
+                    Debug.Print(ex.Message);
                 }
 
 
