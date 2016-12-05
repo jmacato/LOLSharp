@@ -30,15 +30,13 @@ namespace LOLSharp
             ExecutionThread.WorkerSupportsCancellation = true;
             ExecutionThread.DoWork += ExecutionThread_DoWork;
             ExecutionThread.RunWorkerCompleted += ExecutionThread_RunWorkerCompleted; ;
-
         }
 
         private void ExecutionThread_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             Console.WriteLine("\r\n\r\n[PROGRAM TERMINATED]");
         }
-
-
+        
         private void ExecutionThread_DoWork(object sender, DoWorkEventArgs e)
         {
             for (Int64 l = 0; l < prog.Length - 1; l++){
@@ -557,11 +555,5 @@ namespace LOLSharp
         }
 
 
-    }
-    enum ExpressionType
-    {
-        Logical,
-        Numerical,
-        None
     }
 }

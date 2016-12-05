@@ -37,18 +37,26 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>%24this.Icon.ico</ApplicationIcon>
+    <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>LOLSharp.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.AvalonEdit, Version=5.0.3.0, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
-      <HintPath>packages\AvalonEdit.5.0.3\lib\Net35\ICSharpCode.AvalonEdit.dll</HintPath>
+      <HintPath>packages\AvalonEdit.5.0.3\lib\Net40\ICSharpCode.AvalonEdit.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Controls.Input.Toolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Infragistics.Themes.MetroDark.Wpf.1.0.0\lib\net40\System.Windows.Controls.Input.Toolkit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Layout.Toolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Infragistics.Themes.MetroDark.Wpf.1.0.0\lib\net40\System.Windows.Controls.Layout.Toolkit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -70,6 +78,7 @@
       <DependentUpon>DebugWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Interpreter.cs" />
+    <Compile Include="LOLSharp.cs" />
     <Compile Include="Tokenizer.cs" />
     <Page Include="Console.xaml">
       <SubType>Designer</SubType>
@@ -119,7 +128,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="%24this.Icon.ico" />
+    <Resource Include="app.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="LOLASM.txt" />

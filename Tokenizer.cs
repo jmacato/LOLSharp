@@ -39,8 +39,8 @@ namespace LOLSharp
             };
             return x;
         }
-
-        Dictionary<string, string> CompressOps = new Dictionary<string, string>
+        
+        public Dictionary<string, string> CompressOps = new Dictionary<string, string>
                                     {
                                         {@"I HAS A","I-HAS-A"},
                                         {@"BOTH SAEM","IEQ"},
@@ -558,40 +558,6 @@ namespace LOLSharp
 
     }
 
-    public enum OperandType
-    {
-        Command,
-        Expression,
-        Literal,
-        Variable,
-        Argument,
-        Label
-    }
-
-    public enum DataTypes
-    {
-        YARN,
-        NUMBR,
-        NUMBAR,
-        TROOF,
-        NOOB
-    }
-
-    public class Variable
-    {
-        public string name { get; set; }
-        public DataTypes DataType { get; set; }
-        public object value { get; set; }
-
-    }
-
-    public class Token
-    {
-        public Int64 lineAddress { get; set; }
-        public OperandType OperandType { get; set; }
-        public string tokenStr { get; set; }
-        public DataTypes DataType { get; set; }
-    }
 
 }
 
